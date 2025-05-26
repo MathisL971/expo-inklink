@@ -1,13 +1,23 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import ThemedNavBar from "@/components/ThemedNavBar";
+import { ColorSchemeProvider } from "@/contexts/ColorSchemeContext";
+import "@/global.css";
+import { ClerkProvider } from '@clerk/clerk-expo';
+import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { Platform } from "react-native";
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+export default function RootWrapper() {
+   return (
+    <ColorSchemeProvider>
+      <RootLayout />
+    </ColorSchemeProvider>
+  );
+}
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -18,12 +28,15 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <ClerkProvider tokenCache={tokenCache}>
+        { Platform.OS === 'web' && <ThemedNavBar />}
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+    </ClerkProvider>
   );
 }
+
