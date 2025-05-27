@@ -1,0 +1,19 @@
+{
+  "name": "expo-inklink-api",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "dev": "nodemon --exec ts-node ./src/index.ts"
+  },
+  "dependencies": {
+    "mongoose": "^8.15.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.149",
+    "@types/node": "^22.15.21",
+    "dotenv": "^16.5.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
