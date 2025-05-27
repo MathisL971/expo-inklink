@@ -6,7 +6,7 @@ import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Platform } from "react-native";
+import { Platform, View } from "react-native";
 import 'react-native-reanimated';
 
 export default function RootWrapper() {
@@ -29,13 +29,15 @@ function RootLayout() {
 
   return (
     <ClerkProvider tokenCache={tokenCache}>
-        { Platform.OS === 'web' && <ThemedNavBar />}
+      <View className="min-h-full">
+        {Platform.OS === 'web' && <ThemedNavBar />}
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
-        <StatusBar style="auto" />
+        <StatusBar style="auto" />        
+      </View>
     </ClerkProvider>
   );
 }

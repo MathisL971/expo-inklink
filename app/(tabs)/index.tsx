@@ -1,4 +1,3 @@
-import { SignOutButton } from '@/components/SignOutButton';
 import { ThemedButton } from '@/components/ThemedButton';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -11,10 +10,9 @@ export default function HomeScreen() {
   const router = useRouter();
   
   return (
-    <ThemedView style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <ThemedView className='flex-1 flex-col items-center justify-center'>
       <SignedIn>
         <ThemedText>Hello {user?.emailAddresses[0].emailAddress}</ThemedText>
-        <SignOutButton />
       </SignedIn>
       <SignedOut>
         <ThemedView>

@@ -43,18 +43,18 @@ export default function TabLayout({ children }: { children: React.ReactNode }) {
         options={{
           title: 'Home',
           tabBarStyle: {
-            display: isSignedIn ? 'contents' : 'none',
+            display: isSignedIn && Platform.OS !== 'web' ? 'flex' : 'none',
             backgroundColor: Colors[mode ?? 'light'].navbarBackground,
             borderTopColor: Colors[mode ?? 'light'].navbarBackground,
           },
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="settings"
         options={{
-          title: 'Explore',
+          title: 'Settings',
           tabBarStyle: {
-            display: isSignedIn ? 'contents' : 'none',
+            display: isSignedIn && Platform.OS !== 'web' ? 'flex' : 'none',
             backgroundColor: Colors[mode ?? 'light'].navbarBackground,
             borderTopColor: Colors[mode ?? 'light'].navbarBackground,
           },

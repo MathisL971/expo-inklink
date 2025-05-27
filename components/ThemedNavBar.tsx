@@ -1,13 +1,16 @@
 import { Colors } from "@/constants/Colors";
+import { useAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { View } from "react-native";
 import ColorSchemeToggleButton from "./ColorSchemeToggleButton";
+import { SignOutButton } from "./SignOutButton";
 import { ThemedButton } from "./ThemedButton";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 
 export default function ThemedNavBar() {
     const router = useRouter();
+    const { isSignedIn } = useAuth();
 
     return (
         <ThemedView 
@@ -18,8 +21,17 @@ export default function ThemedNavBar() {
             <ThemedText type="title" onPress={() => router.navigate('/')}>Inklink</ThemedText>
             <View style={{ display: 'flex', flexDirection: 'row', gap: 14 }}>  
                 <ColorSchemeToggleButton />
-                <ThemedButton title='Sign in' action='primary' size='sm' variant='solid' onPress={() => router.navigate('/(auth)/sign-in')} />
-                <ThemedButton title='Sign up' action='primary' size='sm' variant='solid' onPress={() => router.navigate('/(auth)/sign-up')} />
+                {
+                    isSignedIn
+                    ? <SignOutButton />
+                    : (
+                        <>
+                            <ThemedButton title='Sign in' action='primary' size='sm' variant='solid' onPress={() => router.navigate('/(auth)/sign-in')} />
+                            <ThemedButton title='Sign up' action='primary' size='sm' variant='solid' onPress={() => router.navigate('/(auth)/sign-up')} />
+                        </>
+                    )
+                }
+                
             </View>
         </ThemedView>
     );
