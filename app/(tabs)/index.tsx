@@ -1,29 +1,13 @@
-import { ThemedButton } from '@/components/ThemedButton';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo';
-import { useRouter } from 'expo-router';
-import { Platform } from 'react-native';
+import EventsContainer from "@/components/EventsContainer";
+import { ThemedView } from "@/components/ThemedView";
+import { ScrollView } from "react-native";
 
 export default function HomeScreen() {
-  const { user } = useUser();
-  const router = useRouter();
-  
   return (
-    <ThemedView className='flex-1 flex-col items-center justify-center'>
-      <SignedIn>
-        <ThemedText>Hello {user?.emailAddresses[0].emailAddress}</ThemedText>
-      </SignedIn>
-      <SignedOut>
-        <ThemedView>
-          {Platform.OS !== "web" && (
-            <ThemedView style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <ThemedButton title='Sign in' action='primary' size='xl' variant='solid' onPress={() => router.navigate('/(auth)/sign-in')} />
-              <ThemedButton title='Sign up' action='primary' size='xl' variant='solid' onPress={() => router.navigate('/(auth)/sign-up')} />
-            </ThemedView>
-          )}
-        </ThemedView>
-      </SignedOut>
+    <ThemedView className="flex-1 flex-col items-center justify-center">
+      <ScrollView className="flex-1 flex-col pt-4 pb-12 px-2 sm:px-4 md:px-8 lg:px-12 xl:px-14 2xl:px-16">
+        <EventsContainer />
+      </ScrollView>
     </ThemedView>
-  )
+  );
 }
