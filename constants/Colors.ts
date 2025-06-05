@@ -1,5 +1,5 @@
-// Improved Color Palette with Enhanced Consistency and Accessibility
-// Uses a more systematic approach with proper contrast ratios and semantic naming
+// Academic Color Palette for Social Sciences Ticketing Platform
+// Designed to convey trust, intellect, and professionalism while maintaining accessibility
 
 // Color scale type for consistent color palettes
 type ColorScale = {
@@ -33,7 +33,7 @@ type ThemeColors = {
   background: string;
   backgroundElevated: string;
 
-  // Primary brand colors
+  // Primary brand colors - Deep Academic Blue
   primary: string;
   primaryHover: string;
   primaryActive: string;
@@ -41,14 +41,14 @@ type ThemeColors = {
   primaryLight: string;
   primaryLighter: string;
 
-  // Secondary colors
+  // Secondary colors - Warm Gray for balance
   secondary: string;
   secondaryHover: string;
   secondaryActive: string;
   secondaryText: string;
   secondaryLight: string;
 
-  // Accent colors
+  // Accent colors - Scholarly Gold
   accent: string;
   accentHover: string;
   accentText: string;
@@ -128,132 +128,147 @@ type ColorConfig = {
   dark: ThemeColors;
 };
 
-// Base lime colors - using a more refined lime palette
-const lime: ColorScale = {
-  50: "rgba(247, 254, 231, 1)", // Very light lime
-  100: "rgba(236, 252, 203, 1)", // Light lime
-  200: "rgba(217, 249, 157, 1)", // Lighter lime
-  300: "rgba(190, 242, 100, 1)", // Medium-light lime
-  400: "rgba(163, 230, 53, 1)", // Medium lime
-  500: "rgba(132, 204, 22, 1)", // Primary lime
-  600: "rgba(101, 163, 13, 1)", // Darker lime
-  700: "rgba(77, 124, 15, 1)", // Dark lime
-  800: "rgba(54, 83, 20, 1)", // Very dark lime
-  900: "rgba(26, 46, 5, 1)", // Deepest lime
-  950: "rgba(13, 19, 3, 1)", // Deepest lime
+// Deep Academic Blue - Primary color representing trust, knowledge, and professionalism
+const academicBlue: ColorScale = {
+  50: "rgba(240, 249, 255, 1)", // Very light blue
+  100: "rgba(224, 242, 254, 1)", // Light blue
+  200: "rgba(186, 230, 253, 1)", // Lighter blue
+  300: "rgba(125, 211, 252, 1)", // Medium-light blue
+  400: "rgba(56, 189, 248, 1)", // Medium blue
+  500: "rgba(14, 165, 233, 1)", // Primary academic blue
+  600: "rgba(2, 132, 199, 1)", // Darker blue
+  700: "rgba(3, 105, 161, 1)", // Dark blue
+  800: "rgba(7, 89, 133, 1)", // Very dark blue
+  900: "rgba(12, 74, 110, 1)", // Deep blue
+  950: "rgba(8, 47, 73, 1)", // Deepest blue
 };
 
-// Neutral grays with better progression
-const neutral: ColorScale = {
-  50: "rgba(248, 250, 252, 1)", // Almost white
-  100: "rgba(241, 245, 249, 1)", // Very light gray
-  200: "rgba(226, 232, 240, 1)", // Light gray
-  300: "rgba(203, 213, 225, 1)", // Medium-light gray
-  400: "rgba(148, 163, 184, 1)", // Medium gray
-  500: "rgba(100, 116, 139, 1)", // Balanced gray
-  600: "rgba(71, 85, 105, 1)", // Medium-dark gray
-  700: "rgba(51, 65, 85, 1)", // Dark gray
-  800: "rgba(30, 41, 59, 1)", // Very dark gray
-  900: "rgba(15, 23, 42, 1)", // Almost black
-  950: "rgba(2, 6, 23, 1)", // Deepest dark
+// Warm Gray - Better for academic contexts than cold neutrals
+const warmGray: ColorScale = {
+  50: "rgba(250, 250, 249, 1)", // Warm white
+  100: "rgba(245, 245, 244, 1)", // Very light warm gray
+  200: "rgba(231, 229, 228, 1)", // Light warm gray
+  300: "rgba(214, 211, 209, 1)", // Medium-light warm gray
+  400: "rgba(168, 162, 158, 1)", // Medium warm gray
+  500: "rgba(120, 113, 108, 1)", // Balanced warm gray
+  600: "rgba(87, 83, 78, 1)", // Medium-dark warm gray
+  700: "rgba(68, 64, 60, 1)", // Dark warm gray
+  800: "rgba(41, 37, 36, 1)", // Very dark warm gray
+  900: "rgba(28, 25, 23, 1)", // Almost black warm
+  950: "rgba(12, 10, 9, 1)", // Deepest warm
 };
 
-// Status colors with improved accessibility
+// Scholarly Gold - Accent color representing achievement and prestige
+const scholarlyGold: ColorScale = {
+  50: "rgba(255, 251, 235, 1)", // Very light gold
+  100: "rgba(254, 243, 199, 1)", // Light gold
+  200: "rgba(253, 230, 138, 1)", // Lighter gold
+  300: "rgba(252, 211, 77, 1)", // Medium-light gold
+  400: "rgba(251, 191, 36, 1)", // Medium gold
+  500: "rgba(245, 158, 11, 1)", // Primary scholarly gold
+  600: "rgba(217, 119, 6, 1)", // Darker gold
+  700: "rgba(180, 83, 9, 1)", // Dark gold
+  800: "rgba(146, 64, 14, 1)", // Very dark gold
+  900: "rgba(120, 53, 15, 1)", // Deep gold
+  950: "rgba(69, 26, 3, 1)", // Deepest gold
+};
+
+// Status colors refined for academic context
 const status: Record<"success" | "warning" | "error" | "info", StatusColor> = {
   success: {
-    light: "rgba(34, 197, 94, 1)",
+    light: "rgba(34, 197, 94, 1)", // Green for confirmations
     lightBg: "rgba(240, 253, 244, 1)",
     dark: "rgba(74, 222, 128, 1)",
     darkBg: "rgba(20, 83, 45, 1)",
   },
   warning: {
-    light: "rgba(245, 158, 11, 1)",
+    light: "rgba(245, 158, 11, 1)", // Scholarly gold for warnings
     lightBg: "rgba(255, 251, 235, 1)",
     dark: "rgba(251, 191, 36, 1)",
     darkBg: "rgba(92, 50, 0, 1)",
   },
   error: {
-    light: "rgba(239, 68, 68, 1)",
+    light: "rgba(220, 38, 38, 1)", // Professional red
     lightBg: "rgba(254, 242, 242, 1)",
     dark: "rgba(248, 113, 113, 1)",
     darkBg: "rgba(87, 13, 13, 1)",
   },
   info: {
-    light: "rgba(59, 130, 246, 1)",
-    lightBg: "rgba(239, 246, 255, 1)",
-    dark: "rgba(96, 165, 250, 1)",
-    darkBg: "rgba(23, 37, 84, 1)",
+    light: "rgba(14, 165, 233, 1)", // Academic blue for info
+    lightBg: "rgba(240, 249, 255, 1)",
+    dark: "rgba(56, 189, 248, 1)",
+    darkBg: "rgba(8, 47, 73, 1)",
   },
 };
 
 export const Colors: ColorConfig = {
   light: {
     // Core text and background
-    text: neutral[900],
-    textSecondary: neutral[600],
-    textTertiary: neutral[500],
+    text: warmGray[900],
+    textSecondary: warmGray[600],
+    textTertiary: warmGray[500],
     background: "rgba(255, 255, 255, 1)",
-    backgroundElevated: neutral[50],
+    backgroundElevated: warmGray[50], // Already distinct
 
-    // Primary brand colors
-    primary: lime[500],
-    primaryHover: lime[600],
-    primaryActive: lime[700],
+    // Primary brand colors - Academic Blue
+    primary: academicBlue[600],
+    primaryHover: academicBlue[700],
+    primaryActive: academicBlue[800],
     primaryText: "rgba(255, 255, 255, 1)",
-    primaryLight: lime[100],
-    primaryLighter: lime[50],
+    primaryLight: academicBlue[100],
+    primaryLighter: academicBlue[50],
 
-    // Secondary colors
-    secondary: neutral[500],
-    secondaryHover: neutral[600],
-    secondaryActive: neutral[700],
+    // Secondary colors - Warm Gray
+    secondary: warmGray[500],
+    secondaryHover: warmGray[600],
+    secondaryActive: warmGray[700],
     secondaryText: "rgba(255, 255, 255, 1)",
-    secondaryLight: neutral[100],
+    secondaryLight: warmGray[100],
 
-    // Accent colors
-    accent: "rgba(99, 102, 241, 1)", // Indigo for better contrast
-    accentHover: "rgba(79, 70, 229, 1)",
+    // Accent colors - Scholarly Gold
+    accent: scholarlyGold[500],
+    accentHover: scholarlyGold[600],
     accentText: "rgba(255, 255, 255, 1)",
 
     // Interactive elements
-    tint: lime[500], // Legacy support
-    icon: neutral[500],
-    iconHover: neutral[700],
-    tabIconDefault: neutral[400],
-    tabIconSelected: lime[500],
+    tint: academicBlue[600],
+    icon: warmGray[500],
+    iconHover: academicBlue[600],
+    tabIconDefault: warmGray[400],
+    tabIconSelected: academicBlue[600],
 
     // Buttons
-    buttonPrimary: lime[500],
-    buttonPrimaryHover: lime[600],
+    buttonPrimary: academicBlue[600],
+    buttonPrimaryHover: academicBlue[700],
     buttonPrimaryText: "rgba(255, 255, 255, 1)",
-    buttonSecondary: neutral[100],
-    buttonSecondaryHover: neutral[200],
-    buttonSecondaryText: neutral[700],
+    buttonSecondary: warmGray[100],
+    buttonSecondaryHover: warmGray[200],
+    buttonSecondaryText: warmGray[700],
     buttonGhost: "transparent",
-    buttonGhostHover: neutral[100],
-    buttonGhostText: neutral[700],
+    buttonGhostHover: warmGray[100],
+    buttonGhostText: warmGray[700],
 
     // Cards and surfaces
-    card: "rgba(255, 255, 255, 1)",
-    cardElevated: neutral[50],
-    cardBorder: neutral[200],
-    surface: "rgba(255, 255, 255, 1)",
-    surfaceElevated: neutral[50],
+    card: warmGray[50], // Changed from "rgba(255, 255, 255, 1)"
+    cardElevated: warmGray[50], // Keep as is, or consider warmGray[100] if you need a deeper hierarchy
+    cardBorder: warmGray[200], // Will help with definition too
+    surface: "rgba(255, 255, 255, 1)", // Keep as is
+    surfaceElevated: warmGray[50], // Keep as is
 
     // Borders and dividers
-    border: neutral[200],
-    borderLight: neutral[100],
-    borderStrong: neutral[300],
-    divider: neutral[200],
+    border: warmGray[200],
+    borderLight: warmGray[100],
+    borderStrong: warmGray[300],
+    divider: warmGray[200],
 
     // Form elements
     inputBackground: "rgba(255, 255, 255, 1)",
     inputBackgroundFocus: "rgba(255, 255, 255, 1)",
-    inputBorder: neutral[300],
-    inputBorderFocus: lime[500],
+    inputBorder: warmGray[300],
+    inputBorderFocus: academicBlue[500],
     inputBorderError: status.error.light,
-    inputText: neutral[900],
-    inputPlaceholder: neutral[400],
+    inputText: warmGray[900],
+    inputPlaceholder: warmGray[400],
 
     // Status colors
     success: status.success.light,
@@ -266,18 +281,18 @@ export const Colors: ColorConfig = {
 
     error: status.error.light,
     errorBg: status.error.lightBg,
-    errorBorder: "rgba(239, 68, 68, 0.2)",
+    errorBorder: "rgba(220, 38, 38, 0.2)",
 
     info: status.info.light,
     infoBg: status.info.lightBg,
-    infoBorder: "rgba(59, 130, 246, 0.2)",
+    infoBorder: "rgba(14, 165, 233, 0.2)",
 
     // Navigation
     navbarBackground: "rgba(255, 255, 255, 0.95)",
-    navbarBackgroundBlur: "rgba(255, 255, 255, 0.8)",
-    navbarBorder: "rgba(226, 232, 240, 0.8)",
-    navbarText: neutral[700],
-    navbarTextActive: lime[600],
+    navbarBackgroundBlur: "rgba(255, 255, 255, 0.9)",
+    navbarBorder: "rgba(231, 229, 228, 0.8)",
+    navbarText: warmGray[700],
+    navbarTextActive: academicBlue[600],
 
     // Shadows and overlays
     shadow: "rgba(0, 0, 0, 0.08)",
@@ -289,71 +304,71 @@ export const Colors: ColorConfig = {
 
   dark: {
     // Core text and background
-    text: neutral[50],
-    textSecondary: neutral[300],
-    textTertiary: neutral[400],
-    background: neutral[950],
-    backgroundElevated: neutral[900],
+    text: warmGray[50],
+    textSecondary: warmGray[300],
+    textTertiary: warmGray[400],
+    background: warmGray[950],
+    backgroundElevated: warmGray[900],
 
-    // Primary brand colors
-    primary: lime[400], // Brighter for dark theme
-    primaryHover: lime[300],
-    primaryActive: lime[200],
-    primaryText: neutral[900],
-    primaryLight: lime[900],
-    primaryLighter: lime[800],
+    // Primary brand colors - Lighter Academic Blue for dark theme
+    primary: academicBlue[400],
+    primaryHover: academicBlue[300],
+    primaryActive: academicBlue[200],
+    primaryText: warmGray[900],
+    primaryLight: academicBlue[900],
+    primaryLighter: academicBlue[950],
 
     // Secondary colors
-    secondary: neutral[400],
-    secondaryHover: neutral[300],
-    secondaryActive: neutral[200],
-    secondaryText: neutral[900],
-    secondaryLight: neutral[800],
+    secondary: warmGray[400],
+    secondaryHover: warmGray[300],
+    secondaryActive: warmGray[200],
+    secondaryText: warmGray[900],
+    secondaryLight: warmGray[800],
 
-    // Accent colors
-    accent: "rgba(129, 140, 248, 1)", // Lighter indigo for dark theme
-    accentHover: "rgba(165, 180, 252, 1)",
-    accentText: neutral[900],
+    // Accent colors - Brighter Gold for dark theme
+    accent: scholarlyGold[400],
+    accentHover: scholarlyGold[300],
+    accentText: warmGray[900],
 
     // Interactive elements
-    tint: lime[400], // Legacy support
-    icon: neutral[400],
-    iconHover: neutral[200],
-    tabIconDefault: neutral[500],
-    tabIconSelected: lime[400],
+    tint: academicBlue[400],
+    icon: warmGray[400],
+    iconHover: academicBlue[300],
+    tabIconDefault: warmGray[500],
+    tabIconSelected: academicBlue[400],
 
     // Buttons
-    buttonPrimary: lime[400],
-    buttonPrimaryHover: lime[300],
-    buttonPrimaryText: neutral[900],
-    buttonSecondary: neutral[800],
-    buttonSecondaryHover: neutral[700],
-    buttonSecondaryText: neutral[200],
+    buttonPrimary: academicBlue[500],
+    buttonPrimaryHover: academicBlue[400],
+    buttonPrimaryText: "rgba(255, 255, 255, 1)",
+    buttonSecondary: warmGray[800],
+    buttonSecondaryHover: warmGray[700],
+    buttonSecondaryText: warmGray[200],
     buttonGhost: "transparent",
-    buttonGhostHover: neutral[800],
-    buttonGhostText: neutral[300],
+    buttonGhostHover: warmGray[800],
+    buttonGhostText: warmGray[300],
 
     // Cards and surfaces
-    card: neutral[900],
-    cardElevated: neutral[800],
-    cardBorder: neutral[700],
-    surface: neutral[900],
-    surfaceElevated: neutral[800],
+    card: warmGray[900],
+    cardElevated: warmGray[800],
+    cardBorder: warmGray[700],
+    surface: warmGray[900],
+    surfaceElevated: warmGray[800],
 
     // Borders and dividers
-    border: neutral[700],
-    borderLight: neutral[800],
-    borderStrong: neutral[600],
-    divider: neutral[700],
+    border: warmGray[700],
+    borderLight: warmGray[800],
+    borderStrong: warmGray[600],
+    divider: warmGray[700],
 
     // Form elements
-    inputBackground: neutral[900],
-    inputBackgroundFocus: neutral[800],
-    inputBorder: neutral[600],
-    inputBorderFocus: lime[400],
+    inputBackground: warmGray[900],
+    inputBackgroundFocus: warmGray[800],
+    inputBorder: warmGray[600],
+    inputBorderFocus: academicBlue[400],
     inputBorderError: status.error.dark,
-    inputText: neutral[50],
-    inputPlaceholder: neutral[500],
+    inputText: warmGray[50],
+    inputPlaceholder: warmGray[500],
 
     // Status colors
     success: status.success.dark,
@@ -370,14 +385,14 @@ export const Colors: ColorConfig = {
 
     info: status.info.dark,
     infoBg: status.info.darkBg,
-    infoBorder: "rgba(96, 165, 250, 0.2)",
+    infoBorder: "rgba(56, 189, 248, 0.2)",
 
     // Navigation
-    navbarBackground: "rgba(2, 6, 23, 0.95)",
-    navbarBackgroundBlur: "rgba(2, 6, 23, 0.8)",
-    navbarBorder: "rgba(51, 65, 85, 0.8)",
-    navbarText: neutral[300],
-    navbarTextActive: lime[400],
+    navbarBackground: warmGray[900], // Changed from warmGray[950]
+    navbarBackgroundBlur: "rgba(12, 10, 9, 0.9)", // Keep current or adjust based on new background
+    navbarBorder: "rgba(68, 64, 60, 0.8)",
+    navbarText: warmGray[300],
+    navbarTextActive: academicBlue[400],
 
     // Shadows and overlays
     shadow: "rgba(0, 0, 0, 0.25)",
@@ -415,9 +430,31 @@ export const getColor = (
 
 // Color palette for design reference
 export const palette = {
-  lime,
-  neutral,
+  academicBlue,
+  warmGray,
+  scholarlyGold,
   status,
+} as const;
+
+// Semantic color helpers for specific use cases
+export const semanticColors = {
+  // Event categories
+  lecture: academicBlue[600],
+  conference: scholarlyGold[600],
+  seminar: warmGray[600],
+  workshop: academicBlue[500],
+
+  // Ticket status
+  available: status.success.light,
+  limited: status.warning.light,
+  soldOut: status.error.light,
+
+  // Academic disciplines (optional extensions)
+  psychology: "rgba(139, 69, 19, 1)", // Warm brown
+  sociology: "rgba(75, 0, 130, 1)", // Indigo
+  economics: "rgba(0, 100, 0, 1)", // Dark green
+  philosophy: "rgba(72, 61, 139, 1)", // Dark slate blue
+  anthropology: "rgba(205, 92, 92, 1)", // Indian red
 } as const;
 
 // Type exports for external use

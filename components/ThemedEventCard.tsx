@@ -15,7 +15,7 @@ export default function ThemedEventCard({ event }: { event: Event }) {
 
   return (
     <Card
-      className="p-5 rounded-md max-w-[360px] m-3"
+      className="p-5 rounded-md h-[520px] max-w-[300px] m-3"
       style={{
         backgroundColor: getColor("card", mode),
       }}
@@ -24,24 +24,45 @@ export default function ThemedEventCard({ event }: { event: Event }) {
         source={{
           uri: event.image ? `${event.image}/id/1/200/200.jpg` : "",
         }}
-        className="mb-6 h-[240px] w-full rounded-md aspect-[263/240]"
+        className="mb-5 h-[240px] w-full rounded-md aspect-[263/240]"
         alt="image"
       />
-      <ThemedText className="text-sm">
-        {event.date} | {event.location}
+      <ThemedText colorVariant="textSecondary" className="text-sm">
+        {new Date(event.startDate).toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+        })}
+        {" | "}
+        {event.location}
       </ThemedText>
-      <ThemedHeading size="xl">{event.title}</ThemedHeading>
-      <ThemedText className="mt-1">{event.description}</ThemedText>
-      <ExternalLink href={event.link as ExternalPathString} className="mt-4">
-        <HStack className="items-center">
-          <ThemedText type="link" className="text-sm flex-row">
-            Learn more
-          </ThemedText>
-          <ThemedText type="link">
-            <Icon as={ArrowRightIcon} size="sm" className="mt-0.5 ml-0.5" />
-          </ThemedText>
-        </HStack>
-      </ExternalLink>
+      <ThemedHeading className="mt-1" size="xl">
+        {event.title}
+      </ThemedHeading>
+      <ThemedText colorVariant="textSecondary" className="mt-2 flex-1">
+        {event.description.length > 150
+          ? event.description.slice(0, 150) + "..."
+          : event.description}
+      </ThemedText>
+      {event.source && (
+        <ExternalLink
+          href={event.source as ExternalPathString}
+          className="mt-2"
+        >
+          <HStack className="items-center">
+            <ThemedText colorVariant="tint" className="text-sm flex-row">
+              Learn more
+            </ThemedText>
+            <Icon
+              as={ArrowRightIcon}
+              size="sm"
+              color={getColor("tint", mode)}
+              className="mt-0.5 ml-0.5"
+            />
+          </HStack>
+        </ExternalLink>
+      )}
     </Card>
   );
 }

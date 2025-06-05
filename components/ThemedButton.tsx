@@ -3,11 +3,11 @@ import { type PressableProps } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Button, ButtonText } from "./ui/button";
 
-type ThemedButtonProps = PressableProps & {
+export type ThemedButtonProps = PressableProps & {
   title: string;
-  action: "primary" | "secondary" | "positive" | "negative" | "default";
-  size: "xs" | "sm" | "md" | "lg" | "xl";
-  variant: "link" | "outline" | "solid";
+  action?: "primary" | "secondary" | "positive" | "negative" | "default";
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  variant?: "link" | "outline" | "solid";
   lightColor?: string;
   darkColor?: string;
   lightBackgroundColor?: string;
@@ -40,6 +40,7 @@ export function ThemedButton({
       variant={variant}
       action={action}
       style={{ backgroundColor }}
+      className="hover:opacity-90"
       {...rest}
     >
       <ButtonText style={{ color }}>{title}</ButtonText>

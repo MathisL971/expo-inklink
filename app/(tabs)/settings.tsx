@@ -1,17 +1,27 @@
+import Container from "@/components/Container";
 import { SignOutButton } from "@/components/SignOutButton";
 import { ThemedButton } from "@/components/ThemedButton";
-import { ThemedView } from "@/components/ThemedView";
-import { SignedIn, SignedOut } from "@clerk/clerk-expo";
-import { useRouter } from "expo-router";
-import { View } from "react-native";
+import { ThemedText } from "@/components/ThemedText";
+import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
+import { Redirect, useRouter } from "expo-router";
+import { Platform, View } from "react-native";
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const { isSignedIn } = useAuth();
+
+  if (!isSignedIn && Platform.OS === "web") {
+    return <Redirect href={"/"} />;
+  }
 
   return (
-    <ThemedView className="flex-1 flex-col items-center justify-center">
+    <Container className="justify-center items-center">
       <SignedIn>
-        <SignOutButton />
+        {Platform.OS !== "web" ? (
+          <SignOutButton size="xl" />
+        ) : (
+          <ThemedText>Settings Screen</ThemedText>
+        )}
       </SignedIn>
       <SignedOut>
         <View className="flex-col gap-3">
@@ -31,6 +41,6 @@ export default function SettingsScreen() {
           />
         </View>
       </SignedOut>
-    </ThemedView>
+    </Container>
   );
 }

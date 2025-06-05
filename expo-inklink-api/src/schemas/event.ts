@@ -1,19 +1,81 @@
 import mongoose, { InferSchemaType, Schema } from "mongoose";
 
+// Define the enum values
+const FormatNames = [
+  "Lecture",
+  "Conference",
+  "Seminar",
+  "Colloquium",
+  "Symposium",
+  "Panel",
+  "Roundtable",
+  "Workshop",
+  "Webinar",
+  "Discussion",
+  "Debate",
+  "Book Talk",
+  "Poster Session",
+  "Networking Event",
+  "Training Session",
+  "Keynote",
+  "Town Hall",
+  "Fireside Chat",
+] as const;
+
+const DisciplineNames = [
+  "Political Science",
+  "Economics",
+  "History",
+  "Sociology",
+  "Anthropology",
+  "Psychology",
+  "Human Geography",
+  "Linguistics",
+  "Archaeology",
+  "Law",
+  "Education",
+  "Communication Studies",
+  "Development Studies",
+  "International Relations",
+  "Criminology",
+  "Demography",
+  "Social Work",
+  "Cultural Studies",
+] as const;
+
+const AccessNames = ["Public", "Private", "Invitation Only"] as const;
+
 const eventSchema = new Schema(
   {
-    // Remove the custom 'id' field - Mongoose creates _id automatically
     title: { type: String, required: true },
     description: { type: String, required: true },
+    note: { type: String, required: false },
     image: { type: String, required: false },
-    date: { type: String, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
     location: { type: String, required: true },
-    link: { type: String, required: true },
+    source: { type: String, required: false },
+    format: {
+      type: String,
+      required: true,
+      enum: FormatNames,
+    },
+    disciplines: [
+      {
+        type: String,
+        enum: DisciplineNames,
+        required: true,
+      },
+    ],
+    access: {
+      type: String,
+      required: true,
+      enum: AccessNames,
+    },
+    organizerId: { type: String, required: false },
   },
   {
-    // Optional: Add timestamps
-    timestamps: true,
-    // Optional: Transform _id to id in JSON output
+    timestamps: true, // This adds createdAt and updatedAt automatically
     toJSON: {
       transform: function (doc, ret) {
         ret.id = ret._id;

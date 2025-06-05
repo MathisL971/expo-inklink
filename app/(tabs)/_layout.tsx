@@ -1,15 +1,14 @@
+import ColorSchemeToggleButton from "@/components/ColorSchemeToggleButton";
+import { HapticTab } from "@/components/HapticTab";
+import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { Tabs } from "expo-router";
 import React from "react";
 import { Platform } from "react-native";
 
-import ColorSchemeToggleButton from "@/components/ColorSchemeToggleButton";
-import { HapticTab } from "@/components/HapticTab";
-import TabBarBackground from "@/components/ui/TabBarBackground";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/contexts/ColorSchemeContext";
-
-export default function TabLayout({ children }: { children: React.ReactNode }) {
+export default function TabLayout() {
   const { mode } = useColorScheme();
+  const navbarBackgroundColor = Colors[mode ?? "light"].navbarBackground;
 
   return (
     <Tabs
@@ -19,17 +18,22 @@ export default function TabLayout({ children }: { children: React.ReactNode }) {
         tabBarActiveTintColor: Colors[mode ?? "light"].tint,
         tabBarInactiveTintColor: Colors[mode ?? "light"].text,
         tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
-            // Use a transparent background on iOS to show the blur effect
             position: "absolute",
+            backgroundColor: navbarBackgroundColor,
+            borderTopColor: navbarBackgroundColor,
+            opacity: 1,
           },
-          default: {},
+          default: {
+            backgroundColor: navbarBackgroundColor,
+            borderTopColor: navbarBackgroundColor,
+            opacity: 1,
+          },
         }),
         headerRight: () => <ColorSchemeToggleButton />,
         headerStyle: {
-          backgroundColor: Colors[mode ?? "light"].navbarBackground,
+          backgroundColor: navbarBackgroundColor,
         },
         headerTitleStyle: {
           color: Colors[mode ?? "light"].text,
@@ -42,8 +46,9 @@ export default function TabLayout({ children }: { children: React.ReactNode }) {
           title: "Home",
           tabBarStyle: {
             display: Platform.OS !== "web" ? "flex" : "none",
-            backgroundColor: Colors[mode ?? "light"].navbarBackground,
-            borderTopColor: Colors[mode ?? "light"].navbarBackground,
+            backgroundColor: navbarBackgroundColor,
+            borderTopColor: navbarBackgroundColor,
+            opacity: 1,
           },
         }}
       />
@@ -53,8 +58,9 @@ export default function TabLayout({ children }: { children: React.ReactNode }) {
           title: "Settings",
           tabBarStyle: {
             display: Platform.OS !== "web" ? "flex" : "none",
-            backgroundColor: Colors[mode ?? "light"].navbarBackground,
-            borderTopColor: Colors[mode ?? "light"].navbarBackground,
+            backgroundColor: navbarBackgroundColor,
+            borderTopColor: navbarBackgroundColor,
+            opacity: 1,
           },
         }}
       />

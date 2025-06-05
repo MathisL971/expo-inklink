@@ -1,9 +1,74 @@
+export type FormatName =
+  | "Lecture"
+  | "Conference"
+  | "Seminar"
+  | "Colloquium"
+  | "Symposium"
+  | "Panel"
+  | "Roundtable"
+  | "Workshop"
+  | "Webinar"
+  | "Discussion"
+  | "Debate"
+  | "Book Talk"
+  | "Poster Session"
+  | "Networking Event"
+  | "Training Session"
+  | "Keynote"
+  | "Town Hall"
+  | "Fireside Chat";
+
+export type Format = {
+  id: string;
+  name: FormatName;
+};
+
+export type DisciplineName =
+  | "Political Science"
+  | "Economics"
+  | "History"
+  | "Sociology"
+  | "Anthropology"
+  | "Psychology"
+  | "Human Geography"
+  | "Linguistics"
+  | "Archaeology"
+  | "Law"
+  | "Education"
+  | "Communication Studies"
+  | "Development Studies"
+  | "International Relations"
+  | "Criminology"
+  | "Demography"
+  | "Social Work"
+  | "Cultural Studies";
+
+export type Discipline = {
+  id: string;
+  name: DisciplineName;
+};
+
+export type AccessName = "Public" | "Private" | "Invitation Only";
+
+export type Access = {
+  id: string;
+  name: AccessName;
+};
+
 export type Event = {
   id: string;
   title: string;
   description: string;
-  image: string;
-  date: string;
+  note?: string;
+  image?: string;
+  startDate: string;
+  endDate: string;
   location: string;
-  link: string;
+  source?: string;
+  format: FormatName;
+  disciplines: DisciplineName[];
+  access: AccessName;
+  organizerId?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };

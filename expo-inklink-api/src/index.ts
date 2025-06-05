@@ -2,19 +2,22 @@ import type {
   APIGatewayProxyEventV2,
   APIGatewayProxyResultV2,
 } from "aws-lambda";
-// import dotenv from "dotenv";
 import { connect } from "mongoose";
+import { handleAccessesGET } from "./handlers/access";
+import { handleDisciplinesGET } from "./handlers/discipline";
 import {
   handleEventsDELETE,
   handleEventsGET,
   handleEventsPOST,
   handleEventsPUT,
 } from "./handlers/event";
+import { handleFormatsGET } from "./handlers/format";
+import { AccessModel } from "./schemas/access";
+import { DisciplineModel } from "./schemas/discipline";
 import { EventModel } from "./schemas/event";
+import { FormatModel } from "./schemas/format";
 import { createResponse, errorResponse } from "./utils/response";
 // Import other models as needed
-
-// dotenv.config();
 
 // Environment validation
 if (!process.env.MONGODB_URI) {
@@ -40,6 +43,18 @@ const RESOURCE_CONFIG = {
     model: EventModel,
     allowedMethods: ["GET", "POST", "PUT", "DELETE"],
   },
+  formats: {
+    model: FormatModel,
+    allowedMethods: ["GET"]
+  },
+  disciplines: {
+    model: DisciplineModel,
+    allowedMethods: ["GET"] 
+  },
+  accesses: {
+    model: AccessModel,
+    allowedMethods: ["GET"]
+  }
   // Add more resources here
 } as const;
 
@@ -52,6 +67,15 @@ function createResourceHandler(resourceName: string) {
       PUT: handleEventsPUT,
       DELETE: handleEventsDELETE,
     },
+    formats: {
+      GET: handleFormatsGET
+    },
+    disciplines: {
+      GET: handleDisciplinesGET
+    },
+    accesses: {
+      GET: handleAccessesGET
+    }
     // Add more resource handlers here
   };
 

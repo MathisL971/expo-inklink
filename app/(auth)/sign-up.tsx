@@ -1,12 +1,13 @@
+import Container from "@/components/Container";
 import { ThemedButton } from "@/components/ThemedButton";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+import { VStack } from "@/components/ui/vstack";
 import { getColor } from "@/constants/Colors";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { useSignUp } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import * as React from "react";
-import { TextInput, View } from "react-native";
+import { TextInput } from "react-native";
 
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -75,14 +76,16 @@ export default function SignUpScreen() {
 
   if (pendingVerification) {
     return (
-      <ThemedView className="flex-1 flex-col items-center justify-center">
-        <View className="flex flex-col gap-3 items-center">
-          <ThemedText type="title">Verify your email</ThemedText>
+      <Container className="justify-center">
+        <VStack className="flex-col w-2/3 sm:w-1/2 md:w-1/3 xl:w-1/4 2xl:w-1/5 self-center gap-4 items-center">
+          <ThemedText colorVariant="text" size="3xl" bold>
+            Verify your email
+          </ThemedText>
           <TextInput
             value={code}
             placeholder="Enter your verification code"
             onChangeText={(code) => setCode(code)}
-            className="px-3 py-2 border rounded-md"
+            className="px-3 py-2 rounded-md w-full border"
             style={{
               backgroundColor: getColor("inputBackground", mode),
               color: getColor("inputText", mode),
@@ -95,21 +98,23 @@ export default function SignUpScreen() {
             variant="solid"
             onPress={onVerifyPress}
           />
-        </View>
-      </ThemedView>
+        </VStack>
+      </Container>
     );
   }
 
   return (
-    <ThemedView className="flex-1 flex-col items-center justify-center">
-      <View className="flex flex-col gap-3 items-center">
-        <ThemedText type="title">Sign up</ThemedText>
+    <Container className="justify-center">
+      <VStack className="flex-col w-2/3 sm:w-1/2 md:w-1/3 xl:w-1/4 2xl:w-1/5 self-center gap-4 items-center">
+        <ThemedText colorVariant="text" size="3xl" bold>
+          Sign up
+        </ThemedText>
         <TextInput
           autoCapitalize="none"
           value={emailAddress}
           placeholder="Enter email"
           onChangeText={(email) => setEmailAddress(email)}
-          className="px-3 py-2 rounded-md"
+          className="px-3 py-2 rounded-md w-full"
           style={{
             backgroundColor: getColor("inputBackground", mode),
             color: getColor("inputText", mode),
@@ -120,7 +125,7 @@ export default function SignUpScreen() {
           placeholder="Enter password"
           secureTextEntry={true}
           onChangeText={(password) => setPassword(password)}
-          className="px-3 py-2 rounded-md"
+          className="px-3 py-2 rounded-md w-full"
           style={{
             backgroundColor: getColor("inputBackground", mode),
             color: getColor("inputText", mode),
@@ -133,7 +138,9 @@ export default function SignUpScreen() {
           variant="solid"
           onPress={onSignUpPress}
         />
-        <ThemedText>Already have an account?</ThemedText>
+        <ThemedText colorVariant="textSecondary" size="sm">
+          Already have an account?
+        </ThemedText>
         <ThemedButton
           title="Sign in"
           action="primary"
@@ -141,7 +148,7 @@ export default function SignUpScreen() {
           variant="solid"
           onPress={() => router.navigate("/(auth)/sign-in")}
         />
-      </View>
-    </ThemedView>
+      </VStack>
+    </Container>
   );
 }
