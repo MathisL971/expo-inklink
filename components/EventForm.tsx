@@ -48,16 +48,19 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
   const formatQuery = useQuery({
     queryKey: ["formats"],
     queryFn: fetchFormats,
+    staleTime: 5 * 60 * 1000,
   });
 
   const disciplineQuery = useQuery({
     queryKey: ["disciplines"],
     queryFn: fetchDisciplines,
+    staleTime: 5 * 60 * 1000,
   });
 
   const accessQuery = useQuery({
     queryKey: ["accesses"],
     queryFn: fetchAccesses,
+    staleTime: 5 * 60 * 1000,
   });
 
   const queryClient = useQueryClient();

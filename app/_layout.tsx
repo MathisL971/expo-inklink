@@ -5,15 +5,40 @@ import { ColorSchemeProvider } from "@/contexts/ColorSchemeContext";
 import "@/global.css";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  focusManager,
+  onlineManager,
+} from "@tanstack/react-query";
 import { useFonts } from "expo-font";
+import * as Network from "expo-network";
 import { Stack } from "expo-router";
-import { Platform } from "react-native";
+import { useEffect } from "react";
+import { AppState, AppStateStatus, Platform } from "react-native";
 import "react-native-reanimated";
 
 const queryClient = new QueryClient();
 
+function onAppStateChange(status: AppStateStatus) {
+  if (Platform.OS !== "web") {
+    focusManager.setFocused(status === "active");
+  }
+}
+
+onlineManager.setEventListener((setOnline) => {
+  const eventSubscription = Network.addNetworkStateListener((state) => {
+    setOnline(!!state.isConnected);
+  });
+  return eventSubscription.remove;
+});
+
 export default function RootWrapper() {
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", onAppStateChange);
+    return () => subscription.remove();
+  }, []);
+
   return (
     <ClerkProvider tokenCache={tokenCache}>
       <ColorSchemeProvider>

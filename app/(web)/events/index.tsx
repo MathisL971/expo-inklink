@@ -23,6 +23,7 @@ export default function EventsScreen() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["events"],
     queryFn: fetchEvents,
+    staleTime: 60 * 1000,
   });
 
   return (
