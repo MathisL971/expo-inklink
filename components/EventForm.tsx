@@ -39,7 +39,6 @@ type EventFormProps = {
   initialEvent?: Event;
 };
 
-// Main Event Form Component
 export const EventForm = ({ initialEvent }: EventFormProps) => {
   const { user } = useUser();
 
@@ -69,9 +68,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
     mutationFn: createEvent,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
-      // navigate("/events");
       router.push("/events");
-      // reset();
       reset();
     },
     onError: (error) => {
@@ -84,6 +81,9 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
       ...eventData,
       startDate: new Date(eventData.startDate),
       endDate: new Date(eventData.endDate),
+      image:
+        eventData.image ??
+        "https://expo-inklink-bucket.s3.us-east-2.amazonaws.com/event_placeholder.png",
     });
   };
 
@@ -92,8 +92,6 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
     handleSubmit,
     formState: { errors },
     reset,
-    // watch,
-    // setValue,
   } = useForm({
     mode: "onTouched",
     defaultValues: testEvent ?? {

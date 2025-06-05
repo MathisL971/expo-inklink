@@ -22,9 +22,11 @@ export default function ThemedEventCard({ event }: { event: Event }) {
     >
       <Image
         source={{
-          uri: event.image ? `${event.image}/id/1/200/200.jpg` : "",
+          uri:
+            event.image ??
+            "https://expo-inklink-bucket.s3.us-east-2.amazonaws.com/event_placeholder.png",
         }}
-        className="mb-5 h-[240px] w-full rounded-md aspect-[263/240]"
+        className="mb-5 h-[250px] w-[250px] rounded-md"
         alt="image"
       />
       <ThemedText colorVariant="textSecondary" className="text-sm">
