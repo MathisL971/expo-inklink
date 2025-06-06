@@ -1,6 +1,8 @@
 import { getColor } from "@/constants/Colors";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { createEvent, deleteEvent } from "@/services/event";
+import { deleteImage } from "@/services/image";
+import { getImageKey } from "@/utils/image";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ExternalPathString } from "expo-router";
 import { Pressable } from "react-native";
@@ -34,9 +36,10 @@ export default function EventsTable({ events }: { events: Event[] }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["events"] }),
   });
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (event: Event) => {
     if (confirm("Are you sure you want to delete this event?")) {
-      deleteMutation.mutate(id);
+      if (event.image) await deleteImage(getImageKey(event.image));
+      deleteMutation.mutate(event.id);
     }
   };
 
@@ -133,7 +136,7 @@ export default function EventsTable({ events }: { events: Event[] }) {
                   <Icon as={CopyIcon} color={getColor("info", mode)} />
                 </Pressable>
                 {/* Delete event */}
-                <Pressable onPress={() => handleDelete(event.id)}>
+                <Pressable onPress={() => handleDelete(event)}>
                   <Icon as={TrashIcon} color={getColor("error", mode)} />
                 </Pressable>
               </HStack>

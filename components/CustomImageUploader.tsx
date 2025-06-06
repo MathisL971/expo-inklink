@@ -17,7 +17,7 @@ export type CustomImageUploaderProps = {
   label: string;
   value?: string;
   onChange: (value: string) => void;
-  onImageDelete: (key: string) => Promise<void>;
+  onImageDelete: (image: string) => Promise<void>;
   onBlur: () => void;
   onImageSelect: (imageAsset: ImagePickerAsset) => Promise<string>;
   placeholder: string;
@@ -171,8 +171,7 @@ export default function CustomImageUploader({
               onPress={async () => {
                 try {
                   onChange("");
-                  const key = new URL(value).pathname.slice(1); // remove leading “/”
-                  await onImageDelete(key);
+                  await onImageDelete(value);
                 } catch (error) {
                   console.log(error);
                   onChange(value);
