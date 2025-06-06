@@ -4,8 +4,10 @@ import { fetchAccesses } from "@/services/access";
 import { fetchDisciplines } from "@/services/discipline";
 import { createEvent } from "@/services/event";
 import { fetchFormats } from "@/services/format";
+import { deleteImage } from "@/services/image";
 import type { DisciplineName, Event, FormatName } from "@/types";
 import { AccessName } from "@/types";
+import { getImageKey } from "@/utils/image";
 import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
@@ -168,10 +170,8 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
     }
   };
 
-  const removeImage = async (key: string) => {
-    await axios.delete(
-      "https://offhu3yuna.execute-api.us-east-2.amazonaws.com/S3/image/" + key
-    );
+  const removeImage = async (image: string) => {
+    await deleteImage(getImageKey(image));
   };
 
   const loadingFieldOptions =
