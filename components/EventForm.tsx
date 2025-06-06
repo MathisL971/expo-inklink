@@ -24,21 +24,6 @@ import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 import { Spinner } from "./ui/spinner";
 
-const testEvent = {
-  title: "Test Event",
-  description: "Test Description",
-  note: "Test Note",
-  image: "",
-  startDate: new Date().toISOString().slice(0, 16),
-  endDate: new Date().toISOString().slice(0, 16),
-  location: "McGill University",
-  source: "https://example.com",
-  format: "Lecture",
-  disciplines: ["Sociology", "Anthropology"] as DisciplineName[],
-  access: "Public",
-  organizerId: "Test Organizer ID",
-};
-
 type EventFormProps = {
   initialEvent?: Event;
 };
@@ -73,7 +58,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
     reset,
   } = useForm({
     mode: "onTouched",
-    defaultValues: testEvent ?? {
+    defaultValues: {
       title: initialEvent?.title || "",
       description: initialEvent?.description || "",
       note: initialEvent?.note || "",
@@ -108,9 +93,6 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
       ...eventData,
       startDate: new Date(eventData.startDate),
       endDate: new Date(eventData.endDate),
-      image:
-        eventData.image ??
-        "https://expo-inklink-bucket.s3.us-east-2.amazonaws.com/events/event_placeholder.png",
     });
   };
 

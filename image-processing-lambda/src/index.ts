@@ -1,6 +1,6 @@
 import type { S3Event, S3Handler } from "aws-lambda";
 import { S3 } from "aws-sdk";
-import Sharp from "sharp/lib"; // Ensure Sharp is packaged with the Lambda layer or deployment
+import Sharp from "sharp"; // Ensure Sharp is packaged with the Lambda layer or deployment
 
 const s3 = new S3();
 
@@ -130,7 +130,7 @@ export const processImage: S3Handler = async (
             Key: newKey,
             Body: resizedImageBuffer,
             ContentType: targetContentType,
-            ACL: "public-read", // Or 'private' depending on your needs
+            // ACL: "public-read", // Or 'private' depending on your needs
           })
           .promise();
       });

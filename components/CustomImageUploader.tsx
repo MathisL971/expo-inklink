@@ -102,7 +102,8 @@ export default function CustomImageUploader({
 
     if (!result.canceled && result.assets[0]) {
       setIsUploading(true);
-      await onImageSelect(result.assets[0]);
+      const imageUrl = await onImageSelect(result.assets[0]);
+      onChange(imageUrl);
       setIsUploading(false);
     }
   };
@@ -160,7 +161,8 @@ export default function CustomImageUploader({
               onPress={async () => {
                 try {
                   onChange("");
-                  await onImageDelete(value.split(".com/")[1]);
+                  const key = new URL(value).pathname.slice(1); // remove leading “/”
+                  await onImageDelete(key);
                 } catch (error) {
                   console.log(error);
                   onChange(value);

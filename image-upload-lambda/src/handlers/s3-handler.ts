@@ -86,9 +86,12 @@ export const generatePresignedUrl = async (
     }
 
     // Generate unique key
-    const fileExtension = fileName.split(".").pop() || ""; // Ensure fileExtension is not undefined
     const folder = "events";
-    const uniqueKey = `${folder}/${uuidv4()}.${fileExtension}`;
+    const ext = (() => {
+      const parts = fileName.split(".");
+      return parts.length > 1 ? `.${parts.pop()}` : "";
+    })();
+    const uniqueKey = `${folder}/${uuidv4()}${ext}`;
 
     // S3 parameters for putObject presigned URL
     const s3PutParams = {
@@ -155,16 +158,13 @@ export const deleteImage = async (
 
     const decodedKey = decodeURIComponent(key);
 
-    // Security check: Ensure the key is within an expected path, if applicable
-    // Example: if (!decodedKey.startsWith('events/') && !decodedKey.startsWith('general-uploads/')) {
-    if (!decodedKey.includes("/")) {
-      // Basic check to prevent deleting unintended root-level items if not expected
-      console.warn(
-        `Attempt to delete key without standard folder structure: ${decodedKey}`
-      );
-      // Depending on policy, you might allow or deny this.
-      // For now, let's assume keys should be in a folder.
-      // return createResponse(403, { error: 'Unauthorized deletion attempt: Invalid key structure.' });
+    // Allow only keys in the expected folder or matching a known pattern
+    const keyPattern = /^events\/[0-9a-f]+\.(jpg|png|webp|gif)$/i;
+    if (!keyPattern.test(decodedKey)) {
+      console.warn(`Blocked deletion of invalid key: ${decodedKey}`);
+      return createResponse(403, {
+        error: "Unauthorized deletion attempt: Invalid or disallowed key.",
+      });
     }
 
     await s3

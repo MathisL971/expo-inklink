@@ -26,21 +26,13 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
     return createResponse(200, {});
   }
 
-  const method = event.requestContext.http.method;
-  let path = event.routeKey?.split(" ")[1]; // API Gateway sets routeKey as "METHOD /path"
-
-  // Get rid of /S3 prefix
-  if (path?.startsWith("/S3")) {
-    path = path.slice(3);
-  }
+  const { method, path: rawPath } = event.requestContext.http;
+  const path = rawPath.replace(/^\/S3/, ""); // strip optional prefix
 
   const routeKey = `${method} ${path}`;
   const routeHandler = routes[routeKey];
 
   return routeHandler
     ? routeHandler(event)
-    : {
-        statusCode: 404,
-        body: JSON.stringify({ error: "Route not found" }),
-      };
+    : createResponse(404, { error: "Route not found" });
 };

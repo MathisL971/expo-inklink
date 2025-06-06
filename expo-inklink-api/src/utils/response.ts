@@ -14,12 +14,14 @@ export function createResponse(
 export function errorResponse(
   statusCode: number,
   message: string,
-  error?: any
+  error?: unknown
 ): APIGatewayProxyResult {
   console.error(`Error ${statusCode}:`, message, error);
-  return createResponse(statusCode, {
-    error: message,
-    ...(process.env.NODE_ENV === "development" &&
-      error && { details: error.message }),
-  });
+
+  const details =
+    process.env.NODE_ENV === "development" && error
+      ? { details: (error as Error).message }
+      : {};
+
+  return createResponse(statusCode, { error: message, ...details });
 }
