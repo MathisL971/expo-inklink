@@ -159,7 +159,7 @@ export const deleteImage = async (
     const decodedKey = decodeURIComponent(key);
 
     // Allow only keys in the expected folder or matching a known pattern
-    const keyPattern = /^[0-9a-f]+\.(jpg|png|webp|gif)$/i;
+    const keyPattern = /^[0-9a-f-]+\.(jpg|png|webp|gif)$/i;
     if (!keyPattern.test(decodedKey)) {
       console.warn(`Blocked deletion of invalid key: ${decodedKey}`);
       return createResponse(403, {
@@ -209,7 +209,7 @@ export const getUploadStatus = async (
     const decodedKey = decodeURIComponent(key);
 
     // Allow only keys in the expected folder or matching a known pattern
-    const keyPattern = /^[0-9a-f]+\.(jpg|png|webp|gif)$/i;
+    const keyPattern = /^[0-9a-f-]+\.(jpg|png|webp|gif)$/i;
     if (!keyPattern.test(decodedKey)) {
       console.warn(`Blocked deletion of invalid key: ${decodedKey}`);
       return createResponse(403, {
