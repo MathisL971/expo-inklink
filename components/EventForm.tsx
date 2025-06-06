@@ -8,11 +8,14 @@ import type { DisciplineName, Event, FormatName } from "@/types";
 import { AccessName } from "@/types";
 import { useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { ImagePickerAsset } from "expo-image-picker";
 import { router } from "expo-router";
 import { Building, Clock, FileText, MapPin } from "lucide-react";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, View } from "react-native";
+import { Alert, Platform, StyleSheet, View } from "react-native";
+import CustomImageUploader from "./CustomImageUploader";
 import CustomInput from "./CustomInput";
 import CustomMultiSelect from "./CustomMultiSelect";
 import CustomPicker from "./CustomPicker";
@@ -25,6 +28,7 @@ const testEvent = {
   title: "Test Event",
   description: "Test Description",
   note: "Test Note",
+  image: "",
   startDate: new Date().toISOString().slice(0, 16),
   endDate: new Date().toISOString().slice(0, 16),
   location: "McGill University",
@@ -62,6 +66,29 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
     staleTime: 5 * 60 * 1000,
   });
 
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    mode: "onTouched",
+    defaultValues: testEvent ?? {
+      title: initialEvent?.title || "",
+      description: initialEvent?.description || "",
+      note: initialEvent?.note || "",
+      image: initialEvent?.image || "",
+      startDate: initialEvent?.startDate || "",
+      endDate: initialEvent?.endDate || "",
+      location: initialEvent?.location || "",
+      source: initialEvent?.source || "",
+      format: initialEvent?.format || "",
+      disciplines: initialEvent?.disciplines || [],
+      access: initialEvent?.access || "",
+      organizerId: initialEvent?.organizerId || user?.id,
+    },
+  });
+
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
@@ -83,31 +110,69 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
       endDate: new Date(eventData.endDate),
       image:
         eventData.image ??
-        "https://expo-inklink-bucket.s3.us-east-2.amazonaws.com/event_placeholder.png",
+        "https://expo-inklink-bucket.s3.us-east-2.amazonaws.com/events/event_placeholder.png",
     });
   };
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm({
-    mode: "onTouched",
-    defaultValues: testEvent ?? {
-      title: initialEvent?.title || "",
-      description: initialEvent?.description || "",
-      note: initialEvent?.note || "",
-      startDate: initialEvent?.startDate || "",
-      endDate: initialEvent?.endDate || "",
-      location: initialEvent?.location || "",
-      source: initialEvent?.source || "",
-      format: initialEvent?.format || "",
-      disciplines: initialEvent?.disciplines || [],
-      access: initialEvent?.access || "",
-      organizerId: initialEvent?.organizerId || user?.id,
-    },
-  });
+  const uploadImage = async (imageAsset: ImagePickerAsset) => {
+    try {
+      // Get presigned URL from your backend
+      const presignedResponse = await axios.post(
+        "https://offhu3yuna.execute-api.us-east-2.amazonaws.com/S3/upload-url",
+        {
+          fileName: `event-${Date.now()}.jpg`,
+          fileType: "image/jpeg",
+          userId: user?.id,
+        }
+      );
+
+      const { uploadUrl, imageUrl } = presignedResponse.data;
+
+      let uploadData: any;
+
+      if (Platform.OS === "web") {
+        // Web: Convert to blob for upload
+        const response = await fetch(imageAsset.uri);
+        const blob = await response.blob();
+        uploadData = blob;
+      } else {
+        // Mobile: Use FormData
+        const formData = new FormData();
+        formData.append("file", {
+          uri: imageAsset.uri,
+          type: "image/jpeg",
+          name: `event-${Date.now()}.jpg`,
+        } as any);
+        uploadData = formData;
+      }
+
+      // Upload to S3
+      await axios.put(uploadUrl, uploadData, {
+        headers: {
+          "Content-Type":
+            Platform.OS === "web" ? "image/jpeg" : "multipart/form-data",
+        },
+      });
+
+      return imageUrl;
+    } catch (error) {
+      console.error("Image upload error:", error);
+      if (Platform.OS === "web") {
+        alert("Failed to upload image. Please try again.");
+      } else {
+        Alert.alert(
+          "Upload Error",
+          "Failed to upload image. Please try again."
+        );
+      }
+    }
+  };
+
+  const removeImage = async (key: string) => {
+    await axios.delete(
+      "https://offhu3yuna.execute-api.us-east-2.amazonaws.com/S3/image/" + key
+    );
+  };
 
   const loadingFieldOptions =
     formatQuery.isLoading || disciplineQuery.isLoading || accessQuery.isLoading;
@@ -119,12 +184,14 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
     !accessQuery.data?.accesses;
 
   if (loadingFieldOptions) return <Spinner size={"large"} className="flex-1" />;
+
   if (errorFieldOptions)
     return (
       <View>
         <ThemedText>An error occured while loading field options...</ThemedText>
       </View>
     );
+
   if (noDataFieldOptions)
     return (
       <View>
@@ -188,6 +255,24 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               multiline
               colors={Colors[mode]}
               error={errors.note?.message}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="image"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <CustomImageUploader
+              label="Event Image"
+              value={value}
+              placeholder="Upload event image"
+              colors={Colors[mode]}
+              error={errors.image?.message}
+              onChange={onChange}
+              onBlur={onBlur}
+              onImageSelect={uploadImage}
+              onImageDelete={removeImage}
             />
           )}
         />

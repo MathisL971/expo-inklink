@@ -1,0 +1,101 @@
+service: image-upload-lambda
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-2
+  stage: ${env:STAGE, 'dev'}
+
+  environment:
+    BUCKET_NAME: ${env:S3_BUCKET_NAME}
+    CLOUDFRONT_URL: ${env:CLOUDFRONT_URL}
+    STAGE: ${self:provider.stage}
+
+  # Specific IAM permissions for image uploads only
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:PutObjectAcl
+        - s3:DeleteObject
+        - s3:HeadObject
+        - s3:GetObject
+      Resource: "arn:aws:s3:::${env:S3_BUCKET_NAME}/*"
+    - Effect: Allow
+      Action:
+        - s3:ListBucket
+      Resource: "arn:aws:s3:::${env:S3_BUCKET_NAME}"
+
+functions:
+  # Generate presigned URLs
+  generatePresignedUrl:
+    handler: src/handlers/upload.generatePresignedUrl
+    timeout: 30
+    memorySize: 256
+    events:
+      - http:
+          path: /upload/presigned-url
+          method: post
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            arn: ${env:COGNITO_AUTHORIZER_ARN}
+            # authorizerId: ${env:COGNITO_AUTHORIZER_ID} # Optional: if using auth
+
+  # Delete uploaded images
+  deleteImage:
+    handler: src/handlers/upload.deleteImage
+    timeout: 30
+    memorySize: 256
+    events:
+      - http:
+          path: /upload/{key}
+          method: delete
+          cors: true
+          request:
+            parameters:
+              paths:
+                key: true
+
+  # Check upload status
+  getUploadStatus:
+    handler: src/handlers/upload.getUploadStatus
+    timeout: 15
+    memorySize: 128
+    events:
+      - http:
+          path: /upload/status/{key}
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                key: true
+
+  # Optional: Process uploaded images (resize, optimize)
+  processImage:
+    handler: src/handlers/process.processImage
+    timeout: 300
+    memorySize: 1024
+    events:
+      - s3:
+          bucket: ${env:S3_BUCKET_NAME}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: events/
+            - suffix: .jpg
+      - s3:
+          bucket: ${env:S3_BUCKET_NAME}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: events/
+            - suffix: .png
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+
+custom:
+  serverless-offline:
+    httpPort: 3001
+    lambdaPort: 3002
