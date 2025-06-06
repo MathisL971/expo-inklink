@@ -70,9 +70,14 @@ export default function CustomImageUploader({
 
     if (!result.canceled && result.assets[0]) {
       setIsUploading(true);
-      const imageUrl = await onImageSelect(result.assets[0]);
-      onChange(imageUrl);
-      setIsUploading(false);
+      try {
+        const imageUrl = await onImageSelect(result.assets[0]);
+        onChange(imageUrl);
+      } catch (error) {
+        console.error("Upload failed:", error);
+      } finally {
+        setIsUploading(false);
+      }
     }
 
     onBlur();
@@ -102,9 +107,14 @@ export default function CustomImageUploader({
 
     if (!result.canceled && result.assets[0]) {
       setIsUploading(true);
-      const imageUrl = await onImageSelect(result.assets[0]);
-      onChange(imageUrl);
-      setIsUploading(false);
+      try {
+        const imageUrl = await onImageSelect(result.assets[0]);
+        onChange(imageUrl);
+      } catch (error) {
+        console.error("Upload failed:", error);
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 

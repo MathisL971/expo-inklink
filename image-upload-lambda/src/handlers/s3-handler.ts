@@ -159,7 +159,7 @@ export const deleteImage = async (
     const decodedKey = decodeURIComponent(key);
 
     // Allow only keys in the expected folder or matching a known pattern
-    const keyPattern = /^events\/[0-9a-f]+\.(jpg|png|webp|gif)$/i;
+    const keyPattern = /^[0-9a-f]+\.(jpg|png|webp|gif)$/i;
     if (!keyPattern.test(decodedKey)) {
       console.warn(`Blocked deletion of invalid key: ${decodedKey}`);
       return createResponse(403, {
@@ -170,13 +170,13 @@ export const deleteImage = async (
     await s3
       .deleteObject({
         Bucket: BUCKET_NAME,
-        Key: "events/" + decodedKey,
+        Key: `events/${decodedKey}`,
       })
       .promise();
 
     return createResponse(200, {
       message: "Image deleted successfully",
-      key: decodedKey,
+      key: `events/${decodedKey}`,
     });
   } catch (error: any) {
     console.error("Delete error:", error);
@@ -200,6 +200,7 @@ export const getUploadStatus = async (
 ): Promise<APIGatewayProxyResultV2> => {
   try {
     const key = event.pathParameters?.key;
+
     if (!key) {
       return createResponse(400, {
         error: "Image key is missing in path parameters",
@@ -207,16 +208,25 @@ export const getUploadStatus = async (
     }
     const decodedKey = decodeURIComponent(key);
 
+    // Allow only keys in the expected folder or matching a known pattern
+    const keyPattern = /^[0-9a-f]+\.(jpg|png|webp|gif)$/i;
+    if (!keyPattern.test(decodedKey)) {
+      console.warn(`Blocked deletion of invalid key: ${decodedKey}`);
+      return createResponse(403, {
+        error: "Unauthorized deletion attempt: Invalid or disallowed key.",
+      });
+    }
+
     const headObject = await s3
       .headObject({
         Bucket: BUCKET_NAME,
-        Key: decodedKey,
+        Key: `events/${decodedKey}`,
       })
       .promise();
 
     return createResponse(200, {
       exists: true,
-      key: decodedKey,
+      key: `events/${decodedKey}`,
       size: headObject.ContentLength,
       lastModified: headObject.LastModified?.toISOString(), // Ensure ISO string format
       contentType: headObject.ContentType,

@@ -15,7 +15,7 @@ export default function ThemedEventCard({ event }: { event: Event }) {
 
   return (
     <Card
-      className="p-5 rounded-md h-[520px] max-w-[300px] m-3"
+      className="p-5 rounded-md max-h-[600px] max-w-[300px] m-3"
       style={{
         backgroundColor: getColor("card", mode),
       }}
@@ -23,13 +23,19 @@ export default function ThemedEventCard({ event }: { event: Event }) {
       <Image
         source={{
           uri:
-            event.image ??
+            event.image ||
             "https://expo-inklink-bucket.s3.us-east-2.amazonaws.com/event_placeholder.png",
         }}
         className="mb-5 h-[250px] w-[250px] rounded-md"
         alt="image"
       />
-      <ThemedText colorVariant="textSecondary" className="text-sm">
+
+      {/* Date and location with truncation */}
+      <ThemedText
+        colorVariant="textSecondary"
+        className="text-sm truncate"
+        numberOfLines={1}
+      >
         {new Date(event.startDate).toLocaleDateString("en-US", {
           month: "long",
           day: "numeric",
@@ -39,14 +45,21 @@ export default function ThemedEventCard({ event }: { event: Event }) {
         {" | "}
         {event.location}
       </ThemedText>
-      <ThemedHeading className="mt-1" size="xl">
+
+      {/* Title with truncation (2 lines max) */}
+      <ThemedHeading className="mt-1 line-clamp-2" size="xl" numberOfLines={2}>
         {event.title}
       </ThemedHeading>
-      <ThemedText colorVariant="textSecondary" className="mt-2 flex-1">
-        {event.description.length > 150
-          ? event.description.slice(0, 150) + "..."
-          : event.description}
+
+      {/* Description with better truncation (3 lines max) */}
+      <ThemedText
+        colorVariant="textSecondary"
+        className="mt-2 flex-1 line-clamp-4"
+        numberOfLines={4}
+      >
+        {event.description}
       </ThemedText>
+
       {event.source && (
         <ExternalLink
           href={event.source as ExternalPathString}
