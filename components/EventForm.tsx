@@ -82,7 +82,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
     mutationFn: createEvent,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
-      router.push("/events");
+      router.push("/(web)/events");
       reset();
     },
     onError: (error) => {

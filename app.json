@@ -38,6 +38,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "splash": {
+      "image": "./assets/images/favicon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
     }
   }
 }

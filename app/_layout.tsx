@@ -1,7 +1,10 @@
 import ThemedNavBar from "@/components/ThemedNavBar";
 import { ThemedView } from "@/components/ThemedView";
 import { Spinner } from "@/components/ui/spinner";
-import { ColorSchemeProvider } from "@/contexts/ColorSchemeContext";
+import {
+  ColorSchemeProvider,
+  useColorScheme,
+} from "@/contexts/ColorSchemeContext";
 import "@/global.css";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
@@ -14,9 +17,12 @@ import {
 import { useFonts } from "expo-font";
 import * as Network from "expo-network";
 import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { AppState, AppStateStatus, Platform } from "react-native";
 import "react-native-reanimated";
+
+SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
 
@@ -54,16 +60,21 @@ function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+  const { isLoaded: isAuthLoaded } = useAuth();
+  const { isLoading: colorSchemeLoading } = useColorScheme();
 
-  const { isLoaded } = useAuth();
+  useEffect(() => {
+    if (!colorSchemeLoading && isAuthLoaded && loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [colorSchemeLoading, isAuthLoaded, loaded]);
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
-
-  if (!isLoaded) {
-    return <Spinner size="large" className="min-h-screen" />;
+  if (colorSchemeLoading || !isAuthLoaded || !loaded) {
+    return (
+      <ThemedView className="min-h-screen">
+        <Spinner size="large" className="min-h-screen" />
+      </ThemedView>
+    );
   }
 
   return (
