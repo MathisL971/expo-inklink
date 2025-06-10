@@ -24,7 +24,7 @@ export default function ThemedEventCard({ event }: { event: Event }) {
         source={{
           uri:
             event.image ||
-            "https://expo-inklink-bucket.s3.us-east-2.amazonaws.com/event_placeholder.png",
+            "https://expo-inklink-bucket.s3.us-east-2.amazonaws.com/events/event_placeholder.png",
         }}
         className="mb-5 h-[250px] w-[250px] rounded-md"
         alt="image"
@@ -37,12 +37,27 @@ export default function ThemedEventCard({ event }: { event: Event }) {
         numberOfLines={1}
       >
         {new Date(event.startDate).toLocaleDateString("en-US", {
-          month: "long",
+          month: "short",
           day: "numeric",
+          year: "numeric",
+        })}
+        {" - "}
+        {new Date(event.startDate).toLocaleTimeString("en-US", {
           hour: "numeric",
           minute: "numeric",
         })}
-        {" | "}
+        {" to "}
+        {new Date(event.endDate).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "numeric",
+        })}
+      </ThemedText>
+
+      <ThemedText
+        colorVariant="textSecondary"
+        className="text-sm line-clamp-1"
+        numberOfLines={1}
+      >
         {event.location}
       </ThemedText>
 
@@ -63,7 +78,7 @@ export default function ThemedEventCard({ event }: { event: Event }) {
       {event.source && (
         <ExternalLink
           href={event.source as ExternalPathString}
-          className="mt-2"
+          className="mt-4"
         >
           <HStack className="items-center">
             <ThemedText colorVariant="tint" className="text-sm flex-row">
