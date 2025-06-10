@@ -38,3 +38,8 @@ export async function updateEvent(event: Event) {
   });
   return res.data;
 }
+
+export async function fetchEvent(id: string): Promise<Event> {
+  const res = await axios.get(`${baseUrl}/events/${id}`);
+  return res.data;
+}

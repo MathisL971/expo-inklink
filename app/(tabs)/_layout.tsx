@@ -64,6 +64,18 @@ export default function TabLayout() {
           },
         }}
       />
+      <Tabs.Screen
+        name="events/[id]/index"
+        options={{
+          title: "Event",
+          tabBarStyle: {
+            display: Platform.OS !== "web" ? "flex" : "none",
+            backgroundColor: navbarBackgroundColor,
+            borderTopColor: navbarBackgroundColor,
+            opacity: 1,
+          },
+        }}
+      />
     </Tabs>
   );
 }

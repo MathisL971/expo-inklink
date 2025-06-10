@@ -1,10 +1,11 @@
 import { getColor } from "@/constants/Colors";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
-import { ExternalPathString } from "expo-router";
+import { ExternalPathString, router } from "expo-router";
 import type { Event } from "../types/index";
 import { ExternalLink } from "./ExternalLink";
 import ThemedHeading from "./ThemedHeading";
 import { ThemedText } from "./ThemedText";
+import { Badge, BadgeText } from "./ui/badge";
 import { Card } from "./ui/card";
 import { HStack } from "./ui/hstack";
 import { ArrowRightIcon, Icon } from "./ui/icon";
@@ -15,10 +16,12 @@ export default function ThemedEventCard({ event }: { event: Event }) {
 
   return (
     <Card
-      className="p-5 rounded-md max-h-[600px] max-w-[300px] m-3"
-      style={{
-        backgroundColor: getColor("card", mode),
-      }}
+      className={`p-5 rounded-md max-h-[600px] max-w-[300px] m-3 cursor-pointer`}
+      style={{ backgroundColor: getColor("card", mode) }}
+      onPointerDown={() => router.push({
+        pathname: "/events/[id]",
+        params: { id: event.id },
+      })}
     >
       <Image
         source={{
@@ -29,6 +32,21 @@ export default function ThemedEventCard({ event }: { event: Event }) {
         className="mb-5 h-[250px] w-full rounded-md"
         alt="image"
       />
+
+      {/* Disciplines as badges */}
+      <HStack className="gap-2 mb-2" style={{ flexWrap: "wrap" }} >
+         <Badge key={event.access} size="sm" variant="solid" className="p-0">
+            <BadgeText className="px-1.5 py-0.5 rounded-sm" style={{ color: getColor("accentText", mode), backgroundColor: getColor("tint", mode) }}>{event.access}</BadgeText>
+        </Badge>
+        <Badge key={event.format} size="sm" variant="solid" action="success" className="p-0">
+          <BadgeText className="px-1.5 py-0.5 rounded-sm" style={{ color: getColor("accentText", mode), backgroundColor: getColor("accent", mode) }}>{event.format}</BadgeText>
+        </Badge>
+        {event.disciplines.map((discipline) => (
+          <Badge key={discipline} size="sm" variant="solid" action="success" className="p-0">
+            <BadgeText className="px-1.5 py-0.5 rounded-sm" style={{ color: getColor("info", mode), backgroundColor: getColor("infoBg", mode) }}>{discipline}</BadgeText>
+          </Badge>
+        ))}
+      </HStack>
 
       {/* Date and location with truncation */}
       <ThemedText
