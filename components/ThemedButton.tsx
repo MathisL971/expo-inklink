@@ -43,7 +43,9 @@ export function ThemedButton({
       className="hover:opacity-90"
       {...rest}
     >
-      <ButtonText style={{ color }}>{title}</ButtonText>
+      <ButtonText style={{ color }} className="w-full text-center">
+        {title}
+      </ButtonText>
     </Button>
   );
 }

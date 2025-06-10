@@ -9,11 +9,12 @@ import type { DisciplineName, Event, FormatName } from "@/types";
 import { AccessName } from "@/types";
 import { getImageKey } from "@/utils/image";
 import { useUser } from "@clerk/clerk-expo";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { ImagePickerAsset } from "expo-image-picker";
 import { router } from "expo-router";
-import { Building, Clock, FileText, MapPin } from "lucide-react";
+import { Building, FileText, MapPin } from "lucide-react";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Alert, Platform, StyleSheet, View } from "react-native";
@@ -21,6 +22,7 @@ import CustomImageUploader from "./CustomImageUploader";
 import CustomInput from "./CustomInput";
 import CustomMultiSelect from "./CustomMultiSelect";
 import CustomPicker from "./CustomPicker";
+import CustomWebDatePicker from "./CustomWebDatePicker";
 import { ThemedButton } from "./ThemedButton";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
@@ -56,8 +58,9 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting, isValid },
     reset,
+    watch,
   } = useForm({
     mode: "onTouched",
     defaultValues: {
@@ -82,8 +85,8 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
     mutationFn: createEvent,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
-      router.push("/(web)/events");
       reset();
+      router.push("/(web)/events");
     },
     onError: (error) => {
       console.log(error);
@@ -269,36 +272,56 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
           control={control}
           name="startDate"
           rules={{ required: "Start date is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <CustomInput
-              label="Start Date & Time *"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="YYYY-MM-DDTHH:MM"
-              error={errors.startDate?.message}
-              Icon={Clock}
-              colors={Colors[mode]}
-            />
-          )}
+          render={({ field: { onChange, onBlur, value } }) =>
+            Platform.OS === "web" ? (
+              <CustomWebDatePicker
+                label="Event Start Date *"
+                value={watch("startDate")}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="Select date"
+                colors={Colors[mode]}
+                minDate={new Date()}
+                error={errors.startDate?.message}
+              />
+            ) : (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={new Date(value)}
+                mode={"datetime"}
+                onChange={onChange}
+                minimumDate={new Date()}
+              />
+            )
+          }
         />
 
         <Controller
           control={control}
           name="endDate"
           rules={{ required: "End date is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <CustomInput
-              label="End Date & Time *"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="YYYY-MM-DDTHH:MM"
-              error={errors.endDate?.message}
-              Icon={Clock}
-              colors={Colors[mode]}
-            />
-          )}
+          render={({ field: { onChange, onBlur, value } }) =>
+            Platform.OS === "web" ? (
+              <CustomWebDatePicker
+                label="Event End Date *"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="Select date"
+                colors={Colors[mode]}
+                minDate={new Date()}
+                error={errors.endDate?.message}
+              />
+            ) : (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={new Date(value)}
+                mode={"datetime"}
+                onChange={onChange}
+                minimumDate={new Date()}
+              />
+            )
+          }
         />
 
         <Controller
@@ -419,19 +442,17 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
         />
       </ThemedView>
 
-      <ThemedView>
-        <ThemedButton
-          title={
-            createMutation.isPending
-              ? "Saving..."
-              : initialEvent
-              ? "Update Event"
-              : "Create Event"
-          }
-          onPress={handleSubmit(onSubmit)}
-          disabled={createMutation.isPending}
-        />
-      </ThemedView>
+      <ThemedButton
+        title={
+          isSubmitting
+            ? "Saving..."
+            : initialEvent
+            ? "Update Event"
+            : "Create Event"
+        }
+        onPress={handleSubmit(onSubmit)}
+        disabled={!isValid || isSubmitting}
+      />
     </View>
   );
 };
@@ -510,7 +531,6 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 20,
-    borderBottomWidth: 1,
   },
   modalTitle: {
     fontSize: 18,
@@ -549,7 +569,6 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
-    marginBottom: 8,
   },
   tag: {
     paddingHorizontal: 12,
