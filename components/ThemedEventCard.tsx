@@ -26,14 +26,14 @@ export default function ThemedEventCard({ event }: { event: Event }) {
             event.image ||
             "https://expo-inklink-bucket.s3.us-east-2.amazonaws.com/events/event_placeholder.png",
         }}
-        className="mb-5 h-[250px] w-[250px] rounded-md"
+        className="mb-5 h-[250px] w-full rounded-md"
         alt="image"
       />
 
       {/* Date and location with truncation */}
       <ThemedText
         colorVariant="textSecondary"
-        className="text-sm truncate"
+        className="text-sm line-clamp-1"
         numberOfLines={1}
       >
         {new Date(event.startDate).toLocaleDateString("en-US", {
