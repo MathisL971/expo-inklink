@@ -41,7 +41,8 @@ export type DisciplineName =
   | "Criminology"
   | "Demography"
   | "Social Work"
-  | "Cultural Studies";
+  | "Cultural Studies"
+  | "Philosophy";
 
 export type Discipline = {
   id: string;

@@ -41,6 +41,7 @@ const DisciplineNames = [
   "Demography",
   "Social Work",
   "Cultural Studies",
+  "Philosophy",
 ] as const;
 
 const AccessNames = ["Public", "Private", "Invitation Only"] as const;
