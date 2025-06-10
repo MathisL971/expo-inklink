@@ -8,14 +8,14 @@ import {
 import "@/global.css";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
+import NetInfo from "@react-native-community/netinfo";
 import {
-  QueryClient,
-  QueryClientProvider,
   focusManager,
   onlineManager,
+  QueryClient,
+  QueryClientProvider
 } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
-import * as Network from "expo-network";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -33,11 +33,10 @@ function onAppStateChange(status: AppStateStatus) {
 }
 
 onlineManager.setEventListener((setOnline) => {
-  const eventSubscription = Network.addNetworkStateListener((state) => {
-    setOnline(!!state.isConnected);
-  });
-  return eventSubscription.remove;
-});
+  return NetInfo.addEventListener((state) => {
+    setOnline(!!state.isConnected)
+  })
+})
 
 export default function RootWrapper() {
   useEffect(() => {
