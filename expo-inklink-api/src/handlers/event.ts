@@ -1,6 +1,26 @@
-import type { APIGatewayProxyEventV2 } from "aws-lambda";
+import type { APIGatewayProxyEventQueryStringParameters, APIGatewayProxyEventV2 } from "aws-lambda";
 import { EventModel } from "../schemas/event";
 import { createResponse, errorResponse } from "../utils/response";
+
+interface EventFilters {
+  format: string | null;
+  disciplines: string[];
+  access: string | null;
+  search: string;
+  sortBy: string;
+  sortOrder: 'asc' | 'desc';
+}
+
+interface MongoFilter {
+  format?: string;
+  disciplines?: { $in: string[] };
+  access?: string;
+  $or?: {
+    title?: { $regex: string; $options: string };
+    description?: { $regex: string; $options: string };
+    location?: { $regex: string; $options: string };
+  }[];
+}
 
 export async function handleEventsGET(event: APIGatewayProxyEventV2) {
   const { pathParameters, queryStringParameters } = event;
@@ -18,14 +38,41 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
     const limit = queryStringParameters?.limit
       ? parseInt(queryStringParameters.limit)
       : 20;
+      
     const skip = queryStringParameters?.skip
       ? parseInt(queryStringParameters.skip)
       : 0;
+      
+    const {
+      format = null,
+      disciplines = [],
+      access = null,
+      search = '',
+      sortBy = 'startDate',
+      sortOrder = 'asc'
+    } = queryStringParameters as APIGatewayProxyEventQueryStringParameters & EventFilters;
 
-    const events = await EventModel.find({})
+    const filter: MongoFilter = {};
+
+    if (format) filter.format = format;
+    if (disciplines?.length > 0) filter.disciplines = { $in: Array.isArray(disciplines) ? disciplines : [disciplines] };
+    if (access) filter.access = access;
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { location: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    // Build sort object
+    const sortObj: Record<string, 1 | -1> = {};
+    sortObj[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    const events = await EventModel.find(filter)
       .limit(limit)
       .skip(skip)
-      .sort({ createdAt: -1 });
+      .sort(sortObj);
 
     return createResponse(200, { events, count: events.length });
   }

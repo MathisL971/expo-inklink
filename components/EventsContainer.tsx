@@ -1,44 +1,49 @@
-import { fetchEvents } from "@/services/event";
-import { useQuery } from "@tanstack/react-query";
+import { useEvents } from "@/hooks/useEvents";
+import { ScrollView } from "react-native";
 import EventsList from "./EventsList";
-import { ThemedText } from "./ThemedText";
 import { Alert, AlertIcon, AlertText } from "./ui/alert";
 import { AlertCircleIcon } from "./ui/icon";
 import { Spinner } from "./ui/spinner";
 import { VStack } from "./ui/vstack";
 
 export default function EventsContainer() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["events"],
-    queryFn: fetchEvents,
-    staleTime: 60 * 1000,
-  });
+  const { data, isLoading, error } = useEvents();
 
-  return (
-    <VStack className="gap-4 flex-1 justify-center">
-      {isLoading ? (
-        <Spinner size="large" />
-      ) : error ? (
-        <Alert variant="solid" action="error">
+  if (isLoading) {
+    return (
+      <VStack className="flex-1 justify-center items-center">
+        <Spinner size={"large"}/>
+      </VStack>
+    );
+  }
+
+  if (error) {
+    return (
+      <VStack className="flex-1 justify-center items-center">
+        <Alert action='error' variant='solid'>
           <AlertIcon as={AlertCircleIcon} />
           <AlertText>Error: {error.message}</AlertText>
         </Alert>
-      ) : !data ? (
-        <Alert variant="solid" action="info">
+      </VStack>
+    );
+  }
+
+  if (!data || data.count === 0) {
+    return (
+      <VStack className="flex-1 justify-center items-center">
+        <Alert action='muted' variant='solid'>
           <AlertIcon as={AlertCircleIcon} />
-          <AlertText>No data</AlertText>
+          <AlertText>
+            There are no upcoming events posted yet... Check back again soon!
+          </AlertText>
         </Alert>
-      ) : data.count > 0 ? (
-        <EventsList events={data.events} />
-      ) : (
-        <ThemedText
-          colorVariant="textTertiary"
-          size="sm"
-          className="italic text-center self-center"
-        >
-          There are no upcoming events posted yet... Check back again soon!
-        </ThemedText>
-      )}
-    </VStack>
+      </VStack>
+    );
+  }
+
+  return (
+    <ScrollView className="p-3">
+      <EventsList events={data.events} />
+    </ScrollView>
   );
 }

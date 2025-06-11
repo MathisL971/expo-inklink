@@ -73,3 +73,15 @@ export type Event = {
   createdAt?: string;
   updatedAt?: string;
 };
+
+export type SortBy = 'startDate' | 'title' | 'createdAt';
+export type SortOrder = 'asc' | 'desc';
+
+export interface EventFilters {
+  format: FormatName | null;
+  disciplines: DisciplineName[];
+  access: AccessName | null;
+  searchTerm: string;
+  sortBy: SortBy;
+  sortOrder: SortOrder;
+}
