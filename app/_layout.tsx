@@ -1,5 +1,6 @@
 import ThemedNavBar from "@/components/ThemedNavBar";
 import { ThemedView } from "@/components/ThemedView";
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { Spinner } from "@/components/ui/spinner";
 import {
   ColorSchemeProvider,
@@ -46,11 +47,13 @@ export default function RootWrapper() {
 
   return (
     <ClerkProvider tokenCache={tokenCache}>
-      <ColorSchemeProvider>
-        <QueryClientProvider client={queryClient}>
-          <RootLayout />
-        </QueryClientProvider>
-      </ColorSchemeProvider>
+      <GluestackUIProvider>
+        <ColorSchemeProvider>
+          <QueryClientProvider client={queryClient}>
+            <RootLayout />
+          </QueryClientProvider>
+        </ColorSchemeProvider>
+      </GluestackUIProvider>
     </ClerkProvider>
   );
 }

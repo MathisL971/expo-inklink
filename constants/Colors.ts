@@ -249,7 +249,7 @@ export const Colors: ColorConfig = {
     buttonGhostText: warmGray[700],
 
     // Cards and surfaces
-    card: warmGray[50], // Changed from "rgba(255, 255, 255, 1)"
+    card: warmGray[100], // Changed from "rgba(255, 255, 255, 1)"
     cardElevated: warmGray[50], // Keep as is, or consider warmGray[100] if you need a deeper hierarchy
     cardBorder: warmGray[200], // Will help with definition too
     surface: "rgba(255, 255, 255, 1)", // Keep as is
@@ -459,3 +459,4 @@ export const semanticColors = {
 
 // Type exports for external use
 export type { ColorConfig, ColorScale, StatusColor, Theme, ThemeColors };
+
