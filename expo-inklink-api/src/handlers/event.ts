@@ -27,14 +27,12 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
   const eventId = pathParameters?.id;
 
   if (eventId) {
-    // Get single event
     const singleEvent = await EventModel.findById(eventId);
     if (!singleEvent) {
       return errorResponse(404, "Event not found");
     }
     return createResponse(200, singleEvent);
   } else {
-    // Get all events with optional query parameters
     const limit = queryStringParameters?.limit
       ? parseInt(queryStringParameters.limit)
       : 20;
@@ -42,33 +40,37 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
     const skip = queryStringParameters?.skip
       ? parseInt(queryStringParameters.skip)
       : 0;
-      
-    const {
-      format = null,
-      disciplines = [],
-      access = null,
-      search = '',
-      sortBy = 'startDate',
-      sortOrder = 'asc'
-    } = queryStringParameters as APIGatewayProxyEventQueryStringParameters & EventFilters;
-
+    
     const filter: MongoFilter = {};
+    const sortObj: Record<string, 1 | -1> = {
+      startDate: 1
+    };
 
-    if (format) filter.format = format;
-    if (disciplines?.length > 0) filter.disciplines = { $in: Array.isArray(disciplines) ? disciplines : [disciplines] };
-    if (access) filter.access = access;
-    if (search) {
-      filter.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { location: { $regex: search, $options: 'i' } }
-      ];
+    if (queryStringParameters) {
+      const {
+        format = null,
+        disciplines = [],
+        access = null,
+        search = '',
+        sortBy = 'startDate',
+        sortOrder = 'asc'
+      } = queryStringParameters as APIGatewayProxyEventQueryStringParameters & EventFilters;
+
+
+      if (format) filter.format = format;
+      if (disciplines?.length > 0) filter.disciplines = { $in: Array.isArray(disciplines) ? disciplines : [disciplines] };
+      if (access) filter.access = access;
+      if (search) {
+        filter.$or = [
+          { title: { $regex: search, $options: 'i' } },
+          { description: { $regex: search, $options: 'i' } },
+          { location: { $regex: search, $options: 'i' } }
+        ];
+      } 
+      
+      sortObj[sortBy] = sortOrder === 'desc' ? -1 : 1;
     }
-
-    // Build sort object
-    const sortObj: Record<string, 1 | -1> = {};
-    sortObj[sortBy] = sortOrder === 'desc' ? -1 : 1;
-
+   
     const events = await EventModel.find(filter)
       .limit(limit)
       .skip(skip)
