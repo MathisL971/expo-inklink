@@ -14,7 +14,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: Platform.OS !== "web",
-        title: "Inklink",
+        title: "Soscitea",
         tabBarActiveTintColor: Colors[mode ?? "light"].tint,
         tabBarInactiveTintColor: Colors[mode ?? "light"].text,
         tabBarButton: HapticTab,

@@ -1,6 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import { KeyboardTypeOptions, Text, TextInput, View } from "react-native";
-import { styles } from "./EventForm";
+import { styles } from "../constants/Styles";
 
 export type CustomInputProps = {
   label: string;

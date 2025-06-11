@@ -6,7 +6,6 @@ import { Href, Link, usePathname, useRouter } from "expo-router"; // Added usePa
 import { Pressable, StyleSheet, View } from "react-native"; // Added StyleSheet and Pressable
 import ColorSchemeToggleButton from "./ColorSchemeToggleButton";
 import { SignOutButton } from "./SignOutButton";
-import { ThemedButton } from "./ThemedButton";
 import { ThemedText } from "./ThemedText";
 
 // Helper component for themed navigation links
@@ -79,7 +78,7 @@ export default function ThemedNavBar() {
               bold
               style={{ opacity: hovered || pressed ? 0.8 : 1 }}
             >
-              Inklink
+              Soscitea
             </ThemedText>
           )}
         </Pressable>
@@ -109,7 +108,7 @@ export default function ThemedNavBar() {
           </>
         ) : (
           <>
-            <ThemedButton
+            {/* <ThemedButton
               title="Sign in"
               action="primary"
               size="sm"
@@ -118,11 +117,11 @@ export default function ThemedNavBar() {
             />
             <ThemedButton
               title="Sign up"
-              action="secondary" // Changed to secondary for visual hierarchy
+              action="secondary"
               size="sm"
-              variant="solid" // Changed to outline for visual hierarchy
+              variant="solid"
               onPress={() => router.navigate("/(auth)/sign-up")}
-            />
+            /> */}
           </>
         )}
         <ColorSchemeToggleButton />

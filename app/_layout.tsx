@@ -14,13 +14,13 @@ import {
   focusManager,
   onlineManager,
   QueryClient,
-  QueryClientProvider
+  QueryClientProvider,
 } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { AppState, AppStateStatus, Platform } from "react-native";
+import { AppState, AppStateStatus, Platform, StatusBar } from "react-native";
 import "react-native-reanimated";
 
 SplashScreen.preventAutoHideAsync();
@@ -35,9 +35,9 @@ function onAppStateChange(status: AppStateStatus) {
 
 onlineManager.setEventListener((setOnline) => {
   return NetInfo.addEventListener((state) => {
-    setOnline(!!state.isConnected)
-  })
-})
+    setOnline(!!state.isConnected);
+  });
+});
 
 export default function RootWrapper() {
   useEffect(() => {
@@ -88,7 +88,7 @@ function RootLayout() {
         <Stack.Screen name="(web)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" options={{ headerShown: false }} />
       </Stack>
-      {/* <StatusBar style="auto" /> */}
+      <StatusBar barStyle={"dark-content"} />
     </ThemedView>
   );
 }

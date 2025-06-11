@@ -82,7 +82,7 @@ export default function Page() {
         >
           Continue
         </ThemedButton>
-        <ThemedText colorVariant="textSecondary" size="sm">
+        {/* <ThemedText colorVariant="textSecondary" size="sm">
           {"Don't have an account?"}
         </ThemedText>
         <ThemedButton
@@ -93,7 +93,7 @@ export default function Page() {
           onPress={() => router.navigate("/(auth)/sign-up")}
         >
           Sign up
-        </ThemedButton>
+        </ThemedButton> */}
       </VStack>
     </Container>
   );

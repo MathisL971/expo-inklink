@@ -1,7 +1,7 @@
 import { ChevronDown, LucideIcon, X } from "lucide-react";
 import { useState } from "react";
 import { Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { styles } from "./EventForm";
+import { styles } from "../constants/Styles";
 
 export type CustomPickerProps = {
   label: string;

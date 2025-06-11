@@ -1,8 +1,8 @@
 import { getColor } from "@/constants/Colors";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
-import { ExternalPathString, router } from "expo-router";
+import { router } from "expo-router";
+import { Platform, TouchableOpacity } from "react-native";
 import type { Event } from "../types/index";
-import { ExternalLink } from "./ExternalLink";
 import ThemedHeading from "./ThemedHeading";
 import { ThemedText } from "./ThemedText";
 import { Badge, BadgeText } from "./ui/badge";
@@ -16,12 +16,8 @@ export default function ThemedEventCard({ event }: { event: Event }) {
 
   return (
     <Card
-      className={`p-5 rounded-md max-h-[600px] max-w-[300px] m-3 cursor-pointer`}
+      className={`p-5 rounded-md max-h-[600px] max-w-[300px] m-3`}
       style={{ backgroundColor: getColor("card", mode) }}
-      onPointerDown={() => router.push({
-        pathname: "/events/[id]",
-        params: { id: event.id },
-      })}
     >
       <Image
         source={{
@@ -33,26 +29,42 @@ export default function ThemedEventCard({ event }: { event: Event }) {
         alt="image"
       />
 
-      {/* Disciplines as badges */}
-      <HStack className="gap-2 mb-2" style={{ flexWrap: "wrap" }} >
-         <Badge key={event.access} size="sm" variant="solid" className="p-0">
-            <BadgeText className="px-1.5 py-0.5 rounded-sm" style={{ color: getColor("accentText", mode), backgroundColor: getColor("tint", mode) }}>{event.access}</BadgeText>
+      <HStack className="gap-2 mb-2" style={{ flexWrap: "wrap" }}>
+        <Badge
+          key={event.access}
+          size="sm"
+          variant="outline"
+          className="px-1.5 py-0.5 rounded-sm"
+          action="muted"
+        >
+          <BadgeText>{event.access}</BadgeText>
         </Badge>
-        <Badge key={event.format} size="sm" variant="solid" action="success" className="p-0">
-          <BadgeText className="px-1.5 py-0.5 rounded-sm" style={{ color: getColor("accentText", mode), backgroundColor: getColor("accent", mode) }}>{event.format}</BadgeText>
+        <Badge
+          key={event.format}
+          size="sm"
+          variant="outline"
+          action="warning"
+          className="px-1.5 py-0.5 rounded-sm"
+        >
+          <BadgeText>{event.format}</BadgeText>
         </Badge>
         {event.disciplines.map((discipline) => (
-          <Badge key={discipline} size="sm" variant="solid" action="success" className="p-0">
-            <BadgeText className="px-1.5 py-0.5 rounded-sm" style={{ color: getColor("info", mode), backgroundColor: getColor("infoBg", mode) }}>{discipline}</BadgeText>
+          <Badge
+            key={discipline}
+            size="sm"
+            variant="outline"
+            action="info"
+            className="px-1.5 py-0.5 rounded-sm"
+          >
+            <BadgeText>{discipline}</BadgeText>
           </Badge>
         ))}
       </HStack>
 
-      {/* Date and location with truncation */}
       <ThemedText
         colorVariant="textSecondary"
         className="text-sm line-clamp-1"
-        numberOfLines={1}
+        {...(Platform.OS !== "web" ? { numberOfLines: 1 } : {})}
       >
         {new Date(event.startDate).toLocaleDateString("en-US", {
           month: "short",
@@ -74,43 +86,46 @@ export default function ThemedEventCard({ event }: { event: Event }) {
       <ThemedText
         colorVariant="textSecondary"
         className="text-sm line-clamp-1"
-        numberOfLines={1}
+        {...(Platform.OS !== "web" ? { numberOfLines: 1 } : {})}
       >
         {event.location}
       </ThemedText>
 
-      {/* Title with truncation (2 lines max) */}
-      <ThemedHeading className="mt-1 line-clamp-2" size="xl" numberOfLines={2}>
+      <ThemedHeading
+        className="mt-1 line-clamp-2"
+        size="xl"
+        {...(Platform.OS !== "web" ? { numberOfLines: 2 } : {})}
+      >
         {event.title}
       </ThemedHeading>
 
-      {/* Description with better truncation (3 lines max) */}
       <ThemedText
         colorVariant="textSecondary"
         className="mt-2 flex-1 line-clamp-4"
-        numberOfLines={4}
+        {...(Platform.OS !== "web" ? { numberOfLines: 4 } : {})}
       >
         {event.description}
       </ThemedText>
 
-      {event.source && (
-        <ExternalLink
-          href={event.source as ExternalPathString}
-          className="mt-4"
-        >
-          <HStack className="items-center">
-            <ThemedText colorVariant="tint" className="text-sm flex-row">
-              Learn more
-            </ThemedText>
-            <Icon
-              as={ArrowRightIcon}
-              size="sm"
-              color={getColor("tint", mode)}
-              className="mt-0.5 ml-0.5"
-            />
-          </HStack>
-        </ExternalLink>
-      )}
+      <TouchableOpacity
+        className="mt-3 flex-row items-center gap-1"
+        onPress={() => {
+          router.push({
+            pathname: "/events/[id]",
+            params: { id: event.id },
+          });
+        }}
+      >
+        <ThemedText colorVariant="tint" className="text-sm flex-row">
+          Learn more
+        </ThemedText>
+        <Icon
+          as={ArrowRightIcon}
+          size="sm"
+          color={getColor("tint", mode)}
+          className="mt-0.5 ml-0.5"
+        />
+      </TouchableOpacity>
     </Card>
   );
 }

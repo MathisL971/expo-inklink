@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { styles } from "./EventForm";
+import { styles } from "../constants/Styles";
 import { ThemedButton } from "./ThemedButton";
 
 // --- CONSTANTS ---
@@ -302,7 +302,7 @@ export default function CustomDateTimePicker({
             },
           ]}
         >
-          <View pointerEvents="none" style={{ flex: 1 }}>
+          <View style={{ flex: 1, pointerEvents: "none" }}>
             <TextInput
               style={[styles.textInput, { color: colors.text }]}
               value={displayValue}
@@ -351,7 +351,6 @@ export default function CustomDateTimePicker({
               ]}
               onPress={(e) => e.stopPropagation()}
             >
-              {/* Calendar Header */}
               <View
                 style={[
                   styles.modalHeader,
@@ -370,7 +369,6 @@ export default function CustomDateTimePicker({
                 </TouchableOpacity>
               </View>
 
-              {/* Calendar Body */}
               <View style={{ paddingHorizontal: 8, paddingTop: 8 }}>
                 <View style={{ flexDirection: "row", marginBottom: 10 }}>
                   {WEEK_DAY_NAMES.map((day) => (
@@ -422,7 +420,6 @@ export default function CustomDateTimePicker({
                 </View>
               </View>
 
-              {/* Time Picker */}
               <View
                 style={{
                   borderTopWidth: 1,
@@ -451,7 +448,6 @@ export default function CustomDateTimePicker({
                     alignItems: "center",
                   }}
                 >
-                  {/* Hour Controls */}
                   <TouchableOpacity
                     onPress={() => handleChangeTime("hour", -1)}
                   >
@@ -487,7 +483,6 @@ export default function CustomDateTimePicker({
                   >
                     :
                   </Text>
-                  {/* Minute Controls */}
                   <TouchableOpacity
                     onPress={() => handleChangeTime("minute", -1)}
                   >
@@ -515,7 +510,6 @@ export default function CustomDateTimePicker({
                 </View>
               </View>
 
-              {/* Confirm Button */}
               <View style={{ padding: 16 }}>
                 <ThemedButton
                   title="Confirm"

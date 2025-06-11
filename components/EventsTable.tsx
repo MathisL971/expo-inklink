@@ -127,15 +127,12 @@ export default function EventsTable({ events }: { events: Event[] }) {
                     />
                   </ExternalLink>
                 )}
-                {/* Update event */}
                 <Pressable onPress={() => {}}>
                   <Icon as={EditIcon} color={getColor("warning", mode)} />
                 </Pressable>
-                {/* Duplicate event */}
                 <Pressable onPress={() => handleDuplicate(event)}>
                   <Icon as={CopyIcon} color={getColor("info", mode)} />
                 </Pressable>
-                {/* Delete event */}
                 <Pressable onPress={() => handleDelete(event)}>
                   <Icon as={TrashIcon} color={getColor("error", mode)} />
                 </Pressable>

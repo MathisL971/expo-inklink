@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { styles } from "./EventForm";
+import { styles } from "../constants/Styles";
 
 export type CustomImageUploaderProps = {
   label: string;
