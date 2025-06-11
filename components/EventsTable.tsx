@@ -97,7 +97,7 @@ export default function EventsTable({ events }: { events: Event[] }) {
         {events.map((event) => (
           <TableRow
             key={event.id}
-            style={{ borderColor: getColor("border", mode) }}
+            style={{ backgroundColor: getColor("background", mode), borderColor: getColor("border", mode) }}
           >
             <TableData>
               <ThemedText>{event.title}</ThemedText>
@@ -115,7 +115,7 @@ export default function EventsTable({ events }: { events: Event[] }) {
               </ThemedText>
             </TableData>
             <TableData>
-              <ThemedText>{event.location}</ThemedText>
+              <ThemedText>{event.location.length < 30 ? event.location : event.location.slice(0, 30) + "..."}</ThemedText>
             </TableData>
             <TableData>
               <HStack className="gap-2">
