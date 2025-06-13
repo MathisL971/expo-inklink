@@ -12,7 +12,7 @@ export default function EventsContainer() {
   if (isLoading) {
     return (
       <VStack className="flex-1 justify-center items-center">
-        <Spinner size={"large"}/>
+        <Spinner size={"large"} />
       </VStack>
     );
   }
@@ -20,7 +20,7 @@ export default function EventsContainer() {
   if (error) {
     return (
       <VStack className="flex-1 justify-center items-center">
-        <Alert action='error' variant='solid'>
+        <Alert action="error" variant="solid">
           <AlertIcon as={AlertCircleIcon} />
           <AlertText>Error: {error.message}</AlertText>
         </Alert>
@@ -31,7 +31,7 @@ export default function EventsContainer() {
   if (!data || data.count === 0) {
     return (
       <VStack className="flex-1 justify-center items-center">
-        <Alert action='muted' variant='solid'>
+        <Alert action="muted" variant="solid">
           <AlertIcon as={AlertCircleIcon} />
           <AlertText>
             There are no upcoming events posted yet... Check back again soon!
@@ -42,7 +42,7 @@ export default function EventsContainer() {
   }
 
   return (
-    <ScrollView className="p-3">
+    <ScrollView>
       <EventsList events={data.events} />
     </ScrollView>
   );

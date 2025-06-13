@@ -24,7 +24,7 @@ interface FilterButtonProps {
 }
 
 // A reusable button component for the filter UI
-const FilterButton = ({
+export const FilterButton = ({
   label,
   isSelected,
   onPress,
@@ -72,7 +72,7 @@ interface FilterSectionProps {
 }
 
 // A reusable section component for grouping filters
-const FilterSection = ({ title, children }: FilterSectionProps) => {
+export const FilterSection = ({ title, children }: FilterSectionProps) => {
   const { mode } = useColorScheme();
 
   return (
@@ -87,6 +87,60 @@ const FilterSection = ({ title, children }: FilterSectionProps) => {
   );
 };
 
+// Data for filters (moved outside for clarity)
+export const formats: FormatName[] = [
+  "Lecture",
+  "Conference",
+  "Seminar",
+  "Colloquium",
+  "Symposium",
+  "Panel",
+  "Roundtable",
+  "Workshop",
+  "Webinar",
+  "Discussion",
+  "Debate",
+  "Book Talk",
+  "Poster Session",
+  "Networking Event",
+  "Training Session",
+  "Keynote",
+  "Town Hall",
+  "Fireside Chat",
+];
+
+export const disciplines: DisciplineName[] = [
+  "Political Science",
+  "Economics",
+  "History",
+  "Sociology",
+  "Anthropology",
+  "Psychology",
+  "Human Geography",
+  "Linguistics",
+  "Archaeology",
+  "Law",
+  "Education",
+  "Communication Studies",
+  "Development Studies",
+  "International Relations",
+  "Criminology",
+  "Demography",
+  "Social Work",
+  "Cultural Studies",
+  "Philosophy",
+];
+export const accessTypes: AccessName[] = [
+  "Public",
+  "Private",
+  "Invitation Only",
+];
+export const sortOptions: { key: SortBy; label: string }[] = [
+  { key: "startDate", label: "Start Date" },
+  { key: "title", label: "Title" },
+  { key: "createdAt", label: "Created" },
+];
+
 export const EventFilters = () => {
   const {
     filters,
@@ -100,55 +154,6 @@ export const EventFilters = () => {
   if (isLoadingFilters) {
     return <Spinner />;
   }
-
-  // Data for filters (moved outside for clarity)
-  const formats: FormatName[] = [
-    "Lecture",
-    "Conference",
-    "Seminar",
-    "Colloquium",
-    "Symposium",
-    "Panel",
-    "Roundtable",
-    "Workshop",
-    "Webinar",
-    "Discussion",
-    "Debate",
-    "Book Talk",
-    "Poster Session",
-    "Networking Event",
-    "Training Session",
-    "Keynote",
-    "Town Hall",
-    "Fireside Chat",
-  ];
-  const disciplines: DisciplineName[] = [
-    "Political Science",
-    "Economics",
-    "History",
-    "Sociology",
-    "Anthropology",
-    "Psychology",
-    "Human Geography",
-    "Linguistics",
-    "Archaeology",
-    "Law",
-    "Education",
-    "Communication Studies",
-    "Development Studies",
-    "International Relations",
-    "Criminology",
-    "Demography",
-    "Social Work",
-    "Cultural Studies",
-    "Philosophy",
-  ];
-  const accessTypes: AccessName[] = ["Public", "Private", "Invitation Only"];
-  const sortOptions: { key: SortBy; label: string }[] = [
-    { key: "startDate", label: "Start Date" },
-    { key: "title", label: "Title" },
-    { key: "createdAt", label: "Created" },
-  ];
 
   return (
     <VStack style={styles.vstack}>
@@ -331,7 +336,7 @@ export const EventFilters = () => {
   );
 };
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   vstack: {
     flex: 1,
     padding: 16,
