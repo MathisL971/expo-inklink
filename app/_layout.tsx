@@ -47,15 +47,23 @@ export default function RootWrapper() {
 
   return (
     <ClerkProvider tokenCache={tokenCache}>
-      <GluestackUIProvider>
         <ColorSchemeProvider>
           <QueryClientProvider client={queryClient}>
-            <RootLayout />
+            <ThemeWrapper />
           </QueryClientProvider>
         </ColorSchemeProvider>
-      </GluestackUIProvider>
     </ClerkProvider>
   );
+}
+
+function ThemeWrapper() {
+  const { mode } = useColorScheme();
+
+  return (
+    <GluestackUIProvider mode={mode}> 
+      <RootLayout />
+    </GluestackUIProvider>
+  )
 }
 
 function RootLayout() {

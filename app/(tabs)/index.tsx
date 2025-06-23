@@ -59,14 +59,13 @@ export default function HomeScreen() {
             Platform.OS === "web" && window.innerWidth > 1024 ? "75%" : "100%",
         }}
       >
-        <View className="flex-col gap-2">
-          <View className="flex-row gap-2 items-center">
+        <View className="flex-col gap-2 lg:hidden">
+          <View className="flex-row gap-2 items-center justify-end">
             <TextInput
               placeholder="Search events..."
               placeholderTextColor={getColor("inputPlaceholder", mode)}
               value={filters.searchTerm}
               onChangeText={(text) => updateFilter("searchTerm", text)}
-              className="lg:hidden"
               style={[
                 {
                   flex: 1,

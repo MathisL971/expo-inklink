@@ -14,9 +14,9 @@ import { Image } from "./ui/image";
 export default function ThemedEventCard({ event }: { event: Event }) {
   const { mode } = useColorScheme();
 
-  return (
+  return ( 
     <Card
-      className={`p-5 rounded-md max-h-[600px] max-w-[300px] m-3`}
+      className={`p-5 rounded-md max-h-[600px] flex-1`}
       style={{ backgroundColor: getColor("card", mode) }}
     >
       <Image
@@ -129,3 +129,4 @@ export default function ThemedEventCard({ event }: { event: Event }) {
     </Card>
   );
 }
+

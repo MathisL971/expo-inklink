@@ -42,7 +42,7 @@ export default function EventsContainer() {
   }
 
   return (
-    <ScrollView>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <EventsList events={data.events} />
     </ScrollView>
   );
