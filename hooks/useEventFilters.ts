@@ -8,9 +8,10 @@ const FILTER_QUERY_KEY = ['eventFilters'] as const;
 
 // Default filter state
 const defaultFilters: EventFilters = {
-  format: null,
+  format: undefined,
   disciplines: [],
-  access: null,
+  access: undefined,
+  dateRange: undefined,
   searchTerm: '',
   sortBy: 'startDate',
   sortOrder: 'asc'
@@ -45,12 +46,12 @@ interface UseEventFiltersReturn {
 }
 
 // Custom hook for managing event filters
-export const useEventFilters = (): UseEventFiltersReturn => {
+export const useEventFilters = (initialFilters?: Partial<EventFilters>): UseEventFiltersReturn => {
   const queryClient = useQueryClient();
 
   // Query to manage filter state
   const {
-    data: filters = defaultFilters,
+    data: filters = { ...defaultFilters, ...initialFilters },
     isLoading: isLoadingFilters
   } = useQuery({
     queryKey: FILTER_QUERY_KEY,

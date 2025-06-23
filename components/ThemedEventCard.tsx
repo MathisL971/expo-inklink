@@ -31,15 +31,6 @@ export default function ThemedEventCard({ event }: { event: Event }) {
 
       <HStack className="gap-2 mb-2" style={{ flexWrap: "wrap" }}>
         <Badge
-          key={event.access}
-          size="sm"
-          variant="outline"
-          className="px-1.5 py-0.5 rounded-sm"
-          action="muted"
-        >
-          <BadgeText>{event.access}</BadgeText>
-        </Badge>
-        <Badge
           key={event.format}
           size="sm"
           variant="outline"

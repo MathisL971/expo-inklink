@@ -25,6 +25,7 @@ export async function fetchEventsWithFilters(filters: EventFilters): Promise<{
   }
   if (filters.access) queryParams.append('access', filters.access);
   if (filters.searchTerm) queryParams.append('search', filters.searchTerm);
+  if (filters.dateRange) queryParams.append('dateRange', filters.dateRange);
 
   queryParams.append('sortBy', filters.sortBy);
   queryParams.append('sortOrder', filters.sortOrder);

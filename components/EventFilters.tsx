@@ -1,7 +1,7 @@
 import { getColor } from "@/constants/Colors";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { useEventFilters } from "@/hooks/useEventFilters";
-import { AccessName, DisciplineName, FormatName, SortBy } from "@/types";
+import { DisciplineName, FormatName, SortBy } from "@/types";
 import React from "react";
 import {
   ScrollView,
@@ -108,7 +108,6 @@ export const formats: FormatName[] = [
   "Town Hall",
   "Fireside Chat",
 ];
-
 export const disciplines: DisciplineName[] = [
   "Political Science",
   "Economics",
@@ -129,11 +128,6 @@ export const disciplines: DisciplineName[] = [
   "Social Work",
   "Cultural Studies",
   "Philosophy",
-];
-export const accessTypes: AccessName[] = [
-  "Public",
-  "Private",
-  "Invitation Only",
 ];
 export const sortOptions: { key: SortBy; label: string }[] = [
   { key: "startDate", label: "Start Date" },
@@ -207,6 +201,16 @@ export const EventFilters = () => {
           />
         </FilterSection>
 
+        <FilterSection title="Date Range">
+          <View style={styles.buttonRow}>
+            <FilterButton label="Today" isSelected={filters.dateRange === "today"} onPress={() => updateFilter("dateRange", filters.dateRange === "today" ? "future" : "today")} />
+            <FilterButton label="Tomorrow" isSelected={filters.dateRange === "tomorrow"} onPress={() => updateFilter("dateRange", filters.dateRange === "tomorrow" ? "future" : "tomorrow")} />
+            <FilterButton label="This Week" isSelected={filters.dateRange === "thisWeek"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisWeek" ? "future" : "thisWeek")} />
+            <FilterButton label="This Weekend" isSelected={filters.dateRange === "thisWeekend"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisWeekend" ? "future" : "thisWeekend")} />
+            <FilterButton label="This Month" isSelected={filters.dateRange === "thisMonth"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisMonth" ? "future" : "thisMonth")} />            
+          </View>
+        </FilterSection>
+
         <FilterSection title="Format">
           <View style={styles.buttonRow}>
             {formats.map((format) => (
@@ -217,28 +221,10 @@ export const EventFilters = () => {
                 onPress={() =>
                   updateFilter(
                     "format",
-                    filters.format === format ? null : format
+                    filters.format === format ? und : format
                   )
                 }
                 style={styles.formatButton} // Using a more specific style name
-              />
-            ))}
-          </View>
-        </FilterSection>
-
-        <FilterSection title="Access">
-          <View style={styles.buttonRow}>
-            {accessTypes.map((access) => (
-              <FilterButton
-                key={access}
-                label={access}
-                isSelected={filters.access === access}
-                onPress={() =>
-                  updateFilter(
-                    "access",
-                    filters.access === access ? null : access
-                  )
-                }
               />
             ))}
           </View>
@@ -260,7 +246,6 @@ export const EventFilters = () => {
 
       {(filters.format ||
         filters.disciplines.length > 0 ||
-        filters.access ||
         filters.searchTerm) && (
         <View
           style={[
@@ -298,16 +283,6 @@ export const EventFilters = () => {
                 ]}
               >
                 Disciplines: {filters.disciplines.join(", ")}
-              </Text>
-            )}
-            {filters.access && (
-              <Text
-                style={[
-                  styles.activeFilterText,
-                  { color: getColor("text", mode) },
-                ]}
-              >
-                Access: {filters.access}
               </Text>
             )}
             {filters.searchTerm && (

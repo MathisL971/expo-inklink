@@ -7,7 +7,9 @@ import { Spinner } from "./ui/spinner";
 import { VStack } from "./ui/vstack";
 
 export default function EventsContainer() {
-  const { data, isLoading, error } = useEvents();
+  const { data, isLoading, error } = useEvents({
+    futureOnly: true,
+  });
 
   if (isLoading) {
     return (
@@ -34,7 +36,7 @@ export default function EventsContainer() {
         <Alert action="muted" variant="solid">
           <AlertIcon as={AlertCircleIcon} />
           <AlertText>
-            There are no upcoming events posted yet... Check back again soon!
+            There are no upcoming events that match your filters... Check back again soon!
           </AlertText>
         </Alert>
       </VStack>

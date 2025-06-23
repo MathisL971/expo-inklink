@@ -7,6 +7,7 @@ interface EventFilters {
   disciplines: string[];
   access: string | null;
   search: string;
+  dateRange: string | null;
   sortBy: string;
   sortOrder: 'asc' | 'desc';
 }
@@ -20,6 +21,7 @@ interface MongoFilter {
     description?: { $regex: string; $options: string };
     location?: { $regex: string; $options: string };
   }[];
+  startDate?: { $gte: Date; $lt?: Date };
 }
 
 export async function handleEventsGET(event: APIGatewayProxyEventV2) {
@@ -52,6 +54,7 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
         disciplines = [],
         access = null,
         search = '',
+        dateRange = null,
         sortBy = 'startDate',
         sortOrder = 'asc'
       } = queryStringParameters as APIGatewayProxyEventQueryStringParameters & EventFilters;
@@ -66,7 +69,44 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
           { description: { $regex: search, $options: 'i' } },
           { location: { $regex: search, $options: 'i' } }
         ];
-      } 
+      }
+      if (dateRange) {
+        if (dateRange === 'future') {
+          filter.startDate = { $gte: new Date() };
+        } else if (dateRange === 'today') {
+          // From now to midnight today
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          filter.startDate = { $gte: today, $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) };
+        } else if (dateRange === 'tomorrow') {
+          // From tomorrow morning to midnight tomorrow
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          tomorrow.setHours(0, 0, 0, 0);
+          filter.startDate = { $gte: tomorrow, $lt: new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000) };
+        } else if (dateRange === 'thisWeek') {
+          // Now to next Sunday 
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const nextSunday = new Date();
+          nextSunday.setDate(nextSunday.getDate() + (7 - nextSunday.getDay()));
+          filter.startDate = { $gte: today, $lt: nextSunday };
+        } else if (dateRange === 'thisWeekend') {
+          // Only upcoming saturday and sunday
+          const nextSaturday = new Date();
+          nextSaturday.setDate(nextSaturday.getDate() + (6 - nextSaturday.getDay()));
+          const nextSunday = new Date();
+          nextSunday.setDate(nextSunday.getDate() + (7 - nextSunday.getDay()));
+          filter.startDate = { $gte: nextSaturday, $lt: nextSunday };
+        } else if (dateRange === 'thisMonth') {
+          // Today to end of month
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+          endOfMonth.setHours(23, 59, 59, 999);
+          filter.startDate = { $gte: today, $lt: endOfMonth };
+        }
+      }
       
       sortObj[sortBy] = sortOrder === 'desc' ? -1 : 1;
     }

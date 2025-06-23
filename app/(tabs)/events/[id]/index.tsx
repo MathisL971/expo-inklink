@@ -100,18 +100,9 @@ export default function EventScreen() {
             </View>
           )}
 
-          <View className="px-6">
+          <View>
             <ThemedView className="mb-4">
               <HStack className="gap-2 mb-2" style={{ flexWrap: "wrap" }}>
-                <Badge
-                  key={data.access}
-                  size="lg"
-                  variant="outline"
-                  className="px-2 py-1 rounded-md"
-                  action="muted"
-                >
-                  <BadgeText>{data.access}</BadgeText>
-                </Badge>
                 <Badge
                   key={data.format}
                   size="lg"

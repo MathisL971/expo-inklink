@@ -77,10 +77,13 @@ export type Event = {
 export type SortBy = 'startDate' | 'title' | 'createdAt';
 export type SortOrder = 'asc' | 'desc';
 
+export type DateRange = 'today' | 'tomorrow' | 'thisWeek' | 'thisWeekend' | 'thisMonth' | 'future';
+
 export interface EventFilters {
-  format: FormatName | null;
+  format?: FormatName;
   disciplines: DisciplineName[];
-  access: AccessName | null;
+  access?: AccessName;
+  dateRange?: DateRange;
   searchTerm: string;
   sortBy: SortBy;
   sortOrder: SortOrder;

@@ -1,12 +1,11 @@
 import {
-  accessTypes,
   disciplines,
   EventFilters,
   FilterButton,
   FilterSection,
   formats,
   sortOptions,
-  styles,
+  styles
 } from "@/components/EventFilters";
 import EventsContainer from "@/components/EventsContainer";
 import { ThemedView } from "@/components/ThemedView";
@@ -131,6 +130,16 @@ export default function HomeScreen() {
                 </View>
               </FilterSection>
 
+              <FilterSection title="Date Range">
+                <View style={styles.buttonRow}>
+                  <FilterButton label="Today" isSelected={filters.dateRange === "today"} onPress={() => updateFilter("dateRange", filters.dateRange === "today" ? "future" : "today")} />
+                  <FilterButton label="Tomorrow" isSelected={filters.dateRange === "tomorrow"} onPress={() => updateFilter("dateRange", filters.dateRange === "tomorrow" ? "future" : "tomorrow")} />
+                  <FilterButton label="This Week" isSelected={filters.dateRange === "thisWeek"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisWeek" ? "future" : "thisWeek")} />
+                  <FilterButton label="This Weekend" isSelected={filters.dateRange === "thisWeekend"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisWeekend" ? "future" : "thisWeekend")} />
+                  <FilterButton label="This Month" isSelected={filters.dateRange === "thisMonth"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisMonth" ? "future" : "thisMonth")} />            
+                </View>
+              </FilterSection>
+
               <FilterSection title="Format">
                 <View style={styles.buttonRow}>
                   {formats.map((format) => (
@@ -141,28 +150,10 @@ export default function HomeScreen() {
                       onPress={() =>
                         updateFilter(
                           "format",
-                          filters.format === format ? null : format
+                          filters.format === format ? undefined : format
                         )
                       }
                       style={styles.formatButton} // Using a more specific style name
-                    />
-                  ))}
-                </View>
-              </FilterSection>
-
-              <FilterSection title="Access">
-                <View style={styles.buttonRow}>
-                  {accessTypes.map((access) => (
-                    <FilterButton
-                      key={access}
-                      label={access}
-                      isSelected={filters.access === access}
-                      onPress={() =>
-                        updateFilter(
-                          "access",
-                          filters.access === access ? null : access
-                        )
-                      }
                     />
                   ))}
                 </View>
