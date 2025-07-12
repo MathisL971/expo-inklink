@@ -1,16 +1,13 @@
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
-import { fetchAccesses } from "@/services/access";
-import { fetchDisciplines } from "@/services/discipline";
 import { createEvent } from "@/services/event";
-import { fetchFormats } from "@/services/format";
 import { deleteImage } from "@/services/image";
 import type { DisciplineName, Event, FormatName } from "@/types";
 import { AccessName } from "@/types";
 import { getImageKey } from "@/utils/image";
 import { useUser } from "@clerk/clerk-expo";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { ImagePickerAsset } from "expo-image-picker";
 import { router } from "expo-router";
@@ -26,34 +23,61 @@ import CustomWebDatePicker from "./CustomWebDatePicker";
 import { ThemedButton } from "./ThemedButton";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
-import { Spinner } from "./ui/spinner";
 
 type EventFormProps = {
   initialEvent?: Event;
 };
 
+// Local data arrays for formats, disciplines, and access levels
+const LOCAL_FORMATS: FormatName[] = [
+  "Lecture",
+  "Conference",
+  "Seminar",
+  "Colloquium",
+  "Symposium",
+  "Panel",
+  "Roundtable",
+  "Workshop",
+  "Webinar",
+  "Discussion",
+  "Debate",
+  "Book Talk",
+  "Poster Session",
+  "Networking Event",
+  "Training Session",
+  "Keynote",
+  "Town Hall",
+  "Fireside Chat",
+];
+
+const LOCAL_DISCIPLINES: DisciplineName[] = [
+  "Political Science",
+  "Economics",
+  "History",
+  "Sociology",
+  "Anthropology",
+  "Psychology",
+  "Human Geography",
+  "Linguistics",
+  "Archaeology",
+  "Law",
+  "Education",
+  "Communication Studies",
+  "Development Studies",
+  "International Relations",
+  "Criminology",
+  "Demography",
+  "Social Work",
+  "Cultural Studies",
+  "Philosophy",
+];
+
+const LOCAL_ACCESSES: AccessName[] = ["Public", "Private", "Invitation Only"];
+
 export const EventForm = ({ initialEvent }: EventFormProps) => {
   const { user } = useUser();
 
   const { mode } = useColorScheme();
-
-  const formatQuery = useQuery({
-    queryKey: ["formats"],
-    queryFn: fetchFormats,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const disciplineQuery = useQuery({
-    queryKey: ["disciplines"],
-    queryFn: fetchDisciplines,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const accessQuery = useQuery({
-    queryKey: ["accesses"],
-    queryFn: fetchAccesses,
-    staleTime: 5 * 60 * 1000,
-  });
 
   const {
     control,
@@ -171,31 +195,6 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
     }
     // No-op for local images
   };
-
-  const loadingFieldOptions =
-    formatQuery.isLoading || disciplineQuery.isLoading || accessQuery.isLoading;
-  const errorFieldOptions =
-    formatQuery.isError || disciplineQuery.isError || accessQuery.isError;
-  const noDataFieldOptions =
-    !formatQuery.data?.formats ||
-    !disciplineQuery.data?.disciplines ||
-    !accessQuery.data?.accesses;
-
-  if (loadingFieldOptions) return <Spinner size={"large"} className="flex-1" />;
-
-  if (errorFieldOptions)
-    return (
-      <View>
-        <ThemedText>An error occured while loading field options...</ThemedText>
-      </View>
-    );
-
-  if (noDataFieldOptions)
-    return (
-      <View>
-        <ThemedText>Some field options data is missing...</ThemedText>
-      </View>
-    );
 
   return (
     <View className="gap-3">
@@ -370,10 +369,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               value={value}
               onSelect={onChange}
               onBlur={onBlur}
-              options={
-                formatQuery.data?.formats.map((f) => f.name) ??
-                ([] as FormatName[])
-              }
+              options={LOCAL_FORMATS}
               error={errors.format?.message}
               Icon={FileText}
               colors={Colors[mode]}
@@ -392,10 +388,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               values={value}
               onSelect={onChange}
               onBlur={onBlur}
-              options={
-                disciplineQuery.data?.disciplines.map((d) => d.name) ??
-                ([] as DisciplineName[])
-              }
+              options={LOCAL_DISCIPLINES}
               error={errors.disciplines?.message}
               Icon={Building}
               colors={Colors[mode]}
@@ -419,10 +412,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               value={value}
               onSelect={onChange}
               onBlur={onBlur}
-              options={
-                accessQuery.data?.accesses.map((a) => a.name) ??
-                ([] as AccessName[])
-              }
+              options={LOCAL_ACCESSES}
               colors={Colors[mode]}
               placeholder="Select access level"
               error={errors.access?.message}
