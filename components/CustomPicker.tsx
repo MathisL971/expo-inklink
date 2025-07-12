@@ -2,6 +2,7 @@ import { ChevronDown, LucideIcon, X } from "lucide-react";
 import { useState } from "react";
 import { Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "../constants/Styles";
+import { Spinner } from "./ui/spinner";
 
 export type CustomPickerProps = {
   label: string;
@@ -25,7 +26,8 @@ export default function CustomPicker({
   Icon,
   colors,
   placeholder,
-}: CustomPickerProps) {
+  loading = false, // new prop
+}: CustomPickerProps & { loading?: boolean }) {
   const [isVisible, setIsVisible] = useState(false);
 
   return (
@@ -89,33 +91,39 @@ export default function CustomPicker({
               </TouchableOpacity>
             </View>
             <ScrollView style={styles.optionsList}>
-              {options.map((option) => (
-                <TouchableOpacity
-                  key={option}
-                  style={[
-                    styles.optionItem,
-                    { borderBottomColor: colors.cardBorder },
-                    value === option && {
-                      backgroundColor: colors.primaryLight,
-                    },
-                  ]}
-                  onPress={() => {
-                    onSelect(option);
-                    setIsVisible(false);
-                  }}
-                >
-                  <Text
+              {loading ? (
+                <View style={{ alignItems: "center", padding: 24 }}>
+                  <Spinner size="large" color={colors.primary} />
+                </View>
+              ) : (
+                options.map((option) => (
+                  <TouchableOpacity
+                    key={option}
                     style={[
-                      styles.optionText,
-                      {
-                        color: value === option ? colors.primary : colors.text,
+                      styles.optionItem,
+                      { borderBottomColor: colors.cardBorder },
+                      value === option && {
+                        backgroundColor: colors.primaryLight,
                       },
                     ]}
+                    onPress={() => {
+                      onSelect(option);
+                      setIsVisible(false);
+                    }}
                   >
-                    {option}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                    <Text
+                      style={[
+                        styles.optionText,
+                        {
+                          color: value === option ? colors.primary : colors.text,
+                        },
+                      ]}
+                    >
+                      {option}
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              )}
             </ScrollView>
           </View>
         </View>

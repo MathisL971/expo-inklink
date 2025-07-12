@@ -146,7 +146,11 @@ export const EventFilters = () => {
   const { mode } = useColorScheme();
 
   if (isLoadingFilters) {
-    return <Spinner />;
+    return (
+      <VStack className="flex-1 justify-center items-center" style={{ minHeight: 200 }}>
+        <Spinner size="large" />
+      </VStack>
+    );
   }
 
   return (
@@ -207,7 +211,7 @@ export const EventFilters = () => {
             <FilterButton label="Tomorrow" isSelected={filters.dateRange === "tomorrow"} onPress={() => updateFilter("dateRange", filters.dateRange === "tomorrow" ? "future" : "tomorrow")} />
             <FilterButton label="This Week" isSelected={filters.dateRange === "thisWeek"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisWeek" ? "future" : "thisWeek")} />
             <FilterButton label="This Weekend" isSelected={filters.dateRange === "thisWeekend"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisWeekend" ? "future" : "thisWeekend")} />
-            <FilterButton label="This Month" isSelected={filters.dateRange === "thisMonth"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisMonth" ? "future" : "thisMonth")} />            
+            <FilterButton label="This Month" isSelected={filters.dateRange === "thisMonth"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisMonth" ? "future" : "thisMonth")} />
           </View>
         </FilterSection>
 
@@ -247,57 +251,57 @@ export const EventFilters = () => {
       {(filters.format ||
         filters.disciplines.length > 0 ||
         filters.searchTerm) && (
-        <View
-          style={[
-            styles.activeFiltersSection,
-            {
-              backgroundColor: getColor("cardElevated", mode),
-              borderColor: getColor("border", mode),
-            },
-          ]}
-        >
-          <Text
+          <View
             style={[
-              styles.activeFiltersSectionTitle,
-              { color: getColor("text", mode) },
+              styles.activeFiltersSection,
+              {
+                backgroundColor: getColor("cardElevated", mode),
+                borderColor: getColor("border", mode),
+              },
             ]}
           >
-            Active Filters:
-          </Text>
-          <View style={styles.activeFiltersContainer}>
-            {filters.format && (
-              <Text
-                style={[
-                  styles.activeFilterText,
-                  { color: getColor("text", mode) },
-                ]}
-              >
-                Format: {filters.format}
-              </Text>
-            )}
-            {filters.disciplines.length > 0 && (
-              <Text
-                style={[
-                  styles.activeFilterText,
-                  { color: getColor("text", mode) },
-                ]}
-              >
-                Disciplines: {filters.disciplines.join(", ")}
-              </Text>
-            )}
-            {filters.searchTerm && (
-              <Text
-                style={[
-                  styles.activeFilterText,
-                  { color: getColor("text", mode) },
-                ]}
-              >
-                Search: {filters.searchTerm}
-              </Text>
-            )}
+            <Text
+              style={[
+                styles.activeFiltersSectionTitle,
+                { color: getColor("text", mode) },
+              ]}
+            >
+              Active Filters:
+            </Text>
+            <View style={styles.activeFiltersContainer}>
+              {filters.format && (
+                <Text
+                  style={[
+                    styles.activeFilterText,
+                    { color: getColor("text", mode) },
+                  ]}
+                >
+                  Format: {filters.format}
+                </Text>
+              )}
+              {filters.disciplines.length > 0 && (
+                <Text
+                  style={[
+                    styles.activeFilterText,
+                    { color: getColor("text", mode) },
+                  ]}
+                >
+                  Disciplines: {filters.disciplines.join(", ")}
+                </Text>
+              )}
+              {filters.searchTerm && (
+                <Text
+                  style={[
+                    styles.activeFilterText,
+                    { color: getColor("text", mode) },
+                  ]}
+                >
+                  Search: {filters.searchTerm}
+                </Text>
+              )}
+            </View>
           </View>
-        </View>
-      )}
+        )}
 
       <Button
         size="md"

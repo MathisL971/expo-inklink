@@ -2,15 +2,15 @@ import * as ImagePicker from "expo-image-picker";
 import { Camera, Upload, X } from "lucide-react-native";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   Image,
   Platform,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { styles } from "../constants/Styles";
+import { Spinner } from "./ui/spinner";
 
 export type CustomImageUploaderProps = {
   label: string;
@@ -202,7 +202,7 @@ export default function CustomImageUploader({
           >
             {isSelecting ? (
               <View style={{ alignItems: "center" }}>
-                <ActivityIndicator size="large" color={colors.primary} />
+                <Spinner size="large" color={colors.primary} />
                 <Text
                   style={{
                     color: colors.textSecondary,
