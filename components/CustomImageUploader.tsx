@@ -1,5 +1,4 @@
 import * as ImagePicker from "expo-image-picker";
-import { ImagePickerAsset } from "expo-image-picker";
 import { Camera, Upload, X } from "lucide-react-native";
 import React, { useState } from "react";
 import {
@@ -15,11 +14,10 @@ import { styles } from "../constants/Styles";
 
 export type CustomImageUploaderProps = {
   label: string;
-  value?: string;
-  onChange: (value: string) => void;
-  onImageDelete: (image: string) => Promise<void>;
+  value?: string | { uri: string };
+  onChange: (value: string | { uri: string } | "") => void;
+  onImageDelete: (image: string | { uri: string }) => Promise<void>;
   onBlur: () => void;
-  onImageSelect: (imageAsset: ImagePickerAsset) => Promise<string>;
   placeholder: string;
   error?: string;
   colors: any;
@@ -30,19 +28,17 @@ export default function CustomImageUploader({
   value,
   onChange,
   onBlur,
-  onImageSelect,
   onImageDelete,
   placeholder,
   error,
   colors,
 }: CustomImageUploaderProps) {
-  const [isUploading, setIsUploading] = useState(false);
+  const [isSelecting, setIsSelecting] = useState(false);
 
   const requestPermissions = async () => {
     if (Platform.OS === "web") {
-      return true; // Web doesn't need explicit permissions for file input
+      return true;
     }
-
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
@@ -57,39 +53,26 @@ export default function CustomImageUploader({
   const pickImage = async () => {
     const hasPermission = await requestPermissions();
     if (!hasPermission) return;
-
+    setIsSelecting(true);
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [16, 9],
       quality: 0.8,
-      ...(Platform.OS === "web" && {
-        allowsMultipleSelection: false,
-      }),
+      ...(Platform.OS === "web" && { allowsMultipleSelection: false }),
     });
-
     if (!result.canceled && result.assets[0]) {
-      setIsUploading(true);
-      try {
-        const imageUrl = await onImageSelect(result.assets[0]);
-        onChange(imageUrl);
-      } catch (error) {
-        console.error("Upload failed:", error);
-      } finally {
-        setIsUploading(false);
-      }
+      onChange(result.assets[0]);
     }
-
+    setIsSelecting(false);
     onBlur();
   };
 
   const takePhoto = async () => {
     if (Platform.OS === "web") {
-      // On web, we can't take photos, so just open file picker
       pickImage();
       return;
     }
-
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
@@ -98,32 +81,22 @@ export default function CustomImageUploader({
       );
       return;
     }
-
+    setIsSelecting(true);
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [16, 9],
       quality: 0.8,
     });
-
     if (!result.canceled && result.assets[0]) {
-      setIsUploading(true);
-      try {
-        const imageUrl = await onImageSelect(result.assets[0]);
-        onChange(imageUrl);
-      } catch (error) {
-        console.error("Upload failed:", error);
-      } finally {
-        setIsUploading(false);
-      }
+      onChange(result.assets[0]);
     }
+    setIsSelecting(false);
   };
 
   const showImageOptions = () => {
     if (Platform.OS === "web") {
-      // On web, just open file picker directly
       pickImage();
     } else {
-      // On mobile, show options for camera or gallery
       Alert.alert("Select Image", "Choose an option to add an image", [
         { text: "Camera", onPress: takePhoto },
         { text: "Photo Library", onPress: pickImage },
@@ -139,10 +112,17 @@ export default function CustomImageUploader({
     return "Tap to select from gallery or take photo";
   };
 
+  // Helper to get URI from value
+  const getImageUri = (val: string | { uri: string } | undefined) => {
+    if (!val) return undefined;
+    if (typeof val === "string") return val;
+    if (val.uri) return val.uri;
+    return undefined;
+  };
+
   return (
     <View style={[styles.inputContainer, { marginBottom: 16 }]}>
       <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
-
       <View
         style={[
           styles.inputWrapper,
@@ -158,7 +138,7 @@ export default function CustomImageUploader({
         {value ? (
           <View style={{ flex: 1, position: "relative" }}>
             <Image
-              source={{ uri: value }}
+              source={{ uri: getImageUri(value) }}
               style={{
                 width: "100%",
                 height: 180,
@@ -200,10 +180,10 @@ export default function CustomImageUploader({
         ) : (
           <TouchableOpacity
             onPress={async () => {
-              if (isUploading) return;
+              if (isSelecting) return;
               showImageOptions();
             }}
-            disabled={isUploading}
+            disabled={isSelecting}
             style={[
               {
                 flex: 1,
@@ -216,11 +196,11 @@ export default function CustomImageUploader({
                 minHeight: 96,
               },
               Platform.OS === "web" && {
-                cursor: isUploading ? "auto" : "pointer",
+                cursor: isSelecting ? "auto" : "pointer",
               },
             ]}
           >
-            {isUploading ? (
+            {isSelecting ? (
               <View style={{ alignItems: "center" }}>
                 <ActivityIndicator size="large" color={colors.primary} />
                 <Text
@@ -230,7 +210,7 @@ export default function CustomImageUploader({
                     fontSize: 14,
                   }}
                 >
-                  Uploading...
+                  Selecting...
                 </Text>
               </View>
             ) : (
@@ -269,7 +249,6 @@ export default function CustomImageUploader({
           </TouchableOpacity>
         )}
       </View>
-
       {error && (
         <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
       )}

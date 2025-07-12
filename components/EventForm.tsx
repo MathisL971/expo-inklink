@@ -93,9 +93,18 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
     },
   });
 
+  // Helper to check if image is a local asset (from expo-image-picker)
+  const isLocalImage = (img: any) => img && typeof img === "object" && img.uri;
+
   const onSubmit = async (eventData: any) => {
+    let imageUrl = eventData.image;
+    if (isLocalImage(eventData.image)) {
+      // Only upload if it's a local asset
+      imageUrl = await uploadImage(eventData.image);
+    }
     createMutation.mutate({
       ...eventData,
+      image: imageUrl,
       startDate: new Date(eventData.startDate),
       endDate: new Date(eventData.endDate),
     });
@@ -155,8 +164,12 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
     }
   };
 
-  const removeImage = async (image: string) => {
-    await deleteImage(getImageKey(image));
+  // Remove image handler: only delete from S3 if it's a remote URL
+  const removeImage = async (image: string | { uri: string }) => {
+    if (typeof image === "string" && image.startsWith("http")) {
+      await deleteImage(getImageKey(image));
+    }
+    // No-op for local images
   };
 
   const loadingFieldOptions =
@@ -256,7 +269,6 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               error={errors.image?.message}
               onChange={onChange}
               onBlur={onBlur}
-              onImageSelect={uploadImage}
               onImageDelete={removeImage}
             />
           )}
@@ -447,8 +459,8 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
           isSubmitting
             ? "Saving..."
             : initialEvent
-            ? "Update Event"
-            : "Create Event"
+              ? "Update Event"
+              : "Create Event"
         }
         onPress={handleSubmit(onSubmit)}
         disabled={!isValid || isSubmitting}

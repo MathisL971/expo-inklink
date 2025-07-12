@@ -29,8 +29,18 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
   const { method, path: rawPath } = event.requestContext.http;
   const path = rawPath.replace(/^\/S3/, ""); // strip optional prefix
 
-  const routeKey = `${method} ${path}`;
-  const routeHandler = routes[routeKey];
+  let routeKey = `${method} ${path}`;
+  let routeHandler = routes[routeKey];
+
+  // Pattern match for /image/events/{key}
+  if (!routeHandler) {
+    const deleteImageMatch = path.match(/^\/image\/events\/(.+)$/);
+    if (method === "DELETE" && deleteImageMatch) {
+      routeHandler = routes["DELETE /image/events/{key}"];
+      event.pathParameters = event.pathParameters || {};
+      event.pathParameters.key = deleteImageMatch[1];
+    }
+  }
 
   return routeHandler
     ? routeHandler(event)
