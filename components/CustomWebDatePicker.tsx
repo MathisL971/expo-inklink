@@ -2,9 +2,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
-  LucideIcon,
-  Minus,
-  Plus,
+  LucideIcon
 } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -75,6 +73,8 @@ export default function CustomDateTimePicker({
   const [showPicker, setShowPicker] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDateTime, setSelectedDateTime] = useState<Date>(new Date());
+  const [hourInput, setHourInput] = useState<string>("00");
+  const [minuteInput, setMinuteInput] = useState<string>("00");
 
   // Helper function to safely parse the value
   const parseValue = useCallback((val: string): Date => {
@@ -101,6 +101,14 @@ export default function CustomDateTimePicker({
       new Date(parsedDate.getFullYear(), parsedDate.getMonth(), 1)
     );
   }, [value, parseValue]);
+
+  // Sync hour/minute input fields when modal opens or selectedDateTime changes
+  useEffect(() => {
+    if (showPicker) {
+      setHourInput(selectedDateTime.getHours().toString().padStart(2, "0"));
+      setMinuteInput(selectedDateTime.getMinutes().toString().padStart(2, "0"));
+    }
+  }, [showPicker, selectedDateTime]);
 
   const parseDateTime = useCallback(
     (dateTimeString: string): Date | null => {
@@ -275,11 +283,26 @@ export default function CustomDateTimePicker({
   );
 
   const handleConfirm = useCallback(() => {
+    // Clamp and commit hour/minute before confirming
+    let hour = parseInt(hourInput, 10);
+    if (isNaN(hour)) hour = 0;
+    if (hour > 23) hour = 23;
+    if (hour < 0) hour = 0;
+    let minute = parseInt(minuteInput, 10);
+    if (isNaN(minute)) minute = 0;
+    if (minute > 59) minute = 59;
+    if (minute < 0) minute = 0;
+    setSelectedDateTime((current) => {
+      const newDate = new Date(current);
+      newDate.setHours(hour);
+      newDate.setMinutes(minute);
+      return newDate;
+    });
     // Return ISO string for React Hook Form compatibility
-    const isoString = selectedDateTime.toISOString();
+    const isoString = new Date(selectedDateTime.setHours(hour, minute)).toISOString();
     onChangeText(isoString);
     handleClose();
-  }, [selectedDateTime, onChangeText, handleClose]);
+  }, [selectedDateTime, onChangeText, handleClose, hourInput, minuteInput]);
 
   const navigateMonth = useCallback((direction: "prev" | "next") => {
     setCurrentMonth((prev) => {
@@ -408,8 +431,8 @@ export default function CustomDateTimePicker({
                           color: dayObj.isSelected
                             ? colors.primaryText
                             : dayObj.isCurrentMonth
-                            ? colors.text
-                            : colors.textSecondary,
+                              ? colors.text
+                              : colors.textSecondary,
                           fontWeight: dayObj.isToday ? "bold" : "normal",
                         }}
                       >
@@ -448,12 +471,7 @@ export default function CustomDateTimePicker({
                     alignItems: "center",
                   }}
                 >
-                  <TouchableOpacity
-                    onPress={() => handleChangeTime("hour", -1)}
-                  >
-                    <Minus size={20} color={colors.primary} />
-                  </TouchableOpacity>
-                  <Text
+                  <TextInput
                     style={[
                       styles.textInput,
                       {
@@ -462,14 +480,34 @@ export default function CustomDateTimePicker({
                         fontWeight: "bold",
                         textAlign: "center",
                         marginHorizontal: 10,
+                        width: 40,
+                        borderWidth: 1,
+                        borderColor: colors.inputBorder,
+                        borderRadius: 6,
+                        backgroundColor: colors.inputBackground,
                       },
                     ]}
-                  >
-                    {selectedDateTime.getHours().toString().padStart(2, "0")}
-                  </Text>
-                  <TouchableOpacity onPress={() => handleChangeTime("hour", 1)}>
-                    <Plus size={20} color={colors.primary} />
-                  </TouchableOpacity>
+                    keyboardType="number-pad"
+                    maxLength={2}
+                    value={hourInput}
+                    onChangeText={(text) => {
+                      // Allow only digits, max 2 chars
+                      const clean = text.replace(/\D/g, "").slice(0, 2);
+                      setHourInput(clean);
+                    }}
+                    onBlur={() => {
+                      let hour = parseInt(hourInput, 10);
+                      if (isNaN(hour)) hour = 0;
+                      if (hour > 23) hour = 23;
+                      if (hour < 0) hour = 0;
+                      setHourInput(hour.toString().padStart(2, "0"));
+                      setSelectedDateTime((current) => {
+                        const newDate = new Date(current);
+                        newDate.setHours(hour);
+                        return newDate;
+                      });
+                    }}
+                  />
                   <Text
                     style={[
                       styles.textInput,
@@ -483,12 +521,7 @@ export default function CustomDateTimePicker({
                   >
                     :
                   </Text>
-                  <TouchableOpacity
-                    onPress={() => handleChangeTime("minute", -1)}
-                  >
-                    <Minus size={20} color={colors.primary} />
-                  </TouchableOpacity>
-                  <Text
+                  <TextInput
                     style={[
                       styles.textInput,
                       {
@@ -497,16 +530,33 @@ export default function CustomDateTimePicker({
                         fontWeight: "bold",
                         textAlign: "center",
                         marginHorizontal: 10,
+                        width: 40,
+                        borderWidth: 1,
+                        borderColor: colors.inputBorder,
+                        borderRadius: 6,
+                        backgroundColor: colors.inputBackground,
                       },
                     ]}
-                  >
-                    {selectedDateTime.getMinutes().toString().padStart(2, "0")}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => handleChangeTime("minute", 1)}
-                  >
-                    <Plus size={20} color={colors.primary} />
-                  </TouchableOpacity>
+                    keyboardType="number-pad"
+                    maxLength={2}
+                    value={minuteInput}
+                    onChangeText={(text) => {
+                      const clean = text.replace(/\D/g, "").slice(0, 2);
+                      setMinuteInput(clean);
+                    }}
+                    onBlur={() => {
+                      let minute = parseInt(minuteInput, 10);
+                      if (isNaN(minute)) minute = 0;
+                      if (minute > 59) minute = 59;
+                      if (minute < 0) minute = 0;
+                      setMinuteInput(minute.toString().padStart(2, "0"));
+                      setSelectedDateTime((current) => {
+                        const newDate = new Date(current);
+                        newDate.setMinutes(minute);
+                        return newDate;
+                      });
+                    }}
+                  />
                 </View>
               </View>
 
