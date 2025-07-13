@@ -28,10 +28,45 @@ export async function fetchEventsWithFilters(filters: EventFilters): Promise<{
       queryParams.append('languages', language)
     );
   }
-  if (filters.access) queryParams.append('access', filters.access);
   if (filters.eventType) queryParams.append('eventType', filters.eventType);
   if (filters.searchTerm) queryParams.append('search', filters.searchTerm);
-  if (filters.dateRange) queryParams.append('dateRange', filters.dateRange);
+  if (filters.startDateTime) queryParams.append('startDateTime', filters.startDateTime);
+  if (filters.endDateTime) queryParams.append('endDateTime', filters.endDateTime);
+
+  // New filtering parameters
+  if (filters.priceRange) queryParams.append('priceRange', filters.priceRange);
+  if (filters.hasFeaturedGuests !== undefined) queryParams.append('hasFeaturedGuests', filters.hasFeaturedGuests.toString());
+  if (filters.hasTickets !== undefined) queryParams.append('hasTickets', filters.hasTickets.toString());
+  if (filters.videoConferencePlatform) queryParams.append('videoConferencePlatform', filters.videoConferencePlatform);
+  if (filters.organizerId) queryParams.append('organizerId', filters.organizerId);
+  if (filters.timezone) queryParams.append('timezone', filters.timezone);
+  if (filters.minPrice !== undefined) queryParams.append('minPrice', filters.minPrice.toString());
+  if (filters.maxPrice !== undefined) queryParams.append('maxPrice', filters.maxPrice.toString());
+  if (filters.parkingAvailable) queryParams.append('parkingAvailable', filters.parkingAvailable);
+
+  // Location filters
+  if (filters.location?.city) queryParams.append('locationCity', filters.location.city);
+  if (filters.location?.state) queryParams.append('locationState', filters.location.state);
+  if (filters.location?.country) queryParams.append('locationCountry', filters.location.country);
+  if (filters.location?.venue) queryParams.append('locationVenue', filters.location.venue);
+
+  // Duration and time filtering
+  if (filters.duration) queryParams.append('duration', filters.duration);
+  if (filters.timeOfDay) queryParams.append('timeOfDay', filters.timeOfDay);
+
+  // Accessibility features filtering
+  if (filters.accessibilityFeatures && filters.accessibilityFeatures.length > 0) {
+    filters.accessibilityFeatures.forEach(feature =>
+      queryParams.append('accessibilityFeatures', feature)
+    );
+  }
+
+  // Inclusivity features filtering
+  if (filters.inclusivityFeatures && filters.inclusivityFeatures.length > 0) {
+    filters.inclusivityFeatures.forEach(feature =>
+      queryParams.append('inclusivityFeatures', feature)
+    );
+  }
 
   queryParams.append('sortBy', filters.sortBy);
   queryParams.append('sortOrder', filters.sortOrder);

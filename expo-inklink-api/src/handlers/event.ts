@@ -6,19 +6,42 @@ interface EventFilters {
   format: string | null;
   disciplines: string[];
   languages: string[];
-  access: string | null;
   eventType: string | null;
   search: string;
-  dateRange: string | null;
+  startDateTime: string | null;
+  endDateTime: string | null;
   sortBy: string;
   sortOrder: 'asc' | 'desc';
+
+  // New filtering parameters
+  priceRange: string | null;
+  hasFeaturedGuests: string | null;
+  hasTickets: string | null;
+  videoConferencePlatform: string | null;
+  organizerId: string | null;
+  timezone: string | null;
+  minPrice: string | null;
+  maxPrice: string | null;
+  parkingAvailable: string | null;
+  locationCity: string | null;
+  locationState: string | null;
+  locationCountry: string | null;
+  locationVenue: string | null;
+
+  // Duration and time filtering
+  duration: string | null;
+  timeOfDay: string | null;
+
+  // Accessibility and inclusivity filtering
+  accessibilityFeatures: string[];
+  inclusivityFeatures: string[];
 }
 
 interface MongoFilter {
   format?: string;
   disciplines?: { $in: string[] };
   languages?: { $in: string[] };
-  access?: string;
+  access?: string; // Used internally to filter for public events only
   eventType?: string;
   $or?: {
     title?: { $regex: string; $options: string };
@@ -31,6 +54,28 @@ interface MongoFilter {
     "address.parkingInstructions"?: { $regex: string; $options: string };
   }[];
   startDate?: { $gte: Date; $lt?: Date };
+  endDate?: { $lte: Date };
+
+  // New filtering options
+  featuredGuests?: { $exists: boolean };
+  ticketTiers?: { $exists: boolean };
+  "videoConference.platform"?: string;
+  organizerId?: string;
+  timezone?: string;
+  "ticketTiers.price"?: { $gte?: number; $lte?: number };
+  "address.parkingAvailable"?: string;
+  "address.city"?: { $regex: string; $options: string };
+  "address.state"?: { $regex: string; $options: string };
+  "address.country"?: { $regex: string; $options: string };
+  "address.venue"?: { $regex: string; $options: string };
+
+  // Duration and time filtering
+  duration?: string;
+  timeOfDay?: string;
+
+  // Accessibility and inclusivity filtering
+  accessibilityFeatures?: { $in: string[] };
+  inclusivityFeatures?: { $in: string[] };
 }
 
 export async function handleEventsGET(event: APIGatewayProxyEventV2) {
@@ -52,7 +97,10 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
       ? parseInt(queryStringParameters.skip)
       : 0;
 
-    const filter: MongoFilter = {};
+    const filter: MongoFilter = {
+      // Always filter for public events only
+      access: "Public"
+    };
     const sortObj: Record<string, 1 | -1> = {
       startDate: 1
     };
@@ -62,19 +110,41 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
         format = null,
         disciplines = [],
         languages = [],
-        access = null,
         eventType = null,
         search = '',
-        dateRange = null,
+        startDateTime = null,
+        endDateTime = null,
         sortBy = 'startDate',
-        sortOrder = 'asc'
+        sortOrder = 'asc',
+
+        // New filtering parameters
+        priceRange = null,
+        hasFeaturedGuests = null,
+        hasTickets = null,
+        videoConferencePlatform = null,
+        organizerId = null,
+        timezone = null,
+        minPrice = null,
+        maxPrice = null,
+        parkingAvailable = null,
+        locationCity = null,
+        locationState = null,
+        locationCountry = null,
+        locationVenue = null,
+
+        // Duration and time filtering
+        duration = null,
+        timeOfDay = null,
+
+        // Accessibility and inclusivity filtering
+        accessibilityFeatures = [],
+        inclusivityFeatures = []
       } = queryStringParameters as APIGatewayProxyEventQueryStringParameters & EventFilters;
 
 
       if (format) filter.format = format;
       if (disciplines?.length > 0) filter.disciplines = { $in: Array.isArray(disciplines) ? disciplines : [disciplines] };
       if (languages?.length > 0) filter.languages = { $in: Array.isArray(languages) ? languages : [languages] };
-      if (access) filter.access = access;
       if (eventType) filter.eventType = eventType;
       if (search) {
         filter.$or = [
@@ -88,42 +158,107 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
           { "address.parkingInstructions": { $regex: search, $options: 'i' } }
         ];
       }
-      if (dateRange) {
-        if (dateRange === 'future') {
-          filter.startDate = { $gte: new Date() };
-        } else if (dateRange === 'today') {
-          // From now to midnight today
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          filter.startDate = { $gte: today, $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) };
-        } else if (dateRange === 'tomorrow') {
-          // From tomorrow morning to midnight tomorrow
-          const tomorrow = new Date();
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          tomorrow.setHours(0, 0, 0, 0);
-          filter.startDate = { $gte: tomorrow, $lt: new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000) };
-        } else if (dateRange === 'thisWeek') {
-          // Now to next Sunday 
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          const nextSunday = new Date();
-          nextSunday.setDate(nextSunday.getDate() + (7 - nextSunday.getDay()));
-          filter.startDate = { $gte: today, $lt: nextSunday };
-        } else if (dateRange === 'thisWeekend') {
-          // Only upcoming saturday and sunday
-          const nextSaturday = new Date();
-          nextSaturday.setDate(nextSaturday.getDate() + (6 - nextSaturday.getDay()));
-          const nextSunday = new Date();
-          nextSunday.setDate(nextSunday.getDate() + (7 - nextSunday.getDay()));
-          filter.startDate = { $gte: nextSaturday, $lt: nextSunday };
-        } else if (dateRange === 'thisMonth') {
-          // Today to end of month
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-          endOfMonth.setHours(23, 59, 59, 999);
-          filter.startDate = { $gte: today, $lt: endOfMonth };
+      // DateTime filtering
+      if (startDateTime) {
+        const startDate = new Date(startDateTime);
+        if (!isNaN(startDate.getTime())) {
+          filter.startDate = { $gte: startDate };
         }
+      }
+
+      if (endDateTime) {
+        const endDate = new Date(endDateTime);
+        if (!isNaN(endDate.getTime())) {
+          filter.endDate = { $lte: endDate };
+        }
+      }
+
+      // New filtering logic
+      if (hasFeaturedGuests === 'true') {
+        filter.featuredGuests = { $exists: true };
+      }
+
+      if (hasTickets === 'true') {
+        filter.ticketTiers = { $exists: true };
+      }
+
+      if (videoConferencePlatform) {
+        filter['videoConference.platform'] = videoConferencePlatform;
+      }
+
+      if (organizerId) {
+        filter.organizerId = organizerId;
+      }
+
+      if (timezone) {
+        filter.timezone = timezone;
+      }
+
+      if (parkingAvailable) {
+        filter['address.parkingAvailable'] = parkingAvailable;
+      }
+
+      // Location filters
+      if (locationCity) {
+        filter['address.city'] = { $regex: locationCity, $options: 'i' };
+      }
+
+      if (locationState) {
+        filter['address.state'] = { $regex: locationState, $options: 'i' };
+      }
+
+      if (locationCountry) {
+        filter['address.country'] = { $regex: locationCountry, $options: 'i' };
+      }
+
+      if (locationVenue) {
+        filter['address.venue'] = { $regex: locationVenue, $options: 'i' };
+      }
+
+      // Price range filtering
+      if (minPrice || maxPrice) {
+        const priceFilter: { $gte?: number; $lte?: number } = {};
+        if (minPrice) priceFilter.$gte = parseFloat(minPrice);
+        if (maxPrice) priceFilter.$lte = parseFloat(maxPrice);
+        filter['ticketTiers.price'] = priceFilter;
+      }
+
+      // Handle predefined price ranges
+      if (priceRange) {
+        switch (priceRange) {
+          case 'free':
+            filter['ticketTiers.price'] = { $lte: 0 };
+            break;
+          case 'low':
+            filter['ticketTiers.price'] = { $gte: 0.01, $lte: 50 };
+            break;
+          case 'medium':
+            filter['ticketTiers.price'] = { $gte: 50.01, $lte: 200 };
+            break;
+          case 'high':
+            filter['ticketTiers.price'] = { $gte: 200.01 };
+            break;
+        }
+      }
+
+      // Duration filtering
+      if (duration) {
+        filter.duration = duration;
+      }
+
+      // Time of day filtering
+      if (timeOfDay) {
+        filter.timeOfDay = timeOfDay;
+      }
+
+      // Accessibility features filtering
+      if (accessibilityFeatures && accessibilityFeatures.length > 0) {
+        filter.accessibilityFeatures = { $in: Array.isArray(accessibilityFeatures) ? accessibilityFeatures : [accessibilityFeatures] };
+      }
+
+      // Inclusivity features filtering
+      if (inclusivityFeatures && inclusivityFeatures.length > 0) {
+        filter.inclusivityFeatures = { $in: Array.isArray(inclusivityFeatures) ? inclusivityFeatures : [inclusivityFeatures] };
       }
 
       sortObj[sortBy] = sortOrder === 'desc' ? -1 : 1;

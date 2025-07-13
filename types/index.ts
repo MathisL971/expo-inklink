@@ -168,6 +168,46 @@ export type VideoConference = {
   instructions?: string;
 };
 
+export type EventDuration =
+  | "Short (< 1 hour)"
+  | "Medium (1-3 hours)"
+  | "Long (3+ hours)"
+  | "Half Day (4-6 hours)"
+  | "Full Day (6+ hours)"
+  | "Multi-Day";
+
+export type TimeOfDay =
+  | "Morning (6 AM - 12 PM)"
+  | "Afternoon (12 PM - 6 PM)"
+  | "Evening (6 PM - 10 PM)"
+  | "Night (10 PM - 6 AM)";
+
+export type AccessibilityFeature =
+  | "Wheelchair Accessible"
+  | "Hearing Assistance (ASL/Interpreters)"
+  | "Visual Assistance (Large Print/Braille)"
+  | "Audio Description Available"
+  | "Closed Captions Available"
+  | "Sensory-Friendly Environment"
+  | "Accessible Parking"
+  | "Accessible Restrooms"
+  | "Mobility Aid Friendly"
+  | "Service Animals Welcome";
+
+export type InclusivityFeature =
+  | "Family-Friendly"
+  | "LGBTQ+ Friendly"
+  | "All Ages Welcome"
+  | "Childcare Available"
+  | "Diverse Speakers"
+  | "Multilingual Support"
+  | "Cultural Sensitivity"
+  | "Religious Accommodations"
+  | "Dietary Accommodations"
+  | "Gender-Neutral Facilities"
+  | "Safe Space Certified"
+  | "Inclusive Language Used";
+
 export type Address = {
   street: string;
   city: string;
@@ -226,6 +266,14 @@ export type Event = {
   organizerId?: string;
   createdAt?: string;
   updatedAt?: string;
+
+  // Duration and time categorization
+  duration?: EventDuration;
+  timeOfDay?: TimeOfDay;
+
+  // Accessibility and inclusivity features
+  accessibilityFeatures?: AccessibilityFeature[];
+  inclusivityFeatures?: InclusivityFeature[];
 };
 
 export type SortBy = 'startDate' | 'title' | 'createdAt';
@@ -233,14 +281,43 @@ export type SortOrder = 'asc' | 'desc';
 
 export type DateRange = 'today' | 'tomorrow' | 'thisWeek' | 'thisWeekend' | 'thisMonth' | 'future';
 
+export type PriceRange = 'free' | 'paid' | 'low' | 'medium' | 'high';
+
+export interface LocationFilter {
+  city?: string;
+  state?: string;
+  country?: string;
+  venue?: string;
+}
+
 export interface EventFilters {
   format?: FormatName;
   disciplines: DisciplineName[];
   languages: LanguageName[]; // Languages filter
-  access?: AccessName;
   eventType?: EventType;
-  dateRange?: DateRange;
+  startDateTime?: string; // ISO datetime string for start date filtering
+  endDateTime?: string; // ISO datetime string for end date filtering
   searchTerm: string;
   sortBy: SortBy;
   sortOrder: SortOrder;
+
+  // New filtering options
+  priceRange?: PriceRange;
+  hasFeaturedGuests?: boolean;
+  hasTickets?: boolean;
+  location?: LocationFilter;
+  videoConferencePlatform?: VideoConferencePlatform;
+  organizerId?: string;
+  timezone?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  parkingAvailable?: string; // "Yes", "No", "Limited"
+
+  // Duration and time filtering
+  duration?: EventDuration;
+  timeOfDay?: TimeOfDay;
+
+  // Accessibility and inclusivity filtering
+  accessibilityFeatures?: AccessibilityFeature[];
+  inclusivityFeatures?: InclusivityFeature[];
 }

@@ -70,129 +70,128 @@ export const VIDEO_CONFERENCE_PLATFORMS: VideoConferencePlatform[] = [
     "Other"
 ];
 
-// Common timezones with user-friendly display names
+// Common timezones for filtering
 export const COMMON_TIMEZONES = [
-    // UTC
-    { value: "UTC", label: "(GMT+00:00) Coordinated Universal Time" },
-
-    // Americas - North America
-    { value: "America/New_York", label: "(GMT-05:00) Eastern Time (New York)" },
-    { value: "America/Chicago", label: "(GMT-06:00) Central Time (Chicago)" },
-    { value: "America/Denver", label: "(GMT-07:00) Mountain Time (Denver)" },
-    { value: "America/Los_Angeles", label: "(GMT-08:00) Pacific Time (Los Angeles)" },
-    { value: "America/Anchorage", label: "(GMT-09:00) Alaska Time (Anchorage)" },
-    { value: "Pacific/Honolulu", label: "(GMT-10:00) Hawaii Time (Honolulu)" },
-
-    // Americas - Canada
-    { value: "America/Toronto", label: "(GMT-05:00) Eastern Time (Toronto)" },
-    { value: "America/Winnipeg", label: "(GMT-06:00) Central Time (Winnipeg)" },
-    { value: "America/Edmonton", label: "(GMT-07:00) Mountain Time (Edmonton)" },
-    { value: "America/Vancouver", label: "(GMT-08:00) Pacific Time (Vancouver)" },
-    { value: "America/Halifax", label: "(GMT-04:00) Atlantic Time (Halifax)" },
-    { value: "America/St_Johns", label: "(GMT-03:30) Newfoundland Time (St. John's)" },
-
-    // Americas - Mexico & Central America
-    { value: "America/Mexico_City", label: "(GMT-06:00) Central Time (Mexico City)" },
-    { value: "America/Cancun", label: "(GMT-05:00) Eastern Time (Cancun)" },
-    { value: "America/Guatemala", label: "(GMT-06:00) Central Time (Guatemala)" },
-    { value: "America/Costa_Rica", label: "(GMT-06:00) Central Time (Costa Rica)" },
-
-    // Americas - South America
-    { value: "America/Sao_Paulo", label: "(GMT-03:00) Brazil Time (São Paulo)" },
-    { value: "America/Argentina/Buenos_Aires", label: "(GMT-03:00) Argentina Time (Buenos Aires)" },
-    { value: "America/Santiago", label: "(GMT-03:00) Chile Time (Santiago)" },
-    { value: "America/Lima", label: "(GMT-05:00) Peru Time (Lima)" },
-    { value: "America/Bogota", label: "(GMT-05:00) Colombia Time (Bogotá)" },
-    { value: "America/Caracas", label: "(GMT-04:00) Venezuela Time (Caracas)" },
-
-    // Europe - Western
-    { value: "Europe/London", label: "(GMT+00:00) Greenwich Mean Time (London)" },
-    { value: "Europe/Dublin", label: "(GMT+00:00) Ireland Time (Dublin)" },
-    { value: "Europe/Lisbon", label: "(GMT+00:00) Western European Time (Lisbon)" },
-    { value: "Atlantic/Reykjavik", label: "(GMT+00:00) Greenwich Mean Time (Reykjavik)" },
-
-    // Europe - Central
-    { value: "Europe/Paris", label: "(GMT+01:00) Central European Time (Paris)" },
-    { value: "Europe/Berlin", label: "(GMT+01:00) Central European Time (Berlin)" },
-    { value: "Europe/Rome", label: "(GMT+01:00) Central European Time (Rome)" },
-    { value: "Europe/Madrid", label: "(GMT+01:00) Central European Time (Madrid)" },
-    { value: "Europe/Amsterdam", label: "(GMT+01:00) Central European Time (Amsterdam)" },
-    { value: "Europe/Brussels", label: "(GMT+01:00) Central European Time (Brussels)" },
-    { value: "Europe/Vienna", label: "(GMT+01:00) Central European Time (Vienna)" },
-    { value: "Europe/Zurich", label: "(GMT+01:00) Central European Time (Zurich)" },
-    { value: "Europe/Prague", label: "(GMT+01:00) Central European Time (Prague)" },
-    { value: "Europe/Budapest", label: "(GMT+01:00) Central European Time (Budapest)" },
-    { value: "Europe/Warsaw", label: "(GMT+01:00) Central European Time (Warsaw)" },
-    { value: "Europe/Stockholm", label: "(GMT+01:00) Central European Time (Stockholm)" },
-    { value: "Europe/Oslo", label: "(GMT+01:00) Central European Time (Oslo)" },
-    { value: "Europe/Copenhagen", label: "(GMT+01:00) Central European Time (Copenhagen)" },
-
-    // Europe - Eastern
-    { value: "Europe/Athens", label: "(GMT+02:00) Eastern European Time (Athens)" },
-    { value: "Europe/Helsinki", label: "(GMT+02:00) Eastern European Time (Helsinki)" },
-    { value: "Europe/Bucharest", label: "(GMT+02:00) Eastern European Time (Bucharest)" },
-    { value: "Europe/Kiev", label: "(GMT+02:00) Eastern European Time (Kiev)" },
-    { value: "Europe/Riga", label: "(GMT+02:00) Eastern European Time (Riga)" },
-    { value: "Europe/Tallinn", label: "(GMT+02:00) Eastern European Time (Tallinn)" },
-    { value: "Europe/Vilnius", label: "(GMT+02:00) Eastern European Time (Vilnius)" },
-    { value: "Europe/Sofia", label: "(GMT+02:00) Eastern European Time (Sofia)" },
-
-    // Europe - Other
-    { value: "Europe/Moscow", label: "(GMT+03:00) Moscow Time (Moscow)" },
-    { value: "Europe/Istanbul", label: "(GMT+03:00) Turkey Time (Istanbul)" },
-
-    // Africa
-    { value: "Africa/Cairo", label: "(GMT+02:00) Eastern European Time (Cairo)" },
-    { value: "Africa/Johannesburg", label: "(GMT+02:00) South Africa Time (Johannesburg)" },
-    { value: "Africa/Lagos", label: "(GMT+01:00) West Africa Time (Lagos)" },
-    { value: "Africa/Nairobi", label: "(GMT+03:00) East Africa Time (Nairobi)" },
-    { value: "Africa/Casablanca", label: "(GMT+01:00) Morocco Time (Casablanca)" },
-
-    // Asia - Middle East
-    { value: "Asia/Jerusalem", label: "(GMT+02:00) Israel Time (Jerusalem)" },
-    { value: "Asia/Dubai", label: "(GMT+04:00) Gulf Time (Dubai)" },
-    { value: "Asia/Riyadh", label: "(GMT+03:00) Arabia Time (Riyadh)" },
-    { value: "Asia/Tehran", label: "(GMT+03:30) Iran Time (Tehran)" },
-    { value: "Asia/Baghdad", label: "(GMT+03:00) Arabia Time (Baghdad)" },
-
-    // Asia - South & Southeast
-    { value: "Asia/Kolkata", label: "(GMT+05:30) India Time (Kolkata)" },
-    { value: "Asia/Karachi", label: "(GMT+05:00) Pakistan Time (Karachi)" },
-    { value: "Asia/Dhaka", label: "(GMT+06:00) Bangladesh Time (Dhaka)" },
-    { value: "Asia/Bangkok", label: "(GMT+07:00) Indochina Time (Bangkok)" },
-    { value: "Asia/Jakarta", label: "(GMT+07:00) Western Indonesia Time (Jakarta)" },
-    { value: "Asia/Manila", label: "(GMT+08:00) Philippines Time (Manila)" },
-    { value: "Asia/Singapore", label: "(GMT+08:00) Singapore Time (Singapore)" },
-    { value: "Asia/Kuala_Lumpur", label: "(GMT+08:00) Malaysia Time (Kuala Lumpur)" },
-    { value: "Asia/Ho_Chi_Minh", label: "(GMT+07:00) Indochina Time (Ho Chi Minh City)" },
-
-    // Asia - East
-    { value: "Asia/Hong_Kong", label: "(GMT+08:00) Hong Kong Time (Hong Kong)" },
-    { value: "Asia/Shanghai", label: "(GMT+08:00) China Time (Shanghai)" },
-    { value: "Asia/Tokyo", label: "(GMT+09:00) Japan Time (Tokyo)" },
-    { value: "Asia/Seoul", label: "(GMT+09:00) Korea Time (Seoul)" },
-    { value: "Asia/Taipei", label: "(GMT+08:00) Taiwan Time (Taipei)" },
-
-    // Asia - North & Central
-    { value: "Asia/Almaty", label: "(GMT+06:00) East Kazakhstan Time (Almaty)" },
-    { value: "Asia/Tashkent", label: "(GMT+05:00) Uzbekistan Time (Tashkent)" },
-    { value: "Asia/Yekaterinburg", label: "(GMT+05:00) Yekaterinburg Time (Yekaterinburg)" },
-    { value: "Asia/Novosibirsk", label: "(GMT+07:00) Novosibirsk Time (Novosibirsk)" },
-    { value: "Asia/Vladivostok", label: "(GMT+10:00) Vladivostok Time (Vladivostok)" },
-
-    // Australia & Oceania
-    { value: "Australia/Sydney", label: "(GMT+10:00) Eastern Australia Time (Sydney)" },
-    { value: "Australia/Melbourne", label: "(GMT+10:00) Eastern Australia Time (Melbourne)" },
-    { value: "Australia/Brisbane", label: "(GMT+10:00) Eastern Australia Time (Brisbane)" },
-    { value: "Australia/Perth", label: "(GMT+08:00) Western Australia Time (Perth)" },
-    { value: "Australia/Adelaide", label: "(GMT+09:30) Central Australia Time (Adelaide)" },
-    { value: "Australia/Darwin", label: "(GMT+09:30) Central Australia Time (Darwin)" },
-    { value: "Pacific/Auckland", label: "(GMT+12:00) New Zealand Time (Auckland)" },
-    { value: "Pacific/Fiji", label: "(GMT+12:00) Fiji Time (Fiji)" },
+    { value: "America/New_York", label: "EST - Eastern Standard Time" },
+    { value: "America/Chicago", label: "CST - Central Standard Time" },
+    { value: "America/Denver", label: "MST - Mountain Standard Time" },
+    { value: "America/Los_Angeles", label: "PST - Pacific Standard Time" },
+    { value: "Europe/London", label: "GMT - Greenwich Mean Time" },
+    { value: "Europe/Paris", label: "CET - Central European Time" },
+    { value: "Europe/Berlin", label: "CET - Central European Time" },
+    { value: "Asia/Tokyo", label: "JST - Japan Standard Time" },
+    { value: "Asia/Shanghai", label: "CST - China Standard Time" },
+    { value: "Australia/Sydney", label: "AEDT - Australian Eastern Daylight Time" },
+    { value: "America/Toronto", label: "EST - Eastern Standard Time" },
+    { value: "America/Vancouver", label: "PST - Pacific Standard Time" },
+    { value: "Europe/Rome", label: "CET - Central European Time" },
+    { value: "Europe/Madrid", label: "CET - Central European Time" },
+    { value: "Asia/Seoul", label: "KST - Korea Standard Time" },
+    { value: "Asia/Mumbai", label: "IST - India Standard Time" },
+    { value: "Asia/Singapore", label: "SGT - Singapore Standard Time" },
+    { value: "Pacific/Auckland", label: "NZDT - New Zealand Daylight Time" },
+    { value: "America/Sao_Paulo", label: "BRT - Brasilia Time" },
+    { value: "UTC", label: "UTC - Coordinated Universal Time" }
 ];
 
 // Default timezone for events (fallback to UTC)
 export const DEFAULT_TIMEZONE = "UTC";
+
+// Common countries for filtering
+export const COMMON_COUNTRIES = [
+    "United States",
+    "Canada",
+    "United Kingdom",
+    "Germany",
+    "France",
+    "Italy",
+    "Spain",
+    "Netherlands",
+    "Belgium",
+    "Switzerland",
+    "Austria",
+    "Sweden",
+    "Norway",
+    "Denmark",
+    "Finland",
+    "Poland",
+    "Czech Republic",
+    "Hungary",
+    "Portugal",
+    "Greece",
+    "Ireland",
+    "Luxembourg",
+    "Iceland",
+    "Estonia",
+    "Latvia",
+    "Lithuania",
+    "Slovenia",
+    "Slovakia",
+    "Croatia",
+    "Bulgaria",
+    "Romania",
+    "Cyprus",
+    "Malta",
+    "Australia",
+    "New Zealand",
+    "Japan",
+    "South Korea",
+    "China",
+    "India",
+    "Singapore",
+    "Hong Kong",
+    "Taiwan",
+    "Malaysia",
+    "Thailand",
+    "Indonesia",
+    "Philippines",
+    "Vietnam",
+    "Brazil",
+    "Argentina",
+    "Chile",
+    "Colombia",
+    "Mexico",
+    "Peru",
+    "Venezuela",
+    "Ecuador",
+    "Uruguay",
+    "Paraguay",
+    "Bolivia",
+    "South Africa",
+    "Nigeria",
+    "Kenya",
+    "Ghana",
+    "Egypt",
+    "Morocco",
+    "Tunisia",
+    "Algeria",
+    "Israel",
+    "Turkey",
+    "United Arab Emirates",
+    "Saudi Arabia",
+    "Jordan",
+    "Lebanon",
+    "Iran",
+    "Iraq",
+    "Pakistan",
+    "Bangladesh",
+    "Sri Lanka",
+    "Nepal",
+    "Afghanistan",
+    "Kazakhstan",
+    "Uzbekistan",
+    "Kyrgyzstan",
+    "Tajikistan",
+    "Turkmenistan",
+    "Russia",
+    "Ukraine",
+    "Belarus",
+    "Moldova",
+    "Georgia",
+    "Armenia",
+    "Azerbaijan",
+    "Other"
+];
 
 // Languages available for events
 export const EVENT_LANGUAGES: LanguageName[] = [
@@ -289,4 +288,52 @@ export const EVENT_LANGUAGES: LanguageName[] = [
     "Latin",
     "Sanskrit",
     "Other"
-]; 
+];
+
+// Duration categories for filtering
+export const EVENT_DURATIONS = [
+    "Short (< 1 hour)",
+    "Medium (1-3 hours)",
+    "Long (3+ hours)",
+    "Half Day (4-6 hours)",
+    "Full Day (6+ hours)",
+    "Multi-Day"
+] as const;
+
+// Time of day categories for filtering
+export const TIME_OF_DAY_OPTIONS = [
+    "Morning (6 AM - 12 PM)",
+    "Afternoon (12 PM - 6 PM)",
+    "Evening (6 PM - 10 PM)",
+    "Night (10 PM - 6 AM)"
+] as const;
+
+// Accessibility features for filtering
+export const ACCESSIBILITY_FEATURES = [
+    "Wheelchair Accessible",
+    "Hearing Assistance (ASL/Interpreters)",
+    "Visual Assistance (Large Print/Braille)",
+    "Audio Description Available",
+    "Closed Captions Available",
+    "Sensory-Friendly Environment",
+    "Accessible Parking",
+    "Accessible Restrooms",
+    "Mobility Aid Friendly",
+    "Service Animals Welcome"
+] as const;
+
+// Inclusivity features for filtering
+export const INCLUSIVITY_FEATURES = [
+    "Family-Friendly",
+    "LGBTQ+ Friendly",
+    "All Ages Welcome",
+    "Childcare Available",
+    "Diverse Speakers",
+    "Multilingual Support",
+    "Cultural Sensitivity",
+    "Religious Accommodations",
+    "Dietary Accommodations",
+    "Gender-Neutral Facilities",
+    "Safe Space Certified",
+    "Inclusive Language Used"
+] as const;

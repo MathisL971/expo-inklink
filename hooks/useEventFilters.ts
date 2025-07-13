@@ -1,4 +1,4 @@
-import { DisciplineName, LanguageName } from '@/types';
+import { AccessibilityFeature, DisciplineName, EventDuration, InclusivityFeature, LanguageName, TimeOfDay } from '@/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { EventFilters } from '../types/index';
@@ -11,12 +11,32 @@ const defaultFilters: EventFilters = {
   format: undefined,
   disciplines: [],
   languages: [],
-  access: undefined,
   eventType: undefined,
-  dateRange: undefined,
+  startDateTime: undefined,
+  endDateTime: undefined,
   searchTerm: '',
   sortBy: 'startDate',
-  sortOrder: 'asc'
+  sortOrder: 'asc',
+
+  // New filtering options
+  priceRange: undefined,
+  hasFeaturedGuests: undefined,
+  hasTickets: undefined,
+  location: undefined,
+  videoConferencePlatform: undefined,
+  organizerId: undefined,
+  timezone: undefined,
+  minPrice: undefined,
+  maxPrice: undefined,
+  parkingAvailable: undefined,
+
+  // Duration and time filtering
+  duration: undefined,
+  timeOfDay: undefined,
+
+  // Accessibility and inclusivity filtering
+  accessibilityFeatures: [],
+  inclusivityFeatures: [],
 };
 
 // Storage utilities
@@ -51,6 +71,40 @@ interface UseEventFiltersReturn {
   resetFilters: () => Promise<void>;
   toggleDiscipline: (discipline: DisciplineName) => Promise<void>;
   toggleLanguage: (language: LanguageName) => Promise<void>;
+
+  // New helper functions for enhanced filtering
+  updateLocationFilter: (locationUpdate: Partial<EventFilters['location']>) => Promise<void>;
+  clearLocationFilter: () => Promise<void>;
+  toggleFeaturedGuests: () => Promise<void>;
+  toggleHasTickets: () => Promise<void>;
+  updatePriceRange: (min?: number, max?: number) => Promise<void>;
+  clearPriceRange: () => Promise<void>;
+
+  // DateTime filtering helpers
+  updateStartDateTime: (dateTime: string) => Promise<void>;
+  clearStartDateTime: () => Promise<void>;
+  updateEndDateTime: (dateTime: string) => Promise<void>;
+  clearEndDateTime: () => Promise<void>;
+
+  // Timezone filtering helpers
+  updateTimezone: (timezone: string) => Promise<void>;
+  clearTimezone: () => Promise<void>;
+
+  // Duration filtering helpers
+  updateDuration: (duration: EventDuration) => Promise<void>;
+  clearDuration: () => Promise<void>;
+
+  // Time of day filtering helpers
+  updateTimeOfDay: (timeOfDay: TimeOfDay) => Promise<void>;
+  clearTimeOfDay: () => Promise<void>;
+
+  // Accessibility features filtering helpers
+  toggleAccessibilityFeature: (feature: AccessibilityFeature) => Promise<void>;
+  clearAccessibilityFeatures: () => Promise<void>;
+
+  // Inclusivity features filtering helpers
+  toggleInclusivityFeature: (feature: InclusivityFeature) => Promise<void>;
+  clearInclusivityFeatures: () => Promise<void>;
 }
 
 // Custom hook for managing event filters
@@ -117,6 +171,107 @@ export const useEventFilters = (initialFilters?: Partial<EventFilters>): UseEven
     await updateFilter('languages', updatedLanguages);
   };
 
+  // New helper functions for enhanced filtering
+  const updateLocationFilter = async (locationUpdate: Partial<EventFilters['location']>): Promise<void> => {
+    const currentLocation = filters.location || {};
+    const updatedLocation = { ...currentLocation, ...locationUpdate };
+    await updateFilter('location', updatedLocation);
+  };
+
+  const clearLocationFilter = async (): Promise<void> => {
+    await updateFilter('location', undefined);
+  };
+
+  const toggleFeaturedGuests = async (): Promise<void> => {
+    const currentValue = filters.hasFeaturedGuests;
+    await updateFilter('hasFeaturedGuests', currentValue === true ? undefined : true);
+  };
+
+  const toggleHasTickets = async (): Promise<void> => {
+    const currentValue = filters.hasTickets;
+    await updateFilter('hasTickets', currentValue === true ? undefined : true);
+  };
+
+  const updatePriceRange = async (min?: number, max?: number): Promise<void> => {
+    const updates: Partial<EventFilters> = {};
+    if (min !== undefined) updates.minPrice = min;
+    if (max !== undefined) updates.maxPrice = max;
+    await updateFilters(updates);
+  };
+
+  const clearPriceRange = async (): Promise<void> => {
+    await updateFilters({ minPrice: undefined, maxPrice: undefined, priceRange: undefined });
+  };
+
+  // DateTime filtering helpers
+  const updateStartDateTime = async (dateTime: string): Promise<void> => {
+    await updateFilter('startDateTime', dateTime);
+  };
+
+  const clearStartDateTime = async (): Promise<void> => {
+    await updateFilter('startDateTime', undefined);
+  };
+
+  const updateEndDateTime = async (dateTime: string): Promise<void> => {
+    await updateFilter('endDateTime', dateTime);
+  };
+
+  const clearEndDateTime = async (): Promise<void> => {
+    await updateFilter('endDateTime', undefined);
+  };
+
+  const updateTimezone = async (timezone: string): Promise<void> => {
+    await updateFilter('timezone', timezone);
+  };
+
+  const clearTimezone = async (): Promise<void> => {
+    await updateFilter('timezone', undefined);
+  };
+
+  // Duration filtering helpers
+  const updateDuration = async (duration: EventDuration): Promise<void> => {
+    await updateFilter('duration', duration);
+  };
+
+  const clearDuration = async (): Promise<void> => {
+    await updateFilter('duration', undefined);
+  };
+
+  // Time of day filtering helpers
+  const updateTimeOfDay = async (timeOfDay: TimeOfDay): Promise<void> => {
+    await updateFilter('timeOfDay', timeOfDay);
+  };
+
+  const clearTimeOfDay = async (): Promise<void> => {
+    await updateFilter('timeOfDay', undefined);
+  };
+
+  // Accessibility features filtering helpers
+  const toggleAccessibilityFeature = async (feature: AccessibilityFeature): Promise<void> => {
+    const currentFeatures = filters.accessibilityFeatures || [];
+    const newFeatures = currentFeatures.includes(feature)
+      ? currentFeatures.filter(f => f !== feature)
+      : [...currentFeatures, feature];
+    await updateFilter('accessibilityFeatures', newFeatures);
+  };
+
+  const clearAccessibilityFeatures = async (): Promise<void> => {
+    await updateFilter('accessibilityFeatures', []);
+  };
+
+  // Inclusivity features filtering helpers
+  const toggleInclusivityFeature = async (feature: InclusivityFeature): Promise<void> => {
+    const currentFeatures = filters.inclusivityFeatures || [];
+    const newFeatures = currentFeatures.includes(feature)
+      ? currentFeatures.filter(f => f !== feature)
+      : [...currentFeatures, feature];
+    await updateFilter('inclusivityFeatures', newFeatures);
+  };
+
+  const clearInclusivityFeatures = async (): Promise<void> => {
+    await updateFilter('inclusivityFeatures', []);
+  };
+
   return {
     filters,
     isLoadingFilters,
@@ -124,6 +279,26 @@ export const useEventFilters = (initialFilters?: Partial<EventFilters>): UseEven
     updateFilter,
     resetFilters,
     toggleDiscipline,
-    toggleLanguage
+    toggleLanguage,
+    updateLocationFilter,
+    clearLocationFilter,
+    toggleFeaturedGuests,
+    toggleHasTickets,
+    updatePriceRange,
+    clearPriceRange,
+    updateStartDateTime,
+    clearStartDateTime,
+    updateEndDateTime,
+    clearEndDateTime,
+    updateTimezone,
+    clearTimezone,
+    updateDuration,
+    clearDuration,
+    updateTimeOfDay,
+    clearTimeOfDay,
+    toggleAccessibilityFeature,
+    clearAccessibilityFeatures,
+    toggleInclusivityFeature,
+    clearInclusivityFeatures,
   };
 };
