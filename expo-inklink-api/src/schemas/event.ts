@@ -181,6 +181,21 @@ const ticketTierSchema = new Schema({
   description: { type: String, required: false },
 }, { _id: true }); // Allow MongoDB to generate _id for each ticket tier
 
+// Define the featured guest schema
+const featuredGuestSchema = new Schema({
+  name: { type: String, required: true },
+  title: { type: String, required: false },
+  bio: { type: String, required: false },
+  image: { type: String, required: false },
+  organization: { type: String, required: false },
+  website: { type: String, required: false },
+  socialMedia: {
+    twitter: { type: String, required: false },
+    linkedin: { type: String, required: false },
+    instagram: { type: String, required: false },
+  },
+}, { _id: true }); // Allow MongoDB to generate _id for each featured guest
+
 const eventSchema = new Schema(
   {
     title: { type: String, required: true },
@@ -243,6 +258,7 @@ const eventSchema = new Schema(
       enum: AccessNames,
     },
     ticketTiers: [ticketTierSchema],
+    featuredGuests: [featuredGuestSchema],
     organizerId: { type: String, required: false },
   },
   {

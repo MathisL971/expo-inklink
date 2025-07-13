@@ -31,7 +31,12 @@ const saveFiltersToStorage = async (filters: EventFilters): Promise<void> => {
 const loadFiltersFromStorage = async (): Promise<EventFilters> => {
   try {
     const stored = await AsyncStorage.getItem(FILTER_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : defaultFilters;
+    if (stored) {
+      const parsedFilters = JSON.parse(stored);
+      // Merge with defaultFilters to ensure all fields are present
+      return { ...defaultFilters, ...parsedFilters };
+    }
+    return defaultFilters;
   } catch (error) {
     console.warn('Failed to load filters from storage:', error);
     return defaultFilters;

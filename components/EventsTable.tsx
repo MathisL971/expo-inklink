@@ -65,8 +65,10 @@ export default function EventsTable({ events }: { events: Event[] }) {
         source: event.source,
         format: event.format,
         disciplines: event.disciplines,
+        languages: event.languages,
         access: event.access,
         ticketTiers: event.ticketTiers,
+        featuredGuests: event.featuredGuests,
         organizerId: event.organizerId,
       });
     }

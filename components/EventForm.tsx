@@ -29,6 +29,7 @@ import CustomInput from "./CustomInput";
 import CustomMultiSelect from "./CustomMultiSelect";
 import CustomPicker from "./CustomPicker";
 import CustomWebDatePicker from "./CustomWebDatePicker";
+import { FeaturedGuestsManager } from "./FeaturedGuestsManager";
 import { ThemedButton } from "./ThemedButton";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
@@ -89,6 +90,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
       access: initialEvent?.access || "",
       organizerId: initialEvent?.organizerId || user?.id,
       ticketTiers: initialEvent?.ticketTiers || [],
+      featuredGuests: initialEvent?.featuredGuests || [],
     },
   });
 
@@ -877,6 +879,12 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
           <ButtonText>Add Ticket Tier</ButtonText>
         </Button>
       </ThemedView>
+
+      <FeaturedGuestsManager
+        value={watch("featuredGuests")}
+        onChange={(guests: any) => setValue("featuredGuests", guests)}
+        onImageDelete={removeImage}
+      />
 
       <ThemedButton
         title={

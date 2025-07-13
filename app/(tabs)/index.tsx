@@ -136,7 +136,7 @@ export default function HomeScreen() {
                   <FilterButton label="Tomorrow" isSelected={filters.dateRange === "tomorrow"} onPress={() => updateFilter("dateRange", filters.dateRange === "tomorrow" ? "future" : "tomorrow")} />
                   <FilterButton label="This Week" isSelected={filters.dateRange === "thisWeek"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisWeek" ? "future" : "thisWeek")} />
                   <FilterButton label="This Weekend" isSelected={filters.dateRange === "thisWeekend"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisWeekend" ? "future" : "thisWeekend")} />
-                  <FilterButton label="This Month" isSelected={filters.dateRange === "thisMonth"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisMonth" ? "future" : "thisMonth")} />            
+                  <FilterButton label="This Month" isSelected={filters.dateRange === "thisMonth"} onPress={() => updateFilter("dateRange", filters.dateRange === "thisMonth" ? "future" : "thisMonth")} />
                 </View>
               </FilterSection>
 

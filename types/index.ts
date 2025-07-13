@@ -189,6 +189,21 @@ export type TicketTier = {
   description?: string;
 };
 
+export type FeaturedGuest = {
+  id: string;
+  name: string;
+  title?: string;
+  bio?: string;
+  image?: string;
+  organization?: string;
+  website?: string;
+  socialMedia?: {
+    twitter?: string;
+    linkedin?: string;
+    instagram?: string;
+  };
+};
+
 export type Event = {
   id: string;
   title: string;
@@ -207,6 +222,7 @@ export type Event = {
   languages: LanguageName[]; // Languages supported by the event
   access: AccessName;
   ticketTiers?: TicketTier[];
+  featuredGuests?: FeaturedGuest[];
   organizerId?: string;
   createdAt?: string;
   updatedAt?: string;

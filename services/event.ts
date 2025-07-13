@@ -68,6 +68,7 @@ export async function updateEvent(event: Event) {
     languages: event.languages,
     access: event.access,
     ticketTiers: event.ticketTiers,
+    featuredGuests: event.featuredGuests,
     organizerId: event.organizerId,
   });
   return res.data;
