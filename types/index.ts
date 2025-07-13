@@ -65,6 +65,14 @@ export type Address = {
   venue?: string; // Optional venue name (e.g., "University Conference Center")
 };
 
+export type TicketTier = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  description?: string;
+};
+
 export type Event = {
   id: string;
   title: string;
@@ -78,6 +86,7 @@ export type Event = {
   format: FormatName;
   disciplines: DisciplineName[];
   access: AccessName;
+  ticketTiers?: TicketTier[];
   organizerId?: string;
   createdAt?: string;
   updatedAt?: string;

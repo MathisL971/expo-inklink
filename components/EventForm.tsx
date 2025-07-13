@@ -11,7 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { ImagePickerAsset } from "expo-image-picker";
 import { router } from "expo-router";
-import { Building, FileText, MapPin } from "lucide-react";
+import { Building, FileText, MapPin, Plus, Ticket, Trash2 } from "lucide-react";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Alert, Platform, View } from "react-native";
@@ -23,6 +23,7 @@ import CustomWebDatePicker from "./CustomWebDatePicker";
 import { ThemedButton } from "./ThemedButton";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
+import { Button, ButtonIcon, ButtonText } from "./ui/button";
 
 type EventFormProps = {
   initialEvent?: Event;
@@ -85,6 +86,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
     formState: { errors, isSubmitting, isValid },
     reset,
     watch,
+    setValue,
   } = useForm({
     mode: "onTouched",
     defaultValues: {
@@ -107,6 +109,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
       disciplines: initialEvent?.disciplines || [],
       access: initialEvent?.access || "",
       organizerId: initialEvent?.organizerId || user?.id,
+      ticketTiers: initialEvent?.ticketTiers || [],
     },
   });
 
@@ -201,6 +204,32 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
       await deleteImage(getImageKey(image));
     }
     // No-op for local images
+  };
+
+  // Ticket tier management functions
+  const addTicketTier = () => {
+    const currentTiers = watch("ticketTiers") || [];
+    const newTier = {
+      id: Date.now().toString(), // Temporary ID for client-side management
+      name: "",
+      price: 0,
+      quantity: 0,
+      description: "",
+    };
+    setValue("ticketTiers", [...currentTiers, newTier]);
+  };
+
+  const removeTicketTier = (index: number) => {
+    const currentTiers = watch("ticketTiers") || [];
+    const updatedTiers = currentTiers.filter((_, i) => i !== index);
+    setValue("ticketTiers", updatedTiers);
+  };
+
+  const updateTicketTier = (index: number, field: string, value: any) => {
+    const currentTiers = watch("ticketTiers") || [];
+    const updatedTiers = [...currentTiers];
+    updatedTiers[index] = { ...updatedTiers[index], [field]: value };
+    setValue("ticketTiers", updatedTiers);
   };
 
   return (
@@ -431,6 +460,84 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
             />
           )}
         />
+      </ThemedView>
+
+      <ThemedView>
+        <ThemedText size="xl" bold className="mb-3">
+          Ticket Tiers
+        </ThemedText>
+
+        {watch("ticketTiers")?.map((tier, index) => (
+          <View key={tier.id || index} className="border rounded-lg p-3 mb-3" style={{ borderColor: Colors[mode].border }}>
+            <View className="flex-row justify-between items-center mb-3">
+              <ThemedText size="lg" bold>Tier {index + 1}</ThemedText>
+              <Button
+                size="sm"
+                variant="solid"
+                action="negative"
+                onPress={() => removeTicketTier(index)}
+              >
+                <ButtonIcon as={Trash2} size="xs" color={"white"} />
+              </Button>
+            </View>
+
+            <CustomInput
+              label="Tier Name *"
+              value={tier.name}
+              onChangeText={(value) => updateTicketTier(index, "name", value)}
+              onBlur={() => { }}
+              placeholder="e.g., General Admission, VIP, Student"
+              colors={Colors[mode]}
+              Icon={Ticket}
+            />
+
+            <View className="flex-row gap-3">
+              <View className="flex-1">
+                <CustomInput
+                  label="Price ($) *"
+                  value={tier.price?.toString() || ""}
+                  onChangeText={(value) => updateTicketTier(index, "price", parseFloat(value) || 0)}
+                  onBlur={() => { }}
+                  placeholder="0.00"
+                  colors={Colors[mode]}
+                  keyboardType="numeric"
+                />
+              </View>
+
+              <View className="flex-1">
+                <CustomInput
+                  label="Quantity *"
+                  value={tier.quantity?.toString() || ""}
+                  onChangeText={(value) => updateTicketTier(index, "quantity", parseInt(value) || 0)}
+                  onBlur={() => { }}
+                  placeholder="100"
+                  colors={Colors[mode]}
+                  keyboardType="numeric"
+                />
+              </View>
+            </View>
+
+            <CustomInput
+              label="Description"
+              value={tier.description || ""}
+              onChangeText={(value) => updateTicketTier(index, "description", value)}
+              onBlur={() => { }}
+              placeholder="Optional description for this tier"
+              colors={Colors[mode]}
+              multiline
+            />
+          </View>
+        ))}
+
+        <Button
+          size="sm"
+          variant="outline"
+          action="primary"
+          onPress={addTicketTier}
+        >
+          <ButtonIcon as={Plus} size="xs" />
+          <ButtonText>Add Ticket Tier</ButtonText>
+        </Button>
       </ThemedView>
 
       <ThemedView>

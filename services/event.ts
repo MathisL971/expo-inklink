@@ -57,6 +57,7 @@ export async function updateEvent(event: Event) {
     format: event.format,
     disciplines: event.disciplines,
     access: event.access,
+    ticketTiers: event.ticketTiers,
     organizerId: event.organizerId,
   });
   return res.data;

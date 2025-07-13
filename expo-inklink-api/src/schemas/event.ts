@@ -56,6 +56,14 @@ const addressSchema = new Schema({
   venue: { type: String, required: false }, // Optional venue name
 }, { _id: false }); // Don't create separate _id for subdocument
 
+// Define the ticket tier schema
+const ticketTierSchema = new Schema({
+  name: { type: String, required: true },
+  price: { type: Number, required: true, min: 0 },
+  quantity: { type: Number, required: true, min: 0 },
+  description: { type: String, required: false },
+}, { _id: true }); // Allow MongoDB to generate _id for each ticket tier
+
 const eventSchema = new Schema(
   {
     title: { type: String, required: true },
@@ -83,6 +91,7 @@ const eventSchema = new Schema(
       required: true,
       enum: AccessNames,
     },
+    ticketTiers: [ticketTierSchema],
     organizerId: { type: String, required: false },
   },
   {
@@ -106,3 +115,4 @@ type Event = InferSchemaType<typeof eventSchema> & {
 };
 
 export type { Event };
+
