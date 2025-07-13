@@ -6,6 +6,7 @@ import { AccessibilityFeature, PriceRange, SortBy } from "@/types";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useState } from "react";
 import {
+  Animated,
   Platform,
   ScrollView,
   StyleSheet,
@@ -17,6 +18,7 @@ import {
 import CustomWebDatePicker from "./CustomWebDatePicker";
 import { ThemedText } from "./ThemedText";
 import { Button, ButtonText } from "./ui/button";
+import { IconSymbol } from "./ui/IconSymbol";
 import { Spinner } from "./ui/spinner";
 import { VStack } from "./ui/vstack";
 
@@ -49,18 +51,18 @@ export const FilterButton = ({
           borderColor: isSelected
             ? getColor("primary", mode)
             : getColor("borderLight", mode),
-          borderWidth: 1,
-          borderRadius: 20,
-          paddingHorizontal: 16,
-          paddingVertical: 8,
-          shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.3)",
-          shadowOffset: { width: 0, height: 2 },
+          borderWidth: isSelected ? 1 : 0.5,
+          borderRadius: 16,
+          paddingHorizontal: 12,
+          paddingVertical: 6,
+          shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(0, 0, 0, 0.1)",
+          shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.1,
-          shadowRadius: 6,
-          elevation: 3,
+          shadowRadius: 2,
+          elevation: 1,
         },
       ]}
-      activeOpacity={0.7}
+      activeOpacity={0.8}
     >
       <ThemedText
         style={[
@@ -70,7 +72,8 @@ export const FilterButton = ({
               ? getColor("primaryText", mode)
               : getColor("text", mode),
             fontWeight: isSelected ? "600" : "500",
-            fontSize: 14,
+            fontSize: 13,
+            letterSpacing: 0.1,
           },
         ]}
       >
@@ -83,41 +86,117 @@ export const FilterButton = ({
 interface FilterSectionProps {
   title: string;
   children: React.ReactNode;
+  defaultExpanded?: boolean;
 }
 
 // A reusable section component for grouping filters
-export const FilterSection = ({ title, children }: FilterSectionProps) => {
+export const FilterSection = ({ title, children, defaultExpanded = false }: FilterSectionProps) => {
   const { mode } = useColorScheme();
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  const [animatedValue] = useState(new Animated.Value(isExpanded ? 1 : 0));
+
+  const toggleExpanded = () => {
+    const newValue = !isExpanded;
+    setIsExpanded(newValue);
+
+    Animated.timing(animatedValue, {
+      toValue: newValue ? 1 : 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const rotateInterpolate = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '90deg'],
+  });
+
+  const opacityInterpolate = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.7, 1],
+  });
 
   return (
-    <View
+    <Animated.View
       style={[
         styles.filterSection,
         {
-          shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.3)",
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.15,
-          shadowRadius: 12,
-          elevation: 8,
-          gap: 12,
+          backgroundColor: getColor("card", mode),
+          borderRadius: 12,
+          padding: 12,
+          shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(0, 0, 0, 0.1)",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 1,
+          borderWidth: 0.5,
+          borderColor: getColor("border", mode),
+          opacity: opacityInterpolate,
         }
       ]}
     >
-      <ThemedText
+      <TouchableOpacity
         style={[
-          styles.sectionTitle,
+          styles.sectionHeader,
           {
-            color: getColor("text", mode),
-            fontSize: 18,
-            fontWeight: "700",
-            letterSpacing: 0.3,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 4,
+            borderRadius: 6,
+            backgroundColor: "transparent",
           }
         ]}
+        onPress={toggleExpanded}
+        activeOpacity={0.8}
       >
-        {title}
-      </ThemedText>
-      {children}
-    </View>
+        <ThemedText
+          style={[
+            styles.sectionTitle,
+            {
+              color: getColor("text", mode),
+              fontSize: 16,
+              fontWeight: "600",
+              letterSpacing: 0.1,
+            }
+          ]}
+        >
+          {title}
+        </ThemedText>
+        <Animated.View
+          style={[
+            styles.chevronContainer,
+            {
+              backgroundColor: "transparent",
+              borderRadius: 12,
+              width: 24,
+              height: 24,
+              alignItems: "center",
+              justifyContent: "center",
+              transform: [{ rotate: rotateInterpolate }],
+            }
+          ]}
+        >
+          <IconSymbol
+            name="chevron.right"
+            size={12}
+            color={getColor("text", mode)}
+          />
+        </Animated.View>
+      </TouchableOpacity>
+      {isExpanded && (
+        <Animated.View
+          style={{
+            gap: 12,
+            marginTop: 8,
+            paddingHorizontal: 2,
+            opacity: animatedValue,
+          }}
+        >
+          {children}
+        </Animated.View>
+      )}
+    </Animated.View>
   );
 };
 
@@ -192,9 +271,9 @@ export const EventFilters = () => {
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ ...styles.scrollContent, gap: 28 }}
+        contentContainerStyle={{ ...styles.scrollContent, gap: 12 }}
       >
-        <FilterSection title="Search">
+        <FilterSection title="Search" defaultExpanded={true}>
           <TextInput
             placeholder="Search events..."
             placeholderTextColor={getColor("inputPlaceholder", mode)}
@@ -211,7 +290,7 @@ export const EventFilters = () => {
           />
         </FilterSection>
 
-        <FilterSection title="Date & Time Filtering">
+        <FilterSection title="Date & Time Filtering" defaultExpanded={true}>
           <View style={styles.inputContainer}>
             {Platform.OS === "web" ? (
               <CustomWebDatePicker
@@ -1071,25 +1150,31 @@ export const EventFilters = () => {
 export const styles = StyleSheet.create({
   vstack: {
     flex: 1,
-    padding: 16,
+    padding: 12,
     backgroundColor: 'transparent',
   },
   container: {
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 24,
+    paddingBottom: 16,
   },
   filterSection: {
     // Card styling is now applied inline in the component
   },
+  sectionHeader: {
+    // Header styling is now applied inline in the component
+  },
   sectionTitle: {
     // Title styling is now applied inline in the component
+  },
+  chevronContainer: {
+    // Chevron container styling is now applied inline in the component
   },
   buttonRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: 6,
   },
   filterButton: {
     justifyContent: "center",
@@ -1106,99 +1191,98 @@ export const styles = StyleSheet.create({
   },
   searchInput: {
     borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderRadius: 12,
-    fontSize: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
+    fontSize: 15,
     fontWeight: "400",
-    minHeight: 52,
+    minHeight: 44,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   inputContainer: {
-    gap: 12,
+    gap: 8,
   },
   textInput: {
     borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderRadius: 12,
-    fontSize: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
+    fontSize: 15,
     fontWeight: "400",
-    minHeight: 52,
+    minHeight: 44,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   activeFiltersSection: {
-    // marginTop: 16,
-    marginBottom: 16,
-    padding: 20,
-    borderRadius: 16,
-    borderWidth: 1,
-    gap: 8,
+    marginBottom: 12,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 0.5,
+    gap: 6,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 1,
     },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   activeFiltersSectionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    letterSpacing: 0.3,
+    fontSize: 14,
+    fontWeight: "600",
+    letterSpacing: 0.1,
   },
   activeFiltersContainer: {
     flexDirection: "column",
-    gap: 8,
+    gap: 6,
   },
   activeFilter: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    margin: 2,
-    borderWidth: 1,
-    backgroundColor: "rgba(14, 165, 233, 0.1)",
-    borderColor: "rgba(14, 165, 233, 0.3)",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    margin: 1,
+    borderWidth: 0.5,
+    backgroundColor: "rgba(14, 165, 233, 0.08)",
+    borderColor: "rgba(14, 165, 233, 0.2)",
   },
   activeFilterText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "500",
-    lineHeight: 20,
-    letterSpacing: 0.1,
+    lineHeight: 18,
+    letterSpacing: 0.05,
   },
   resetButton: {
-    paddingVertical: 16,
-    borderRadius: 12,
+    paddingVertical: 12,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 1,
     },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   resetButtonText: {
-    fontWeight: "700",
-    fontSize: 16,
-    letterSpacing: 0.3,
+    fontWeight: "600",
+    fontSize: 15,
+    letterSpacing: 0.1,
   },
   locationInput: {
     borderWidth: 1,
