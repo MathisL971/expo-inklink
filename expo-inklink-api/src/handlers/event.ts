@@ -5,6 +5,7 @@ import { createResponse, errorResponse } from "../utils/response";
 interface EventFilters {
   format: string | null;
   disciplines: string[];
+  languages: string[];
   access: string | null;
   eventType: string | null;
   search: string;
@@ -16,6 +17,7 @@ interface EventFilters {
 interface MongoFilter {
   format?: string;
   disciplines?: { $in: string[] };
+  languages?: { $in: string[] };
   access?: string;
   eventType?: string;
   $or?: {
@@ -59,6 +61,7 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
       const {
         format = null,
         disciplines = [],
+        languages = [],
         access = null,
         eventType = null,
         search = '',
@@ -70,6 +73,7 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
 
       if (format) filter.format = format;
       if (disciplines?.length > 0) filter.disciplines = { $in: Array.isArray(disciplines) ? disciplines : [disciplines] };
+      if (languages?.length > 0) filter.languages = { $in: Array.isArray(languages) ? languages : [languages] };
       if (access) filter.access = access;
       if (eventType) filter.eventType = eventType;
       if (search) {

@@ -56,6 +56,106 @@ export type Access = {
   name: AccessName;
 };
 
+export type LanguageName =
+  | "English"
+  | "Spanish"
+  | "French"
+  | "German"
+  | "Italian"
+  | "Portuguese"
+  | "Russian"
+  | "Chinese (Mandarin)"
+  | "Chinese (Cantonese)"
+  | "Japanese"
+  | "Korean"
+  | "Arabic"
+  | "Hindi"
+  | "Bengali"
+  | "Dutch"
+  | "Swedish"
+  | "Norwegian"
+  | "Danish"
+  | "Finnish"
+  | "Polish"
+  | "Czech"
+  | "Hungarian"
+  | "Greek"
+  | "Hebrew"
+  | "Turkish"
+  | "Persian (Farsi)"
+  | "Urdu"
+  | "Tamil"
+  | "Telugu"
+  | "Marathi"
+  | "Gujarati"
+  | "Punjabi"
+  | "Thai"
+  | "Vietnamese"
+  | "Indonesian"
+  | "Malay"
+  | "Tagalog"
+  | "Swahili"
+  | "Amharic"
+  | "Yoruba"
+  | "Hausa"
+  | "Igbo"
+  | "Zulu"
+  | "Afrikaans"
+  | "Romanian"
+  | "Bulgarian"
+  | "Serbian"
+  | "Croatian"
+  | "Bosnian"
+  | "Slovenian"
+  | "Slovak"
+  | "Lithuanian"
+  | "Latvian"
+  | "Estonian"
+  | "Ukrainian"
+  | "Belarusian"
+  | "Georgian"
+  | "Armenian"
+  | "Azerbaijani"
+  | "Kazakh"
+  | "Uzbek"
+  | "Kyrgyz"
+  | "Tajik"
+  | "Turkmen"
+  | "Mongolian"
+  | "Tibetan"
+  | "Burmese"
+  | "Khmer"
+  | "Lao"
+  | "Sinhala"
+  | "Nepali"
+  | "Pashto"
+  | "Dari"
+  | "Kurdish"
+  | "Maltese"
+  | "Basque"
+  | "Catalan"
+  | "Galician"
+  | "Welsh"
+  | "Irish"
+  | "Scottish Gaelic"
+  | "Breton"
+  | "Luxembourgish"
+  | "Frisian"
+  | "Icelandic"
+  | "Faroese"
+  | "Albanian"
+  | "Macedonian"
+  | "Montenegrin"
+  | "Esperanto"
+  | "Latin"
+  | "Sanskrit"
+  | "Other";
+
+export type Language = {
+  id: string;
+  name: LanguageName;
+};
+
 export type EventType = "In-Person" | "Online" | "Hybrid";
 
 export type VideoConferencePlatform = "Zoom" | "Teams" | "Google Meet" | "WebEx" | "GoToMeeting" | "Other";
@@ -97,12 +197,14 @@ export type Event = {
   image?: string;
   startDate: string;
   endDate: string;
+  timezone: string; // IANA timezone name like "America/New_York"
   eventType: EventType;
   address?: Address; // Optional for online events
   videoConference?: VideoConference; // Optional for in-person events
   source?: string;
   format: FormatName;
   disciplines: DisciplineName[];
+  languages: LanguageName[]; // Languages supported by the event
   access: AccessName;
   ticketTiers?: TicketTier[];
   organizerId?: string;
@@ -118,6 +220,7 @@ export type DateRange = 'today' | 'tomorrow' | 'thisWeek' | 'thisWeekend' | 'thi
 export interface EventFilters {
   format?: FormatName;
   disciplines: DisciplineName[];
+  languages: LanguageName[]; // Languages filter
   access?: AccessName;
   eventType?: EventType;
   dateRange?: DateRange;

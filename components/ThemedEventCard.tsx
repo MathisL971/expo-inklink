@@ -1,5 +1,6 @@
 import { getColor } from "@/constants/Colors";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
+import { formatDateRangeInTimezone } from "@/utils/timezone";
 import { router } from "expo-router";
 import { Platform, TouchableOpacity } from "react-native";
 import type { Event } from "../types/index";
@@ -50,6 +51,17 @@ export default function ThemedEventCard({ event }: { event: Event }) {
             <BadgeText>{discipline}</BadgeText>
           </Badge>
         ))}
+        {event.languages.map((language) => (
+          <Badge
+            key={language}
+            size="sm"
+            variant="outline"
+            action="success"
+            className="px-1.5 py-0.5 rounded-sm"
+          >
+            <BadgeText>{language}</BadgeText>
+          </Badge>
+        ))}
       </HStack>
 
       <ThemedText
@@ -57,21 +69,7 @@ export default function ThemedEventCard({ event }: { event: Event }) {
         className="text-sm line-clamp-1"
         {...(Platform.OS !== "web" ? { numberOfLines: 1 } : {})}
       >
-        {new Date(event.startDate).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        })}
-        {" - "}
-        {new Date(event.startDate).toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-        })}
-        {" to "}
-        {new Date(event.endDate).toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-        })}
+        {formatDateRangeInTimezone(event.startDate, event.endDate, event.timezone || "UTC")}
       </ThemedText>
 
       <ThemedText

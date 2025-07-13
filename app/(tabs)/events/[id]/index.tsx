@@ -249,6 +249,30 @@ export default function EventScreen() {
               </HStack>
             </ThemedView>
 
+            <ThemedView className="p-2 rounded-xl mb-2">
+              <View className="flex-row items-start mb-3">
+                <Tag
+                  size={20}
+                  color={colors.primary}
+                  style={{ marginTop: 2, marginRight: 12 }}
+                />
+                <ThemedText className="font-semibold">Languages</ThemedText>
+              </View>
+              <HStack className="gap-2 mb-2" style={{ flexWrap: "wrap" }}>
+                {data.languages.map((language) => (
+                  <Badge
+                    key={language}
+                    size="lg"
+                    variant="outline"
+                    action="success"
+                    className="px-2 py-1 rounded-md"
+                  >
+                    <BadgeText>{language}</BadgeText>
+                  </Badge>
+                ))}
+              </HStack>
+            </ThemedView>
+
             <ThemedView className="p-2 mb-4">
               <ThemedText className="font-semibold mb-3">
                 About this Event

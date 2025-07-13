@@ -1,7 +1,8 @@
 import { getColor } from "@/constants/Colors";
+import { EVENT_DISCIPLINES, EVENT_FORMATS, EVENT_LANGUAGES } from "@/constants/Event";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { useEventFilters } from "@/hooks/useEventFilters";
-import { DisciplineName, FormatName, SortBy } from "@/types";
+import { SortBy } from "@/types";
 import React from "react";
 import {
   ScrollView,
@@ -87,48 +88,10 @@ export const FilterSection = ({ title, children }: FilterSectionProps) => {
   );
 };
 
-// Data for filters (moved outside for clarity)
-export const formats: FormatName[] = [
-  "Lecture",
-  "Conference",
-  "Seminar",
-  "Colloquium",
-  "Symposium",
-  "Panel",
-  "Roundtable",
-  "Workshop",
-  "Webinar",
-  "Discussion",
-  "Debate",
-  "Book Talk",
-  "Poster Session",
-  "Networking Event",
-  "Training Session",
-  "Keynote",
-  "Town Hall",
-  "Fireside Chat",
-];
-export const disciplines: DisciplineName[] = [
-  "Political Science",
-  "Economics",
-  "History",
-  "Sociology",
-  "Anthropology",
-  "Psychology",
-  "Human Geography",
-  "Linguistics",
-  "Archaeology",
-  "Law",
-  "Education",
-  "Communication Studies",
-  "Development Studies",
-  "International Relations",
-  "Criminology",
-  "Demography",
-  "Social Work",
-  "Cultural Studies",
-  "Philosophy",
-];
+// Data for filters (using imported constants from Event.ts)
+export const formats = EVENT_FORMATS;
+export const disciplines = EVENT_DISCIPLINES;
+export const languages = EVENT_LANGUAGES;
 export const sortOptions: { key: SortBy; label: string }[] = [
   { key: "startDate", label: "Start Date" },
   { key: "title", label: "Title" },
@@ -142,6 +105,7 @@ export const EventFilters = () => {
     resetFilters,
     isLoadingFilters,
     toggleDiscipline,
+    toggleLanguage,
   } = useEventFilters();
   const { mode } = useColorScheme();
 
@@ -246,10 +210,24 @@ export const EventFilters = () => {
             ))}
           </View>
         </FilterSection>
+
+        <FilterSection title="Languages">
+          <View style={styles.buttonRow}>
+            {languages.map((language) => (
+              <FilterButton
+                key={language}
+                label={language}
+                isSelected={filters.languages.includes(language)}
+                onPress={() => toggleLanguage(language)}
+              />
+            ))}
+          </View>
+        </FilterSection>
       </ScrollView>
 
       {(filters.format ||
         filters.disciplines.length > 0 ||
+        filters.languages.length > 0 ||
         filters.searchTerm) && (
           <View
             style={[
@@ -287,6 +265,16 @@ export const EventFilters = () => {
                   ]}
                 >
                   Disciplines: {filters.disciplines.join(", ")}
+                </Text>
+              )}
+              {filters.languages.length > 0 && (
+                <Text
+                  style={[
+                    styles.activeFilterText,
+                    { color: getColor("text", mode) },
+                  ]}
+                >
+                  Languages: {filters.languages.join(", ")}
                 </Text>
               )}
               {filters.searchTerm && (

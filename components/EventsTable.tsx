@@ -2,11 +2,12 @@ import { getColor } from "@/constants/Colors";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { createEvent, deleteEvent } from "@/services/event";
 import { deleteImage } from "@/services/image";
+import type { Event } from "@/types";
 import { getImageKey } from "@/utils/image";
+import { formatDateInTimezone } from "@/utils/timezone";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ExternalPathString } from "expo-router";
 import { Pressable } from "react-native";
-import { Event } from "../types/index";
 import { ExternalLink } from "./ExternalLink";
 import { ThemedText } from "./ThemedText";
 import { HStack } from "./ui/hstack";
@@ -57,6 +58,7 @@ export default function EventsTable({ events }: { events: Event[] }) {
         image: event.image,
         startDate: event.startDate,
         endDate: event.endDate,
+        timezone: event.timezone,
         eventType: event.eventType,
         address: event.address,
         videoConference: event.videoConference,
@@ -114,7 +116,7 @@ export default function EventsTable({ events }: { events: Event[] }) {
             </TableData>
             <TableData>
               <ThemedText>
-                {new Date(event.startDate).toLocaleDateString()}
+                {formatDateInTimezone(event.startDate, event.timezone || "UTC", { includeTime: false })}
               </ThemedText>
             </TableData>
             <TableData>

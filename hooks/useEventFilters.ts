@@ -1,4 +1,4 @@
-import { DisciplineName } from '@/types';
+import { DisciplineName, LanguageName } from '@/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { EventFilters } from '../types/index';
@@ -10,6 +10,7 @@ const FILTER_QUERY_KEY = ['eventFilters'] as const;
 const defaultFilters: EventFilters = {
   format: undefined,
   disciplines: [],
+  languages: [],
   access: undefined,
   eventType: undefined,
   dateRange: undefined,
@@ -44,6 +45,7 @@ interface UseEventFiltersReturn {
   updateFilter: <K extends keyof EventFilters>(key: K, value: EventFilters[K]) => Promise<void>;
   resetFilters: () => Promise<void>;
   toggleDiscipline: (discipline: DisciplineName) => Promise<void>;
+  toggleLanguage: (language: LanguageName) => Promise<void>;
 }
 
 // Custom hook for managing event filters
@@ -100,12 +102,23 @@ export const useEventFilters = (initialFilters?: Partial<EventFilters>): UseEven
     await updateFilter('disciplines', updatedDisciplines);
   };
 
+  // Function to toggle language selection
+  const toggleLanguage = async (language: LanguageName): Promise<void> => {
+    const currentLanguages = filters.languages;
+    const updatedLanguages = currentLanguages.includes(language)
+      ? currentLanguages.filter(l => l !== language)
+      : [...currentLanguages, language];
+
+    await updateFilter('languages', updatedLanguages);
+  };
+
   return {
     filters,
     isLoadingFilters,
     updateFilters,
     updateFilter,
     resetFilters,
-    toggleDiscipline
+    toggleDiscipline,
+    toggleLanguage
   };
 };

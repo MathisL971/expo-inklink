@@ -1,10 +1,19 @@
 import { Colors } from "@/constants/Colors";
+import {
+  COMMON_TIMEZONES,
+  EVENT_ACCESS_LEVELS,
+  EVENT_DISCIPLINES,
+  EVENT_FORMATS,
+  EVENT_LANGUAGES,
+  EVENT_TYPES,
+  VIDEO_CONFERENCE_PLATFORMS
+} from "@/constants/Event";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { createEvent } from "@/services/event";
 import { deleteImage } from "@/services/image";
-import type { DisciplineName, Event, EventType, FormatName, VideoConferencePlatform } from "@/types";
-import { AccessName } from "@/types";
+import type { Event } from "@/types";
 import { getImageKey } from "@/utils/image";
+import { getUserTimezone } from "@/utils/timezone";
 import { useUser } from "@clerk/clerk-expo";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -29,55 +38,7 @@ type EventFormProps = {
   initialEvent?: Event;
 };
 
-// Local data arrays for formats, disciplines, and access levels
-const LOCAL_FORMATS: FormatName[] = [
-  "Lecture",
-  "Conference",
-  "Seminar",
-  "Colloquium",
-  "Symposium",
-  "Panel",
-  "Roundtable",
-  "Workshop",
-  "Webinar",
-  "Discussion",
-  "Debate",
-  "Book Talk",
-  "Poster Session",
-  "Networking Event",
-  "Training Session",
-  "Keynote",
-  "Town Hall",
-  "Fireside Chat",
-];
-
-const LOCAL_DISCIPLINES: DisciplineName[] = [
-  "Political Science",
-  "Economics",
-  "History",
-  "Sociology",
-  "Anthropology",
-  "Psychology",
-  "Human Geography",
-  "Linguistics",
-  "Archaeology",
-  "Law",
-  "Education",
-  "Communication Studies",
-  "Development Studies",
-  "International Relations",
-  "Criminology",
-  "Demography",
-  "Social Work",
-  "Cultural Studies",
-  "Philosophy",
-];
-
-const LOCAL_ACCESSES: AccessName[] = ["Public", "Private", "Invitation Only"];
-
-const LOCAL_EVENT_TYPES: EventType[] = ["In-Person", "Online", "Hybrid"];
-
-const LOCAL_VIDEO_PLATFORMS: VideoConferencePlatform[] = ["Zoom", "Teams", "Google Meet", "WebEx", "GoToMeeting", "Other"];
+// Event constants are now imported from @/constants/Event
 
 export const EventForm = ({ initialEvent }: EventFormProps) => {
   const { user } = useUser();
@@ -100,6 +61,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
       image: initialEvent?.image || "",
       startDate: initialEvent?.startDate || "",
       endDate: initialEvent?.endDate || "",
+      timezone: initialEvent?.timezone || getUserTimezone(COMMON_TIMEZONES.map(tz => tz.value)),
       eventType: initialEvent?.eventType || "In-Person",
       address: {
         street: initialEvent?.address?.street || "",
@@ -123,6 +85,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
       source: initialEvent?.source || "",
       format: initialEvent?.format || "",
       disciplines: initialEvent?.disciplines || [],
+      languages: initialEvent?.languages || [],
       access: initialEvent?.access || "",
       organizerId: initialEvent?.organizerId || user?.id,
       ticketTiers: initialEvent?.ticketTiers || [],
@@ -386,6 +349,36 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
             )
           }
         />
+
+        <Controller
+          control={control}
+          name="timezone"
+          rules={{ required: "Timezone is required" }}
+          render={({ field: { onChange, onBlur, value } }) => {
+            // Find the current timezone label for display
+            const currentTimezoneLabel = COMMON_TIMEZONES.find(tz => tz.value === value)?.label || value;
+
+            return (
+              <CustomPicker
+                label="Event Timezone *"
+                value={currentTimezoneLabel}
+                onSelect={(selectedLabel: string) => {
+                  // Find the timezone value from the selected label
+                  const selectedTimezone = COMMON_TIMEZONES.find(tz => tz.label === selectedLabel);
+                  if (selectedTimezone) {
+                    onChange(selectedTimezone.value);
+                  }
+                }}
+                onBlur={onBlur}
+                options={COMMON_TIMEZONES.map(tz => tz.label)}
+                error={errors.timezone?.message}
+                Icon={undefined}
+                colors={Colors[mode]}
+                placeholder="Select timezone"
+              />
+            );
+          }}
+        />
       </ThemedView>
 
       <ThemedView>
@@ -403,7 +396,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               value={value}
               onSelect={onChange}
               onBlur={onBlur}
-              options={LOCAL_FORMATS}
+              options={EVENT_FORMATS}
               error={errors.format?.message}
               Icon={FileText}
               colors={Colors[mode]}
@@ -422,11 +415,30 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               values={value}
               onSelect={onChange}
               onBlur={onBlur}
-              options={LOCAL_DISCIPLINES}
+              options={EVENT_DISCIPLINES}
               error={errors.disciplines?.message}
               Icon={Building}
               colors={Colors[mode]}
               placeholder="Select disciplines"
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="languages"
+          rules={{ required: "At least one language is required" }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <CustomMultiSelect
+              label="Event Languages *"
+              values={value}
+              onSelect={onChange}
+              onBlur={onBlur}
+              options={EVENT_LANGUAGES}
+              error={errors.languages?.message}
+              Icon={Users}
+              colors={Colors[mode]}
+              placeholder="Select languages"
             />
           )}
         />
@@ -447,7 +459,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               value={value}
               onSelect={onChange}
               onBlur={onBlur}
-              options={LOCAL_ACCESSES}
+              options={EVENT_ACCESS_LEVELS}
               colors={Colors[mode]}
               placeholder="Select access level"
               error={errors.access?.message}
@@ -494,7 +506,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               value={value}
               onSelect={onChange}
               onBlur={onBlur}
-              options={LOCAL_EVENT_TYPES}
+              options={EVENT_TYPES}
               error={errors.eventType?.message}
               Icon={Users}
               colors={Colors[mode]}
@@ -710,7 +722,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
                 value={value}
                 onSelect={onChange}
                 onBlur={onBlur}
-                options={LOCAL_VIDEO_PLATFORMS}
+                options={VIDEO_CONFERENCE_PLATFORMS}
                 error={errors.videoConference?.platform?.message}
                 Icon={Monitor}
                 colors={Colors[mode]}
