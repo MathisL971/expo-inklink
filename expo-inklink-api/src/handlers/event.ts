@@ -25,6 +25,8 @@ interface MongoFilter {
     "address.city"?: { $regex: string; $options: string };
     "address.state"?: { $regex: string; $options: string };
     "address.venue"?: { $regex: string; $options: string };
+    "address.parkingDetails"?: { $regex: string; $options: string };
+    "address.parkingInstructions"?: { $regex: string; $options: string };
   }[];
   startDate?: { $gte: Date; $lt?: Date };
 }
@@ -77,7 +79,9 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
           { "address.street": { $regex: search, $options: 'i' } },
           { "address.city": { $regex: search, $options: 'i' } },
           { "address.state": { $regex: search, $options: 'i' } },
-          { "address.venue": { $regex: search, $options: 'i' } }
+          { "address.venue": { $regex: search, $options: 'i' } },
+          { "address.parkingDetails": { $regex: search, $options: 'i' } },
+          { "address.parkingInstructions": { $regex: search, $options: 'i' } }
         ];
       }
       if (dateRange) {

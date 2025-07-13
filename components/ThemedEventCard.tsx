@@ -79,11 +79,29 @@ export default function ThemedEventCard({ event }: { event: Event }) {
         className="text-sm line-clamp-1"
         {...(Platform.OS !== "web" ? { numberOfLines: 1 } : {})}
       >
-        {event.address.venue
-          ? `${event.address.venue}, ${event.address.city}, ${event.address.state}`
-          : `${event.address.city}, ${event.address.state}`
-        }
+        {event.eventType === "Online" ? (
+          "Online Event"
+        ) : event.address ? (
+          event.address.venue
+            ? `${event.address.venue}, ${event.address.city}, ${event.address.state}`
+            : `${event.address.city}, ${event.address.state}`
+        ) : (
+          "Location TBD"
+        )}
       </ThemedText>
+
+      {/* Parking Information */}
+      {(event.eventType === "In-Person" || event.eventType === "Hybrid") &&
+        event.address?.parkingAvailable &&
+        event.address.parkingAvailable !== "No" && (
+          <ThemedText
+            colorVariant="textSecondary"
+            className="text-xs"
+            {...(Platform.OS !== "web" ? { numberOfLines: 1 } : {})}
+          >
+            🚗 Parking: {event.address.parkingAvailable}
+          </ThemedText>
+        )}
 
       <ThemedHeading
         className="mt-1 line-clamp-2"

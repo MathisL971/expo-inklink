@@ -58,6 +58,10 @@ const addressSchema = new Schema({
   zipCode: { type: String, required: true },
   country: { type: String, required: true },
   venue: { type: String, required: false }, // Optional venue name
+  parkingAvailable: { type: String, required: false }, // "Yes", "No", or "Limited"
+  parkingDetails: { type: String, required: false }, // Description of parking options
+  parkingInstructions: { type: String, required: false }, // Instructions for parking
+  parkingCost: { type: String, required: false }, // Cost information for parking
 }, { _id: false }); // Don't create separate _id for subdocument
 
 // Define the video conference schema

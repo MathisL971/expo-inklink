@@ -16,6 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ExternalPathString, router, useLocalSearchParams } from "expo-router";
 import {
   Calendar,
+  Car,
   Clock,
   ExternalLink as ExternalLinkIcon,
   MapPin,
@@ -156,34 +157,73 @@ export default function EventScreen() {
               </View>
             </ThemedView>
 
-            <ThemedView className="p-2 rounded-xl mb-2">
-              <View className="flex-row items-start">
-                <MapPin
-                  size={20}
-                  color={colors.primary}
-                  style={{ marginTop: 2, marginRight: 12 }}
-                />
-                <View className="flex-1">
-                  <ThemedText className="font-semibold mb-1">
-                    Location
-                  </ThemedText>
-                  {data.address.venue && (
-                    <ThemedText colorVariant="textSecondary" className="mb-1">
-                      {data.address.venue}
+            {/* Location Information */}
+            {(data.eventType === "In-Person" || data.eventType === "Hybrid") && data.address && (
+              <ThemedView className="p-2 rounded-xl mb-2">
+                <View className="flex-row items-start">
+                  <MapPin
+                    size={20}
+                    color={colors.primary}
+                    style={{ marginTop: 2, marginRight: 12 }}
+                  />
+                  <View className="flex-1">
+                    <ThemedText className="font-semibold mb-1">
+                      Location
                     </ThemedText>
-                  )}
-                  <ThemedText colorVariant="textSecondary">
-                    {data.address.street}
-                  </ThemedText>
-                  <ThemedText colorVariant="textSecondary">
-                    {data.address.city}, {data.address.state} {data.address.zipCode}
-                  </ThemedText>
-                  <ThemedText colorVariant="textSecondary">
-                    {data.address.country}
-                  </ThemedText>
+                    {data.address.venue && (
+                      <ThemedText colorVariant="textSecondary" className="mb-1">
+                        {data.address.venue}
+                      </ThemedText>
+                    )}
+                    <ThemedText colorVariant="textSecondary">
+                      {data.address.street}
+                    </ThemedText>
+                    <ThemedText colorVariant="textSecondary">
+                      {data.address.city}, {data.address.state} {data.address.zipCode}
+                    </ThemedText>
+                    <ThemedText colorVariant="textSecondary">
+                      {data.address.country}
+                    </ThemedText>
+                  </View>
                 </View>
-              </View>
-            </ThemedView>
+              </ThemedView>
+            )}
+
+            {/* Parking Information */}
+            {(data.eventType === "In-Person" || data.eventType === "Hybrid") && data.address?.parkingAvailable && data.address.parkingAvailable !== "No" && (
+              <ThemedView className="p-2 rounded-xl mb-2">
+                <View className="flex-row items-start">
+                  <Car
+                    size={20}
+                    color={colors.primary}
+                    style={{ marginTop: 2, marginRight: 12 }}
+                  />
+                  <View className="flex-1">
+                    <ThemedText className="font-semibold mb-1">
+                      Parking Information
+                    </ThemedText>
+                    <ThemedText colorVariant="textSecondary" className="mb-1">
+                      Parking: {data.address.parkingAvailable}
+                    </ThemedText>
+                    {data.address.parkingCost && (
+                      <ThemedText colorVariant="textSecondary" className="mb-1">
+                        Cost: {data.address.parkingCost}
+                      </ThemedText>
+                    )}
+                    {data.address.parkingDetails && (
+                      <ThemedText colorVariant="textSecondary" className="mb-1">
+                        {data.address.parkingDetails}
+                      </ThemedText>
+                    )}
+                    {data.address.parkingInstructions && (
+                      <ThemedText colorVariant="textSecondary">
+                        Instructions: {data.address.parkingInstructions}
+                      </ThemedText>
+                    )}
+                  </View>
+                </View>
+              </ThemedView>
+            )}
 
             <ThemedView className="p-2 rounded-xl mb-2">
               <View className="flex-row items-start mb-3">

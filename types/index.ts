@@ -75,6 +75,10 @@ export type Address = {
   zipCode: string;
   country: string;
   venue?: string; // Optional venue name (e.g., "University Conference Center")
+  parkingAvailable?: string; // "Yes", "No", or "Limited"
+  parkingDetails?: string; // Description of parking options
+  parkingInstructions?: string; // Instructions for parking
+  parkingCost?: string; // Cost information for parking
 };
 
 export type TicketTier = {

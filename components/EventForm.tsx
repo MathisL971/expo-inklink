@@ -11,7 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { ImagePickerAsset } from "expo-image-picker";
 import { router } from "expo-router";
-import { Building, FileText, MapPin, Monitor, Plus, Ticket, Trash2, Users } from "lucide-react";
+import { Building, Car, FileText, MapPin, Monitor, Plus, Ticket, Trash2, Users } from "lucide-react";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Alert, Platform, View } from "react-native";
@@ -108,6 +108,10 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
         zipCode: initialEvent?.address?.zipCode || "",
         country: initialEvent?.address?.country || "",
         venue: initialEvent?.address?.venue || "",
+        parkingAvailable: initialEvent?.address?.parkingAvailable || "No",
+        parkingDetails: initialEvent?.address?.parkingDetails || "",
+        parkingInstructions: initialEvent?.address?.parkingInstructions || "",
+        parkingCost: initialEvent?.address?.parkingCost || "",
       },
       videoConference: {
         platform: initialEvent?.videoConference?.platform || "Zoom",
@@ -610,6 +614,82 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               />
             )}
           />
+
+          <ThemedText size="lg" bold className="mt-4 mb-3">
+            Parking Information
+          </ThemedText>
+
+          <Controller
+            control={control}
+            name="address.parkingAvailable"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomPicker
+                label="Parking Available"
+                value={value}
+                onSelect={onChange}
+                onBlur={onBlur}
+                options={["Yes", "No", "Limited"]}
+                error={errors.address?.parkingAvailable?.message}
+                Icon={Car}
+                colors={Colors[mode]}
+                placeholder="Select parking availability"
+              />
+            )}
+          />
+
+          {watch("address.parkingAvailable") === "Yes" || watch("address.parkingAvailable") === "Limited" ? (
+            <>
+              <Controller
+                control={control}
+                name="address.parkingDetails"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <CustomInput
+                    label="Parking Details"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    placeholder="e.g., On-site parking garage, Street parking available"
+                    error={errors.address?.parkingDetails?.message}
+                    colors={Colors[mode]}
+                    multiline
+                  />
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="address.parkingCost"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <CustomInput
+                    label="Parking Cost"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    placeholder="e.g., Free, $10/day, $5/hour"
+                    error={errors.address?.parkingCost?.message}
+                    colors={Colors[mode]}
+                  />
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="address.parkingInstructions"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <CustomInput
+                    label="Parking Instructions"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    placeholder="e.g., Enter from Main Street, validate ticket at front desk"
+                    error={errors.address?.parkingInstructions?.message}
+                    colors={Colors[mode]}
+                    multiline
+                  />
+                )}
+              />
+            </>
+          ) : null}
         </ThemedView>
       )}
 
