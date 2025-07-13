@@ -17,56 +17,117 @@ export default function ThemedEventCard({ event }: { event: Event }) {
 
   return (
     <Card
-      className={`p-5 rounded-md max-h-[600px] flex-1`}
-      style={{ backgroundColor: getColor("card", mode) }}
+      className={`p-6 rounded-xl flex-1`}
+      style={{
+        backgroundColor: getColor("card", mode),
+        shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.3)",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+        elevation: 8,
+        borderWidth: 1,
+        borderColor: getColor("borderLight", mode),
+      }}
     >
-      <Image
+      {event.image && (<Image
         source={{
           uri:
             event.image ||
             "https://expo-inklink-bucket.s3.us-east-2.amazonaws.com/events/event_placeholder.png",
         }}
-        className="mb-5 h-[250px] w-full rounded-md"
-        alt="image"
+        className="mb-6 h-[200px] w-full rounded-lg"
+        alt="Event image"
       />
+      )}
 
-      <HStack className="gap-2 mb-2" style={{ flexWrap: "wrap" }}>
+      <HStack className="gap-2 mb-4" style={{ flexWrap: "wrap" }}>
         <Badge
           key={event.format}
           size="sm"
           variant="outline"
           action="warning"
-          className="px-1.5 py-0.5 rounded-sm"
+          style={{
+            backgroundColor: mode === "light" ? "rgba(245, 158, 11, 0.1)" : "rgba(251, 191, 36, 0.2)",
+            borderColor: mode === "light" ? "rgba(245, 158, 11, 0.5)" : "rgba(251, 191, 36, 0.5)",
+            borderRadius: 12,
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+          }}
         >
-          <BadgeText>{event.format}</BadgeText>
+          <BadgeText style={{ fontSize: 12, fontWeight: "600" }}>{event.format}</BadgeText>
         </Badge>
-        {event.disciplines.map((discipline) => (
+        {event.disciplines.slice(0, 2).map((discipline) => (
           <Badge
             key={discipline}
             size="sm"
             variant="outline"
             action="info"
-            className="px-1.5 py-0.5 rounded-sm"
+            style={{
+              backgroundColor: mode === "light" ? "rgba(14, 165, 233, 0.1)" : "rgba(56, 189, 248, 0.2)",
+              borderColor: mode === "light" ? "rgba(14, 165, 233, 0.5)" : "rgba(56, 189, 248, 0.5)",
+              borderRadius: 12,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+            }}
           >
-            <BadgeText>{discipline}</BadgeText>
+            <BadgeText style={{ fontSize: 12, fontWeight: "500" }}>{discipline}</BadgeText>
           </Badge>
         ))}
-        {event.languages.map((language) => (
+        {event.disciplines.length > 2 && (
+          <Badge
+            size="sm"
+            variant="outline"
+            action="info"
+            style={{
+              backgroundColor: getColor("backgroundElevated", mode),
+              borderColor: getColor("border", mode),
+              borderRadius: 12,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+            }}
+          >
+            <BadgeText style={{ fontSize: 12, fontWeight: "500" }}>+{event.disciplines.length - 2} more</BadgeText>
+          </Badge>
+        )}
+        {event.languages.slice(0, 2).map((language) => (
           <Badge
             key={language}
             size="sm"
             variant="outline"
             action="success"
-            className="px-1.5 py-0.5 rounded-sm"
+            style={{
+              backgroundColor: mode === "light" ? "rgba(34, 197, 94, 0.1)" : "rgba(74, 222, 128, 0.2)",
+              borderColor: mode === "light" ? "rgba(34, 197, 94, 0.5)" : "rgba(74, 222, 128, 0.5)",
+              borderRadius: 12,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+            }}
           >
-            <BadgeText>{language}</BadgeText>
+            <BadgeText style={{ fontSize: 12, fontWeight: "500" }}>{language}</BadgeText>
           </Badge>
         ))}
+        {event.languages.length > 2 && (
+          <Badge
+            size="sm"
+            variant="outline"
+            action="success"
+            style={{
+              backgroundColor: getColor("backgroundElevated", mode),
+              borderColor: getColor("border", mode),
+              borderRadius: 12,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+            }}
+          >
+            <BadgeText style={{ fontSize: 12, fontWeight: "500" }}>+{event.languages.length - 2} more</BadgeText>
+          </Badge>
+        )}
       </HStack>
 
       <ThemedText
         colorVariant="textSecondary"
-        className="text-sm line-clamp-1"
+        className="text-sm line-clamp-1 mb-1"
+        style={{ fontWeight: "500" }}
         {...(Platform.OS !== "web" ? { numberOfLines: 1 } : {})}
       >
         {formatDateRangeInTimezone(event.startDate, event.endDate, event.timezone || "UTC")}
@@ -74,7 +135,8 @@ export default function ThemedEventCard({ event }: { event: Event }) {
 
       <ThemedText
         colorVariant="textSecondary"
-        className="text-sm line-clamp-1"
+        className="text-sm line-clamp-1 mb-3"
+        style={{ fontWeight: "500" }}
         {...(Platform.OS !== "web" ? { numberOfLines: 1 } : {})}
       >
         {event.eventType === "Online" ? (
@@ -93,8 +155,9 @@ export default function ThemedEventCard({ event }: { event: Event }) {
         event.address?.parkingAvailable &&
         event.address.parkingAvailable !== "No" && (
           <ThemedText
-            colorVariant="textSecondary"
-            className="text-xs"
+            colorVariant="textTertiary"
+            className="text-xs mb-2"
+            style={{ fontWeight: "500" }}
             {...(Platform.OS !== "web" ? { numberOfLines: 1 } : {})}
           >
             🚗 Parking: {event.address.parkingAvailable}
@@ -102,8 +165,13 @@ export default function ThemedEventCard({ event }: { event: Event }) {
         )}
 
       <ThemedHeading
-        className="mt-1 line-clamp-2"
+        className="mt-1 line-clamp-2 mb-3"
         size="xl"
+        style={{
+          fontWeight: "700",
+          lineHeight: 28,
+          color: getColor("text", mode)
+        }}
         {...(Platform.OS !== "web" ? { numberOfLines: 2 } : {})}
       >
         {event.title}
@@ -111,14 +179,26 @@ export default function ThemedEventCard({ event }: { event: Event }) {
 
       <ThemedText
         colorVariant="textSecondary"
-        className="mt-2 flex-1 line-clamp-4"
+        className="mt-2 flex-1 line-clamp-4 mb-4"
+        style={{
+          lineHeight: 20,
+          fontSize: 14
+        }}
         {...(Platform.OS !== "web" ? { numberOfLines: 4 } : {})}
       >
         {event.description}
       </ThemedText>
 
       <TouchableOpacity
-        className="mt-3 flex-row items-center gap-1"
+        className="mt-auto flex-row items-center justify-center gap-2 px-4 py-3 rounded-xl"
+        style={{
+          backgroundColor: getColor("primary", mode),
+          shadowColor: getColor("primary", mode),
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 8,
+          elevation: 4,
+        }}
         onPress={() => {
           router.push({
             pathname: "/events/[id]",
@@ -126,14 +206,19 @@ export default function ThemedEventCard({ event }: { event: Event }) {
           });
         }}
       >
-        <ThemedText colorVariant="tint" className="text-sm flex-row">
-          Learn more
+        <ThemedText
+          style={{
+            color: "white",
+            fontWeight: "600",
+            fontSize: 15
+          }}
+        >
+          Learn More
         </ThemedText>
         <Icon
           as={ArrowRightIcon}
           size="sm"
-          color={getColor("tint", mode)}
-          className="mt-0.5 ml-0.5"
+          color="white"
         />
       </TouchableOpacity>
     </Card>

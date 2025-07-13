@@ -28,7 +28,7 @@ export default function CustomInput({
   ...props
 }: CustomInputProps) {
   return (
-    <View style={[styles.inputContainer, { marginBottom: 16 }]}>
+    <View style={[styles.inputContainer]}>
       <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
       <View
         style={[

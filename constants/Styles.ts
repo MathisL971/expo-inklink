@@ -24,7 +24,6 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
   },
   inputContainer: {
-    marginBottom: 16,
   },
   label: {
     fontSize: 16,

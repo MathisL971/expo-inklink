@@ -37,7 +37,7 @@ export default function CustomMultiSelect({
   };
 
   return (
-    <View style={[styles.inputContainer, { marginBottom: 16 }]}>
+    <View style={[styles.inputContainer]}>
       <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
       <TouchableOpacity
         style={[

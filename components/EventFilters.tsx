@@ -1,4 +1,4 @@
-import { getColor } from "@/constants/Colors";
+import { Colors, getColor } from "@/constants/Colors";
 import { ACCESSIBILITY_FEATURES, COMMON_TIMEZONES, EVENT_DISCIPLINES, EVENT_DURATIONS, EVENT_FORMATS, EVENT_LANGUAGES, EVENT_TYPES, TIME_OF_DAY_OPTIONS, VIDEO_CONFERENCE_PLATFORMS } from "@/constants/Event";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { useEventFilters } from "@/hooks/useEventFilters";
@@ -41,26 +41,36 @@ export const FilterButton = ({
       onPress={onPress}
       style={[
         styles.filterButton,
-        style, // Allow additional styles to be passed in
+        style,
         {
           backgroundColor: isSelected
             ? getColor("primary", mode)
-            : getColor("card", mode),
+            : getColor("backgroundElevated", mode),
           borderColor: isSelected
             ? getColor("primary", mode)
-            : getColor("border", mode),
+            : getColor("borderLight", mode),
+          borderWidth: 1,
+          borderRadius: 20,
+          paddingHorizontal: 16,
+          paddingVertical: 8,
+          shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.3)",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 6,
+          elevation: 3,
         },
       ]}
+      activeOpacity={0.7}
     >
       <ThemedText
-        size="sm"
         style={[
           styles.filterButtonText,
           {
             color: isSelected
               ? getColor("primaryText", mode)
               : getColor("text", mode),
-            fontWeight: isSelected ? "600" : "400",
+            fontWeight: isSelected ? "600" : "500",
+            fontSize: 14,
           },
         ]}
       >
@@ -80,9 +90,29 @@ export const FilterSection = ({ title, children }: FilterSectionProps) => {
   const { mode } = useColorScheme();
 
   return (
-    <View style={styles.filterSection}>
+    <View
+      style={[
+        styles.filterSection,
+        {
+          shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.3)",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          elevation: 8,
+          gap: 12,
+        }
+      ]}
+    >
       <ThemedText
-        style={[styles.sectionTitle, { color: getColor("text", mode) }]}
+        style={[
+          styles.sectionTitle,
+          {
+            color: getColor("text", mode),
+            fontSize: 18,
+            fontWeight: "700",
+            letterSpacing: 0.3,
+          }
+        ]}
       >
         {title}
       </ThemedText>
@@ -162,7 +192,7 @@ export const EventFilters = () => {
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{ ...styles.scrollContent, gap: 28 }}
       >
         <FilterSection title="Search">
           <TextInput
@@ -174,7 +204,7 @@ export const EventFilters = () => {
               styles.searchInput,
               {
                 backgroundColor: getColor("inputBackground", mode),
-                borderColor: getColor("border", mode),
+                borderColor: getColor("inputBorder", mode),
                 color: getColor("text", mode),
               },
             ]}
@@ -183,7 +213,6 @@ export const EventFilters = () => {
 
         <FilterSection title="Date & Time Filtering">
           <View style={styles.inputContainer}>
-            <ThemedText style={styles.inputLabel}>Start Date & Time</ThemedText>
             {Platform.OS === "web" ? (
               <CustomWebDatePicker
                 label="Start Date & Time"
@@ -191,12 +220,7 @@ export const EventFilters = () => {
                 onChangeText={(dateTime: string) => updateStartDateTime(dateTime)}
                 onBlur={() => { }}
                 placeholder="Select start date & time"
-                colors={{
-                  inputBackground: getColor("inputBackground", mode),
-                  border: getColor("border", mode),
-                  text: getColor("text", mode),
-                  inputPlaceholder: getColor("inputPlaceholder", mode),
-                }}
+                colors={Colors[mode]}
               />
             ) : (
               <>
@@ -218,10 +242,23 @@ export const EventFilters = () => {
                   />
                 )}
                 <TouchableOpacity
-                  style={[styles.textInput, { borderColor: getColor("border", mode) }]}
+                  style={[
+                    styles.textInput,
+                    {
+                      borderColor: getColor("inputBorder", mode) || (mode === "light" ? "#d6d3d1" : "#57534e"),
+                      backgroundColor: getColor("inputBackground", mode),
+                      opacity: 1.0,
+                    },
+                  ]}
                   onPress={() => setShowStartPicker(true)}
                 >
-                  <Text style={{ color: getColor("text", mode) }}>
+                  <Text style={{
+                    color: filters.startDateTime
+                      ? getColor("text", mode)
+                      : getColor("inputPlaceholder", mode),
+                    fontSize: 16,
+                    fontWeight: "400",
+                  }}>
                     {filters.startDateTime
                       ? new Date(filters.startDateTime).toLocaleString()
                       : "Select start date & time"}
@@ -236,8 +273,7 @@ export const EventFilters = () => {
             )}
           </View>
 
-          <View style={styles.inputContainer}>
-            <ThemedText style={styles.inputLabel}>End Date & Time</ThemedText>
+          <View style={[styles.inputContainer]}>
             {Platform.OS === "web" ? (
               <CustomWebDatePicker
                 label="End Date & Time"
@@ -245,12 +281,7 @@ export const EventFilters = () => {
                 onChangeText={(dateTime: string) => updateEndDateTime(dateTime)}
                 onBlur={() => { }}
                 placeholder="Select end date & time"
-                colors={{
-                  inputBackground: getColor("inputBackground", mode),
-                  border: getColor("border", mode),
-                  text: getColor("text", mode),
-                  inputPlaceholder: getColor("inputPlaceholder", mode),
-                }}
+                colors={Colors[mode]}
               />
             ) : (
               <>
@@ -272,10 +303,23 @@ export const EventFilters = () => {
                   />
                 )}
                 <TouchableOpacity
-                  style={[styles.textInput, { borderColor: getColor("border", mode) }]}
+                  style={[
+                    styles.textInput,
+                    {
+                      borderColor: getColor("inputBorder", mode) || (mode === "light" ? "#d6d3d1" : "#57534e"),
+                      backgroundColor: getColor("inputBackground", mode),
+                      opacity: 1.0,
+                    },
+                  ]}
                   onPress={() => setShowEndPicker(true)}
                 >
-                  <Text style={{ color: getColor("text", mode) }}>
+                  <Text style={{
+                    color: filters.endDateTime
+                      ? getColor("text", mode)
+                      : getColor("inputPlaceholder", mode),
+                    fontSize: 16,
+                    fontWeight: "400",
+                  }}>
                     {filters.endDateTime
                       ? new Date(filters.endDateTime).toLocaleString()
                       : "Select end date & time"}
@@ -322,14 +366,14 @@ export const EventFilters = () => {
                 styles.textInput,
                 {
                   backgroundColor: getColor("inputBackground", mode),
-                  borderColor: getColor("border", mode),
+                  borderColor: getColor("inputBorder", mode),
                   color: getColor("text", mode),
                 },
               ]}
             />
           </View>
 
-          <View style={styles.inputContainer}>
+          <View style={[styles.inputContainer]}>
             <ThemedText style={styles.inputLabel}>State/Province</ThemedText>
             <TextInput
               placeholder="Enter state or province"
@@ -342,14 +386,14 @@ export const EventFilters = () => {
                 styles.textInput,
                 {
                   backgroundColor: getColor("inputBackground", mode),
-                  borderColor: getColor("border", mode),
+                  borderColor: getColor("inputBorder", mode),
                   color: getColor("text", mode),
                 },
               ]}
             />
           </View>
 
-          <View style={styles.inputContainer}>
+          <View style={[styles.inputContainer]}>
             <ThemedText style={styles.inputLabel}>Country</ThemedText>
             <TextInput
               placeholder="Enter country"
@@ -362,14 +406,14 @@ export const EventFilters = () => {
                 styles.textInput,
                 {
                   backgroundColor: getColor("inputBackground", mode),
-                  borderColor: getColor("border", mode),
+                  borderColor: getColor("inputBorder", mode),
                   color: getColor("text", mode),
                 },
               ]}
             />
           </View>
 
-          <View style={styles.inputContainer}>
+          <View style={[styles.inputContainer]}>
             <ThemedText style={styles.inputLabel}>Venue</ThemedText>
             <TextInput
               placeholder="Enter venue name"
@@ -382,7 +426,7 @@ export const EventFilters = () => {
                 styles.textInput,
                 {
                   backgroundColor: getColor("inputBackground", mode),
-                  borderColor: getColor("border", mode),
+                  borderColor: getColor("inputBorder", mode),
                   color: getColor("text", mode),
                 },
               ]}
@@ -528,14 +572,14 @@ export const EventFilters = () => {
                 styles.textInput,
                 {
                   backgroundColor: getColor("inputBackground", mode),
-                  borderColor: getColor("border", mode),
+                  borderColor: getColor("inputBorder", mode),
                   color: getColor("text", mode),
                 },
               ]}
             />
           </View>
 
-          <View style={styles.inputContainer}>
+          <View style={[styles.inputContainer]}>
             <ThemedText style={styles.inputLabel}>Maximum Price ($)</ThemedText>
             <TextInput
               placeholder="1000"
@@ -550,7 +594,7 @@ export const EventFilters = () => {
                 styles.textInput,
                 {
                   backgroundColor: getColor("inputBackground", mode),
-                  borderColor: getColor("border", mode),
+                  borderColor: getColor("inputBorder", mode),
                   color: getColor("text", mode),
                 },
               ]}
@@ -732,202 +776,293 @@ export const EventFilters = () => {
                 { color: getColor("text", mode) },
               ]}
             >
-              Active Filters:
+              🔍 Active Filters
             </Text>
             <View style={styles.activeFiltersContainer}>
               {filters.format && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Format: {filters.format}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Format: {filters.format}
+                  </Text>
+                </View>
               )}
               {filters.disciplines.length > 0 && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Disciplines: {filters.disciplines.join(", ")}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Disciplines: {filters.disciplines.join(", ")}
+                  </Text>
+                </View>
               )}
               {filters.languages.length > 0 && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Languages: {filters.languages.join(", ")}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Languages: {filters.languages.join(", ")}
+                  </Text>
+                </View>
               )}
               {filters.eventType && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Event Type: {filters.eventType}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Event Type: {filters.eventType}
+                  </Text>
+                </View>
               )}
               {filters.startDateTime && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Start: {new Date(filters.startDateTime).toLocaleDateString()} {new Date(filters.startDateTime).toLocaleTimeString()}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Start: {new Date(filters.startDateTime).toLocaleDateString()} {new Date(filters.startDateTime).toLocaleTimeString()}
+                  </Text>
+                </View>
               )}
               {filters.endDateTime && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  End: {new Date(filters.endDateTime).toLocaleDateString()} {new Date(filters.endDateTime).toLocaleTimeString()}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    End: {new Date(filters.endDateTime).toLocaleDateString()} {new Date(filters.endDateTime).toLocaleTimeString()}
+                  </Text>
+                </View>
               )}
               {filters.timezone && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Timezone: {COMMON_TIMEZONES.find((tz: { value: string; label: string }) => tz.value === filters.timezone)?.label}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Timezone: {COMMON_TIMEZONES.find((tz: { value: string; label: string }) => tz.value === filters.timezone)?.label}
+                  </Text>
+                </View>
               )}
               {filters.priceRange && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Price Range: {filters.priceRange}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Price Range: {filters.priceRange}
+                  </Text>
+                </View>
               )}
               {filters.hasFeaturedGuests && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Has Featured Guests
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Has Featured Guests
+                  </Text>
+                </View>
               )}
               {filters.hasTickets && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Has Tickets
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Has Tickets
+                  </Text>
+                </View>
               )}
               {filters.videoConferencePlatform && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Video Platform: {filters.videoConferencePlatform}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Video Platform: {filters.videoConferencePlatform}
+                  </Text>
+                </View>
               )}
               {filters.parkingAvailable && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Parking: {filters.parkingAvailable}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Parking: {filters.parkingAvailable}
+                  </Text>
+                </View>
               )}
               {(filters.location?.city || filters.location?.state || filters.location?.venue || filters.location?.country) && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Location: {[filters.location?.city, filters.location?.state, filters.location?.venue, filters.location?.country].filter(Boolean).join(", ")}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Location: {[filters.location?.city, filters.location?.state, filters.location?.venue, filters.location?.country].filter(Boolean).join(", ")}
+                  </Text>
+                </View>
               )}
               {(filters.minPrice || filters.maxPrice) && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Price: {filters.minPrice ? `$${filters.minPrice}` : ""}
-                  {filters.minPrice && filters.maxPrice ? " - " : ""}
-                  {filters.maxPrice ? `$${filters.maxPrice}` : ""}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Price: {filters.minPrice ? `$${filters.minPrice}` : ""}
+                    {filters.minPrice && filters.maxPrice ? " - " : ""}
+                    {filters.maxPrice ? `$${filters.maxPrice}` : ""}
+                  </Text>
+                </View>
               )}
               {filters.searchTerm && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Search: &quot;{filters.searchTerm}&quot;
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Search: &quot;{filters.searchTerm}&quot;
+                  </Text>
+                </View>
               )}
               {(filters.accessibilityFeatures && filters.accessibilityFeatures.length > 0) && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Accessibility Features: {filters.accessibilityFeatures.join(", ")}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Accessibility Features: {filters.accessibilityFeatures.join(", ")}
+                  </Text>
+                </View>
               )}
               {filters.duration && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Duration: {filters.duration}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Duration: {filters.duration}
+                  </Text>
+                </View>
               )}
               {filters.timeOfDay && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Time of Day: {filters.timeOfDay}
-                </Text>
+                <View style={[
+                  styles.activeFilter,
+                  { backgroundColor: getColor("card", mode) + "80" }
+                ]}>
+                  <Text
+                    style={[
+                      styles.activeFilterText,
+                      { color: getColor("text", mode) },
+                    ]}
+                  >
+                    Time of Day: {filters.timeOfDay}
+                  </Text>
+                </View>
               )}
             </View>
           </View>
         )}
 
       <Button
-        size="md"
+        size="lg"
         variant="solid"
         action="negative"
         onPress={resetFilters}
+        style={styles.resetButton}
       >
-        <ButtonText>Reset Filters</ButtonText>
+        <ButtonText style={styles.resetButtonText}>Reset All Filters</ButtonText>
       </Button>
     </VStack>
   );
@@ -937,139 +1072,219 @@ export const styles = StyleSheet.create({
   vstack: {
     flex: 1,
     padding: 16,
+    backgroundColor: 'transparent',
   },
   container: {
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 16,
+    paddingBottom: 24,
   },
   filterSection: {
-    marginBottom: 20,
-    gap: 4,
+    // Card styling is now applied inline in the component
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
+    // Title styling is now applied inline in the component
   },
   buttonRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    margin: -4,
+    gap: 8,
   },
   filterButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
-    margin: 4,
+    minHeight: 36,
+    // Other styling is now applied inline in the component
   },
   formatButton: {
-    minWidth: 80,
+    minWidth: 90,
   },
   filterButtonText: {
     textAlign: "center",
+    // Other styling is now applied inline in the component
   },
   searchInput: {
     borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 8,
-    fontSize: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 12,
+    fontSize: 16,
+    fontWeight: "400",
+    minHeight: 52,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   inputContainer: {
-    gap: 8,
+    gap: 12,
   },
   textInput: {
     borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 8,
-    fontSize: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 12,
+    fontSize: 16,
+    fontWeight: "400",
+    minHeight: 52,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   activeFiltersSection: {
-    marginTop: 12,
+    // marginTop: 16,
     marginBottom: 16,
-    padding: 16,
-    borderRadius: 12,
+    padding: 20,
+    borderRadius: 16,
     borderWidth: 1,
+    gap: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
   },
   activeFiltersSectionTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 8,
+    fontSize: 16,
+    fontWeight: "700",
+    letterSpacing: 0.3,
   },
   activeFiltersContainer: {
     flexDirection: "column",
-    flexWrap: "wrap",
-    margin: 4,
-    gap: 4,
+    gap: 8,
   },
   activeFilter: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    margin: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    margin: 2,
+    borderWidth: 1,
+    backgroundColor: "rgba(14, 165, 233, 0.1)",
+    borderColor: "rgba(14, 165, 233, 0.3)",
   },
   activeFilterText: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "500",
+    lineHeight: 20,
+    letterSpacing: 0.1,
   },
   resetButton: {
-    paddingVertical: 14,
-    borderRadius: 8,
+    paddingVertical: 16,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
   },
   resetButtonText: {
-    fontWeight: "600",
+    fontWeight: "700",
     fontSize: 16,
+    letterSpacing: 0.3,
   },
   locationInput: {
     borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 8,
-    fontSize: 14,
-    marginBottom: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 12,
+    fontSize: 16,
+    fontWeight: "400",
+    minHeight: 52,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   clearButton: {
-    marginTop: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    marginTop: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
+    minHeight: 44,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  clearButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    letterSpacing: 0.2,
   },
   priceInput: {
     borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 8,
-    fontSize: 14,
-    marginBottom: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 12,
+    fontSize: 16,
+    fontWeight: "400",
+    minHeight: 52,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   dateInput: {
     borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 8,
-    fontSize: 14,
-    marginBottom: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 12,
+    fontSize: 16,
+    fontWeight: "400",
+    minHeight: 52,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   orText: {
     textAlign: "center",
     fontSize: 14,
     fontWeight: "600",
-    marginVertical: 8,
+    marginVertical: 16,
     opacity: 0.7,
+    letterSpacing: 0.2,
   },
   inputLabel: {
     fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 4,
+    fontWeight: "600",
+    letterSpacing: 0.2,
   },
 });

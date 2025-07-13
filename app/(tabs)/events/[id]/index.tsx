@@ -106,12 +106,18 @@ export default function EventScreen() {
               <HStack className="gap-2 mb-2" style={{ flexWrap: "wrap" }}>
                 <Badge
                   key={data.format}
-                  size="lg"
+                  size="md"
                   variant="outline"
-                  className="px-2 py-1 rounded-md"
                   action="warning"
+                  style={{
+                    backgroundColor: colorScheme === "light" ? "rgba(245, 158, 11, 0.1)" : "rgba(251, 191, 36, 0.2)",
+                    borderColor: colorScheme === "light" ? "rgba(245, 158, 11, 0.5)" : "rgba(251, 191, 36, 0.5)",
+                    borderRadius: 12,
+                    paddingHorizontal: 12,
+                    paddingVertical: 6,
+                  }}
                 >
-                  <BadgeText>{data.format}</BadgeText>
+                  <BadgeText style={{ fontSize: 13, fontWeight: "600" }}>{data.format}</BadgeText>
                 </Badge>
               </HStack>
 
@@ -238,12 +244,18 @@ export default function EventScreen() {
                 {data.disciplines.map((discipline) => (
                   <Badge
                     key={discipline}
-                    size="lg"
+                    size="md"
                     variant="outline"
                     action="info"
-                    className="px-2 py-1 rounded-md"
+                    style={{
+                      backgroundColor: colorScheme === "light" ? "rgba(14, 165, 233, 0.1)" : "rgba(56, 189, 248, 0.2)",
+                      borderColor: colorScheme === "light" ? "rgba(14, 165, 233, 0.5)" : "rgba(56, 189, 248, 0.5)",
+                      borderRadius: 12,
+                      paddingHorizontal: 12,
+                      paddingVertical: 6,
+                    }}
                   >
-                    <BadgeText>{discipline}</BadgeText>
+                    <BadgeText style={{ fontSize: 13, fontWeight: "500" }}>{discipline}</BadgeText>
                   </Badge>
                 ))}
               </HStack>
@@ -262,12 +274,18 @@ export default function EventScreen() {
                 {data.languages.map((language) => (
                   <Badge
                     key={language}
-                    size="lg"
+                    size="md"
                     variant="outline"
                     action="success"
-                    className="px-2 py-1 rounded-md"
+                    style={{
+                      backgroundColor: colorScheme === "light" ? "rgba(34, 197, 94, 0.1)" : "rgba(74, 222, 128, 0.2)",
+                      borderColor: colorScheme === "light" ? "rgba(34, 197, 94, 0.5)" : "rgba(74, 222, 128, 0.5)",
+                      borderRadius: 12,
+                      paddingHorizontal: 12,
+                      paddingVertical: 6,
+                    }}
                   >
-                    <BadgeText>{language}</BadgeText>
+                    <BadgeText style={{ fontSize: 13, fontWeight: "500" }}>{language}</BadgeText>
                   </Badge>
                 ))}
               </HStack>

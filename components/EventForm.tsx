@@ -1,4 +1,4 @@
-import { Colors } from "@/constants/Colors";
+import { Colors, getColor } from "@/constants/Colors";
 import {
   ACCESSIBILITY_FEATURES,
   COMMON_TIMEZONES,
@@ -33,7 +33,6 @@ import CustomWebDatePicker from "./CustomWebDatePicker";
 import { FeaturedGuestsManager } from "./FeaturedGuestsManager";
 import { ThemedButton } from "./ThemedButton";
 import { ThemedText } from "./ThemedText";
-import { ThemedView } from "./ThemedView";
 import { Button, ButtonIcon, ButtonText } from "./ui/button";
 
 type EventFormProps = {
@@ -216,9 +215,23 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
   };
 
   return (
-    <View className="gap-3">
-      <ThemedView>
-        <ThemedText size="xl" bold className="mb-3">
+    <View style={{ padding: 16, gap: 24 }}>
+      <View
+        style={{
+          backgroundColor: getColor("card", mode),
+          borderRadius: 12,
+          padding: 20,
+          shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.3)",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          elevation: 8,
+          borderWidth: 1,
+          borderColor: getColor("borderLight", mode),
+          gap: 20,
+        }}
+      >
+        <ThemedText style={{ fontSize: 18, fontWeight: "700", letterSpacing: 0.3 }}>
           Event Details
         </ThemedText>
 
@@ -291,10 +304,24 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
             />
           )}
         />
-      </ThemedView>
+      </View>
 
-      <ThemedView>
-        <ThemedText size="xl" bold className="mb-3">
+      <View
+        style={{
+          backgroundColor: getColor("card", mode),
+          borderRadius: 12,
+          padding: 20,
+          shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.3)",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          elevation: 8,
+          borderWidth: 1,
+          borderColor: getColor("borderLight", mode),
+          gap: 20,
+        }}
+      >
+        <ThemedText style={{ fontSize: 18, fontWeight: "700", letterSpacing: 0.3 }}>
           Date & Time
         </ThemedText>
 
@@ -358,36 +385,38 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
           control={control}
           name="timezone"
           rules={{ required: "Timezone is required" }}
-          render={({ field: { onChange, onBlur, value } }) => {
-            // Find the current timezone label for display
-            const currentTimezoneLabel = COMMON_TIMEZONES.find(tz => tz.value === value)?.label || value;
-
-            return (
-              <CustomPicker
-                label="Event Timezone *"
-                value={currentTimezoneLabel}
-                onSelect={(selectedLabel: string) => {
-                  // Find the timezone value from the selected label
-                  const selectedTimezone = COMMON_TIMEZONES.find(tz => tz.label === selectedLabel);
-                  if (selectedTimezone) {
-                    onChange(selectedTimezone.value);
-                  }
-                }}
-                onBlur={onBlur}
-                options={COMMON_TIMEZONES.map(tz => tz.label)}
-                error={errors.timezone?.message}
-                Icon={undefined}
-                colors={Colors[mode]}
-                placeholder="Select timezone"
-              />
-            );
-          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <CustomPicker
+              label="Timezone *"
+              value={value}
+              onSelect={onChange}
+              onBlur={onBlur}
+              placeholder="Select timezone"
+              options={COMMON_TIMEZONES}
+              error={errors.timezone?.message}
+              colors={Colors[mode]}
+            />
+          )}
         />
-      </ThemedView>
+      </View>
 
-      <ThemedView>
-        <ThemedText size="xl" bold className="mb-3">
-          Event Classification
+      <View
+        style={{
+          backgroundColor: getColor("card", mode),
+          borderRadius: 12,
+          padding: 20,
+          shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.3)",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          elevation: 8,
+          borderWidth: 1,
+          borderColor: getColor("borderLight", mode),
+          gap: 20,
+        }}
+      >
+        <ThemedText style={{ fontSize: 18, fontWeight: "700", letterSpacing: 0.3 }}>
+          Event Format & Categories
         </ThemedText>
 
         <Controller
@@ -400,11 +429,10 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               value={value}
               onSelect={onChange}
               onBlur={onBlur}
+              placeholder="Select format"
               options={EVENT_FORMATS}
               error={errors.format?.message}
-              Icon={FileText}
               colors={Colors[mode]}
-              placeholder="Select event format"
             />
           )}
         />
@@ -419,11 +447,11 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               values={value}
               onSelect={onChange}
               onBlur={onBlur}
+              placeholder="Select disciplines"
               options={EVENT_DISCIPLINES}
               error={errors.disciplines?.message}
               Icon={Building}
               colors={Colors[mode]}
-              placeholder="Select disciplines"
             />
           )}
         />
@@ -438,20 +466,14 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               values={value}
               onSelect={onChange}
               onBlur={onBlur}
+              placeholder="Select languages"
               options={EVENT_LANGUAGES}
               error={errors.languages?.message}
               Icon={Users}
               colors={Colors[mode]}
-              placeholder="Select languages"
             />
           )}
         />
-      </ThemedView>
-
-      <ThemedView>
-        <ThemedText size="xl" bold className="mb-3">
-          Access
-        </ThemedText>
 
         <Controller
           control={control}
@@ -463,65 +485,32 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               value={value}
               onSelect={onChange}
               onBlur={onBlur}
-              options={EVENT_ACCESS_LEVELS}
-              colors={Colors[mode]}
               placeholder="Select access level"
+              options={EVENT_ACCESS_LEVELS}
               error={errors.access?.message}
-            />
-          )}
-        />
-      </ThemedView>
-
-      <ThemedView>
-        <ThemedText size="xl" bold className="mb-3">
-          Organizer Information
-        </ThemedText>
-
-        <Controller
-          control={control}
-          name="source"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <CustomInput
-              label="Event Source/Website"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="https://example.com"
               colors={Colors[mode]}
-              keyboardType="url"
-              error={errors.source?.message}
             />
           )}
         />
-      </ThemedView>
+      </View>
 
-      <ThemedView>
-        <ThemedText size="xl" bold className="mb-3">
-          Accessibility Features
-        </ThemedText>
-
-        <Controller
-          control={control}
-          name="accessibilityFeatures"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <CustomMultiSelect
-              label="Accessibility Features"
-              values={value}
-              onSelect={onChange}
-              onBlur={onBlur}
-              options={ACCESSIBILITY_FEATURES}
-              colors={Colors[mode]}
-              placeholder="Select accessibility features"
-              error={errors.accessibilityFeatures?.message}
-              Icon={Shield}
-            />
-          )}
-        />
-      </ThemedView>
-
-      <ThemedView>
-        <ThemedText size="xl" bold className="mb-3">
-          Event Type
+      <View
+        style={{
+          backgroundColor: getColor("card", mode),
+          borderRadius: 12,
+          padding: 20,
+          shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.3)",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          elevation: 8,
+          borderWidth: 1,
+          borderColor: getColor("borderLight", mode),
+          gap: 20,
+        }}
+      >
+        <ThemedText style={{ fontSize: 18, fontWeight: "700", letterSpacing: 0.3 }}>
+          Event Type & Location
         </ThemedText>
 
         <Controller
@@ -534,395 +523,503 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               value={value}
               onSelect={onChange}
               onBlur={onBlur}
+              placeholder="Select event type"
               options={EVENT_TYPES}
               error={errors.eventType?.message}
-              Icon={Users}
               colors={Colors[mode]}
-              placeholder="Select event type"
             />
           )}
         />
-      </ThemedView>
 
+        {/* Location fields for In-Person and Hybrid events */}
+        {(watch("eventType") === "In-Person" || watch("eventType") === "Hybrid") && (
+          <>
+            <Controller
+              control={control}
+              name="address.venue"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <CustomInput
+                  label="Venue Name"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="Enter venue name"
+                  error={errors.address?.venue?.message}
+                  Icon={Building}
+                  colors={Colors[mode]}
+                />
+              )}
+            />
 
-      {/* Conditional Location/Video Conference Section */}
-      {(watch("eventType") === "In-Person" || watch("eventType") === "Hybrid") && (
-        <ThemedView>
-          <ThemedText size="xl" bold className="mb-3">
-            Event Location
-          </ThemedText>
+            <Controller
+              control={control}
+              name="address.street"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <CustomInput
+                  label="Street Address"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="Enter street address"
+                  error={errors.address?.street?.message}
+                  Icon={MapPin}
+                  colors={Colors[mode]}
+                />
+              )}
+            />
 
-          <Controller
-            control={control}
-            name="address.venue"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <CustomInput
-                label="Venue Name"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="University Conference Center, etc."
-                error={errors.address?.venue?.message}
-                Icon={Building}
-                colors={Colors[mode]}
-              />
+            <View style={{ flexDirection: "row", gap: 16 }}>
+              <View style={{ flex: 1 }}>
+                <Controller
+                  control={control}
+                  name="address.city"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <CustomInput
+                      label="City"
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Enter city"
+                      error={errors.address?.city?.message}
+                      colors={Colors[mode]}
+                    />
+                  )}
+                />
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <Controller
+                  control={control}
+                  name="address.state"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <CustomInput
+                      label="State/Province"
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Enter state"
+                      error={errors.address?.state?.message}
+                      colors={Colors[mode]}
+                    />
+                  )}
+                />
+              </View>
+            </View>
+
+            <View style={{ flexDirection: "row", gap: 16 }}>
+              <View style={{ flex: 1 }}>
+                <Controller
+                  control={control}
+                  name="address.zipCode"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <CustomInput
+                      label="ZIP/Postal Code"
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Enter ZIP code"
+                      error={errors.address?.zipCode?.message}
+                      colors={Colors[mode]}
+                    />
+                  )}
+                />
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <Controller
+                  control={control}
+                  name="address.country"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <CustomInput
+                      label="Country"
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Enter country"
+                      error={errors.address?.country?.message}
+                      colors={Colors[mode]}
+                    />
+                  )}
+                />
+              </View>
+            </View>
+
+            <Controller
+              control={control}
+              name="address.parkingAvailable"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <CustomPicker
+                  label="Parking Available"
+                  value={value}
+                  onSelect={onChange}
+                  onBlur={onBlur}
+                  placeholder="Select parking availability"
+                  options={[
+                    { value: "Yes", label: "Yes" },
+                    { value: "No", label: "No" },
+                    { value: "Limited", label: "Limited" },
+                  ]}
+                  error={errors.address?.parkingAvailable?.message}
+                  Icon={Car}
+                  colors={Colors[mode]}
+                />
+              )}
+            />
+
+            {watch("address.parkingAvailable") === "Yes" && (
+              <>
+                <Controller
+                  control={control}
+                  name="address.parkingDetails"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <CustomInput
+                      label="Parking Details"
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Describe parking options"
+                      multiline
+                      error={errors.address?.parkingDetails?.message}
+                      colors={Colors[mode]}
+                    />
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="address.parkingInstructions"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <CustomInput
+                      label="Parking Instructions"
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Any special parking instructions"
+                      multiline
+                      error={errors.address?.parkingInstructions?.message}
+                      colors={Colors[mode]}
+                    />
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="address.parkingCost"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <CustomInput
+                      label="Parking Cost"
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="e.g., $5, Free, $10/hour"
+                      error={errors.address?.parkingCost?.message}
+                      colors={Colors[mode]}
+                    />
+                  )}
+                />
+              </>
             )}
-          />
+          </>
+        )}
 
-          <Controller
-            control={control}
-            name="address.street"
-            rules={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? { required: "Street address is required" } : {}}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <CustomInput
-                label={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? "Street Address *" : "Street Address"}
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="123 Main Street"
-                error={errors.address?.street?.message}
-                Icon={MapPin}
-                colors={Colors[mode]}
-              />
-            )}
-          />
+        {/* Video conference fields for Online and Hybrid events */}
+        {(watch("eventType") === "Online" || watch("eventType") === "Hybrid") && (
+          <>
+            <Controller
+              control={control}
+              name="videoConference.platform"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <CustomPicker
+                  label="Video Conference Platform"
+                  value={value}
+                  onSelect={onChange}
+                  onBlur={onBlur}
+                  placeholder="Select platform"
+                  options={VIDEO_CONFERENCE_PLATFORMS}
+                  error={errors.videoConference?.platform?.message}
+                  Icon={Monitor}
+                  colors={Colors[mode]}
+                />
+              )}
+            />
 
-          <Controller
-            control={control}
-            name="address.city"
-            rules={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? { required: "City is required" } : {}}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <CustomInput
-                label={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? "City *" : "City"}
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="New York"
-                error={errors.address?.city?.message}
-                colors={Colors[mode]}
-              />
-            )}
-          />
+            <Controller
+              control={control}
+              name="videoConference.link"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <CustomInput
+                  label="Meeting Link"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="Enter meeting link"
+                  error={errors.videoConference?.link?.message}
+                  colors={Colors[mode]}
+                />
+              )}
+            />
 
-          <Controller
-            control={control}
-            name="address.state"
-            rules={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? { required: "State is required" } : {}}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <CustomInput
-                label={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? "State/Province *" : "State/Province"}
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="NY"
-                error={errors.address?.state?.message}
-                colors={Colors[mode]}
-              />
-            )}
-          />
+            <Controller
+              control={control}
+              name="videoConference.meetingId"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <CustomInput
+                  label="Meeting ID"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="Enter meeting ID"
+                  error={errors.videoConference?.meetingId?.message}
+                  colors={Colors[mode]}
+                />
+              )}
+            />
 
-          <Controller
-            control={control}
-            name="address.zipCode"
-            rules={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? { required: "ZIP code is required" } : {}}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <CustomInput
-                label={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? "ZIP/Postal Code *" : "ZIP/Postal Code"}
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="10001"
-                error={errors.address?.zipCode?.message}
-                colors={Colors[mode]}
-              />
-            )}
-          />
+            <Controller
+              control={control}
+              name="videoConference.passcode"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <CustomInput
+                  label="Meeting Passcode"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="Enter meeting passcode"
+                  error={errors.videoConference?.passcode?.message}
+                  colors={Colors[mode]}
+                />
+              )}
+            />
 
-          <Controller
-            control={control}
-            name="address.country"
-            rules={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? { required: "Country is required" } : {}}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <CustomInput
-                label={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? "Country *" : "Country"}
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="United States"
-                error={errors.address?.country?.message}
-                colors={Colors[mode]}
-              />
-            )}
-          />
+            <Controller
+              control={control}
+              name="videoConference.instructions"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <CustomInput
+                  label="Join Instructions"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="Any special instructions for joining"
+                  multiline
+                  error={errors.videoConference?.instructions?.message}
+                  colors={Colors[mode]}
+                />
+              )}
+            />
+          </>
+        )}
 
-          <ThemedText size="lg" bold className="mt-4 mb-3">
-            Parking Information
-          </ThemedText>
+        <Controller
+          control={control}
+          name="source"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <CustomInput
+              label="Source Link"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              placeholder="Link to original event posting"
+              error={errors.source?.message}
+              colors={Colors[mode]}
+            />
+          )}
+        />
+      </View>
 
-          <Controller
-            control={control}
-            name="address.parkingAvailable"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <CustomPicker
-                label="Parking Available"
-                value={value}
-                onSelect={onChange}
-                onBlur={onBlur}
-                options={["Yes", "No", "Limited"]}
-                error={errors.address?.parkingAvailable?.message}
-                Icon={Car}
-                colors={Colors[mode]}
-                placeholder="Select parking availability"
-              />
-            )}
-          />
-
-          {watch("address.parkingAvailable") === "Yes" || watch("address.parkingAvailable") === "Limited" ? (
-            <>
-              <Controller
-                control={control}
-                name="address.parkingDetails"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <CustomInput
-                    label="Parking Details"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    placeholder="e.g., On-site parking garage, Street parking available"
-                    error={errors.address?.parkingDetails?.message}
-                    colors={Colors[mode]}
-                    multiline
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="address.parkingCost"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <CustomInput
-                    label="Parking Cost"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    placeholder="e.g., Free, $10/day, $5/hour"
-                    error={errors.address?.parkingCost?.message}
-                    colors={Colors[mode]}
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="address.parkingInstructions"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <CustomInput
-                    label="Parking Instructions"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    placeholder="e.g., Enter from Main Street, validate ticket at front desk"
-                    error={errors.address?.parkingInstructions?.message}
-                    colors={Colors[mode]}
-                    multiline
-                  />
-                )}
-              />
-            </>
-          ) : null}
-        </ThemedView>
-      )}
-
-      {/* Video Conference Section */}
-      {(watch("eventType") === "Online" || watch("eventType") === "Hybrid") && (
-        <ThemedView>
-          <ThemedText size="xl" bold className="mb-3">
-            Video Conference Details
-          </ThemedText>
-
-          <Controller
-            control={control}
-            name="videoConference.platform"
-            rules={watch("eventType") === "Online" || watch("eventType") === "Hybrid" ? { required: "Platform is required" } : {}}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <CustomPicker
-                label={watch("eventType") === "Online" || watch("eventType") === "Hybrid" ? "Platform *" : "Platform"}
-                value={value}
-                onSelect={onChange}
-                onBlur={onBlur}
-                options={VIDEO_CONFERENCE_PLATFORMS}
-                error={errors.videoConference?.platform?.message}
-                Icon={Monitor}
-                colors={Colors[mode]}
-                placeholder="Select video platform"
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="videoConference.link"
-            rules={watch("eventType") === "Online" || watch("eventType") === "Hybrid" ? { required: "Meeting link is required" } : {}}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <CustomInput
-                label={watch("eventType") === "Online" || watch("eventType") === "Hybrid" ? "Meeting Link *" : "Meeting Link"}
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="https://zoom.us/j/123456789"
-                error={errors.videoConference?.link?.message}
-                colors={Colors[mode]}
-                keyboardType="url"
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="videoConference.meetingId"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <CustomInput
-                label="Meeting ID"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="123 456 789"
-                error={errors.videoConference?.meetingId?.message}
-                colors={Colors[mode]}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="videoConference.passcode"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <CustomInput
-                label="Passcode"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="Meeting passcode"
-                error={errors.videoConference?.passcode?.message}
-                colors={Colors[mode]}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="videoConference.instructions"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <CustomInput
-                label="Additional Instructions"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="Any special instructions for joining the meeting"
-                error={errors.videoConference?.instructions?.message}
-                colors={Colors[mode]}
-                multiline
-              />
-            )}
-          />
-        </ThemedView>
-      )}
-
-      <ThemedView>
-        <ThemedText size="xl" bold className="mb-3">
-          Ticket Tiers
+      <View
+        style={{
+          backgroundColor: getColor("card", mode),
+          borderRadius: 12,
+          padding: 20,
+          shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.3)",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          elevation: 8,
+          borderWidth: 1,
+          borderColor: getColor("borderLight", mode),
+          gap: 20,
+        }}
+      >
+        <ThemedText style={{ fontSize: 18, fontWeight: "700", letterSpacing: 0.3 }}>
+          Additional Features
         </ThemedText>
 
-        {watch("ticketTiers")?.map((tier, index) => (
-          <View key={tier.id || index} className="border rounded-lg p-3 mb-3" style={{ borderColor: Colors[mode].border }}>
-            <View className="flex-row justify-between items-center mb-3">
-              <ThemedText size="lg" bold>Tier {index + 1}</ThemedText>
-              <Button
-                size="sm"
-                variant="solid"
-                action="negative"
-                onPress={() => removeTicketTier(index)}
-              >
-                <ButtonIcon as={Trash2} size="xs" color={"white"} />
-              </Button>
-            </View>
-
-            <CustomInput
-              label="Tier Name *"
-              value={tier.name}
-              onChangeText={(value) => updateTicketTier(index, "name", value)}
-              onBlur={() => { }}
-              placeholder="e.g., General Admission, VIP, Student"
-              colors={Colors[mode]}
-              Icon={Ticket}
+        <Controller
+          control={control}
+          name="featuredGuests"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <FeaturedGuestsManager
+              value={value}
+              onChange={onChange}
+              onImageDelete={removeImage}
             />
+          )}
+        />
 
-            <View className="flex-row gap-3">
-              <View className="flex-1">
-                <CustomInput
-                  label="Price ($) *"
-                  value={tier.price?.toString() || ""}
-                  onChangeText={(value) => updateTicketTier(index, "price", parseFloat(value) || 0)}
-                  onBlur={() => { }}
-                  placeholder="0.00"
-                  colors={Colors[mode]}
-                  keyboardType="numeric"
-                />
+        <Controller
+          control={control}
+          name="accessibilityFeatures"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <CustomMultiSelect
+              label="Accessibility Features"
+              values={value}
+              onSelect={onChange}
+              onBlur={onBlur}
+              placeholder="Select accessibility features"
+              options={ACCESSIBILITY_FEATURES}
+              error={errors.accessibilityFeatures?.message}
+              Icon={Shield}
+              colors={Colors[mode]}
+            />
+          )}
+        />
+      </View>
+
+      <View
+        style={{
+          backgroundColor: getColor("card", mode),
+          borderRadius: 12,
+          padding: 20,
+          shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.3)",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          elevation: 8,
+          borderWidth: 1,
+          borderColor: getColor("borderLight", mode),
+          gap: 20,
+        }}
+      >
+        <ThemedText style={{ fontSize: 18, fontWeight: "700", letterSpacing: 0.3 }}>
+          Ticketing
+        </ThemedText>
+
+        <View style={{ gap: 20 }}>
+          {watch("ticketTiers")?.map((tier, index) => (
+            <View
+              key={index}
+              style={{
+                backgroundColor: getColor("backgroundElevated", mode),
+                borderRadius: 8,
+                padding: 20,
+                borderWidth: 1,
+                borderColor: getColor("borderLight", mode),
+                gap: 16,
+              }}
+            >
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <ThemedText style={{ fontSize: 16, fontWeight: "600" }}>
+                  Ticket Tier {index + 1}
+                </ThemedText>
+                <Button
+                  onPress={() => removeTicketTier(index)}
+                  variant="outline"
+                  action="negative"
+                  size="sm"
+                  style={{ borderColor: getColor("error", mode) }}
+                >
+                  <ButtonIcon as={Trash2} />
+                </Button>
               </View>
 
-              <View className="flex-1">
-                <CustomInput
-                  label="Quantity *"
-                  value={tier.quantity?.toString() || ""}
-                  onChangeText={(value) => updateTicketTier(index, "quantity", parseInt(value) || 0)}
-                  onBlur={() => { }}
-                  placeholder="100"
-                  colors={Colors[mode]}
-                  keyboardType="numeric"
-                />
+              <CustomInput
+                label="Tier Name"
+                value={tier.name}
+                onChangeText={(value) => updateTicketTier(index, "name", value)}
+                onBlur={() => { }}
+                placeholder="e.g., General Admission"
+                colors={Colors[mode]}
+                Icon={Ticket}
+              />
+
+              <View style={{ flexDirection: "row", gap: 16 }}>
+                <View style={{ flex: 1 }}>
+                  <CustomInput
+                    label="Price ($)"
+                    value={tier.price?.toString() || ""}
+                    onChangeText={(value) => updateTicketTier(index, "price", parseFloat(value) || 0)}
+                    onBlur={() => { }}
+                    placeholder="0.00"
+                    colors={Colors[mode]}
+                    keyboardType="numeric"
+                  />
+                </View>
+
+                <View style={{ flex: 1 }}>
+                  <CustomInput
+                    label="Quantity"
+                    value={tier.quantity?.toString() || ""}
+                    onChangeText={(value) => updateTicketTier(index, "quantity", parseInt(value) || 0)}
+                    onBlur={() => { }}
+                    placeholder="100"
+                    colors={Colors[mode]}
+                    keyboardType="numeric"
+                  />
+                </View>
               </View>
+
+              <CustomInput
+                label="Description"
+                value={tier.description || ""}
+                onChangeText={(value) => updateTicketTier(index, "description", value)}
+                onBlur={() => { }}
+                placeholder="Describe this ticket tier"
+                multiline
+                colors={Colors[mode]}
+              />
             </View>
+          ))}
 
-            <CustomInput
-              label="Description"
-              value={tier.description || ""}
-              onChangeText={(value) => updateTicketTier(index, "description", value)}
-              onBlur={() => { }}
-              placeholder="Optional description for this tier"
-              colors={Colors[mode]}
-              multiline
-            />
-          </View>
-        ))}
+          <Button
+            onPress={addTicketTier}
+            style={{
+              backgroundColor: getColor("primary", mode),
+              borderRadius: 8,
+              shadowColor: getColor("primary", mode),
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 8,
+              elevation: 4,
+            }}
+          >
+            <ButtonIcon as={Plus} color={"white"} />
+            <ButtonText style={{ color: "white", fontWeight: "600" }}>Add Ticket Tier</ButtonText>
+          </Button>
+        </View>
+      </View>
 
-        <Button
-          size="sm"
-          variant="outline"
-          action="primary"
-          onPress={addTicketTier}
-        >
-          <ButtonIcon as={Plus} size="xs" />
-          <ButtonText>Add Ticket Tier</ButtonText>
-        </Button>
-      </ThemedView>
-
-      <FeaturedGuestsManager
-        value={watch("featuredGuests")}
-        onChange={(guests: any) => setValue("featuredGuests", guests)}
-        onImageDelete={removeImage}
-      />
-
-      <ThemedButton
-        title={
-          isSubmitting
-            ? "Saving..."
-            : initialEvent
-              ? "Update Event"
-              : "Create Event"
-        }
-        onPress={handleSubmit(onSubmit)}
-        disabled={!isValid || isSubmitting}
-      />
+      <View
+        style={{
+          backgroundColor: getColor("card", mode),
+          borderRadius: 12,
+          padding: 20,
+          shadowColor: mode === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.3)",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          elevation: 8,
+          borderWidth: 1,
+          borderColor: getColor("borderLight", mode),
+        }}
+      >
+        <ThemedButton
+          title={isSubmitting ? "Creating Event..." : "Create Event"}
+          onPress={handleSubmit(onSubmit)}
+          disabled={isSubmitting}
+          style={{
+            backgroundColor: getColor("primary", mode),
+            borderRadius: 12,
+            paddingVertical: 16,
+            shadowColor: getColor("primary", mode),
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.25,
+            shadowRadius: 8,
+            elevation: 6,
+          }}
+        />
+      </View>
     </View>
   );
 };

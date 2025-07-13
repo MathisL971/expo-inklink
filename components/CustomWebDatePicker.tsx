@@ -483,7 +483,7 @@ export default function CustomDateTimePicker({
                         width: 40,
                         borderWidth: 1,
                         borderColor: colors.inputBorder,
-                        borderRadius: 6,
+                        borderRadius: 8,
                         backgroundColor: colors.inputBackground,
                       },
                     ]}
@@ -533,7 +533,7 @@ export default function CustomDateTimePicker({
                         width: 40,
                         borderWidth: 1,
                         borderColor: colors.inputBorder,
-                        borderRadius: 6,
+                        borderRadius: 8,
                         backgroundColor: colors.inputBackground,
                       },
                     ]}
