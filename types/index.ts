@@ -61,94 +61,13 @@ export type LanguageName =
   | "Spanish"
   | "French"
   | "German"
-  | "Italian"
-  | "Portuguese"
-  | "Russian"
   | "Chinese (Mandarin)"
-  | "Chinese (Cantonese)"
-  | "Japanese"
-  | "Korean"
   | "Arabic"
-  | "Hindi"
-  | "Bengali"
+  | "Russian"
+  | "Portuguese"
+  | "Japanese"
+  | "Italian"
   | "Dutch"
-  | "Swedish"
-  | "Norwegian"
-  | "Danish"
-  | "Finnish"
-  | "Polish"
-  | "Czech"
-  | "Hungarian"
-  | "Greek"
-  | "Hebrew"
-  | "Turkish"
-  | "Persian (Farsi)"
-  | "Urdu"
-  | "Tamil"
-  | "Telugu"
-  | "Marathi"
-  | "Gujarati"
-  | "Punjabi"
-  | "Thai"
-  | "Vietnamese"
-  | "Indonesian"
-  | "Malay"
-  | "Tagalog"
-  | "Swahili"
-  | "Amharic"
-  | "Yoruba"
-  | "Hausa"
-  | "Igbo"
-  | "Zulu"
-  | "Afrikaans"
-  | "Romanian"
-  | "Bulgarian"
-  | "Serbian"
-  | "Croatian"
-  | "Bosnian"
-  | "Slovenian"
-  | "Slovak"
-  | "Lithuanian"
-  | "Latvian"
-  | "Estonian"
-  | "Ukrainian"
-  | "Belarusian"
-  | "Georgian"
-  | "Armenian"
-  | "Azerbaijani"
-  | "Kazakh"
-  | "Uzbek"
-  | "Kyrgyz"
-  | "Tajik"
-  | "Turkmen"
-  | "Mongolian"
-  | "Tibetan"
-  | "Burmese"
-  | "Khmer"
-  | "Lao"
-  | "Sinhala"
-  | "Nepali"
-  | "Pashto"
-  | "Dari"
-  | "Kurdish"
-  | "Maltese"
-  | "Basque"
-  | "Catalan"
-  | "Galician"
-  | "Welsh"
-  | "Irish"
-  | "Scottish Gaelic"
-  | "Breton"
-  | "Luxembourgish"
-  | "Frisian"
-  | "Icelandic"
-  | "Faroese"
-  | "Albanian"
-  | "Macedonian"
-  | "Montenegrin"
-  | "Esperanto"
-  | "Latin"
-  | "Sanskrit"
   | "Other";
 
 export type Language = {
@@ -171,9 +90,9 @@ export type VideoConference = {
 export type EventDuration =
   | "Short (< 1 hour)"
   | "Medium (1-3 hours)"
-  | "Long (3+ hours)"
+  | "Long (3-4 hours)"
   | "Half Day (4-6 hours)"
-  | "Full Day (6+ hours)"
+  | "Full Day (6-24 hours)"
   | "Multi-Day";
 
 export type TimeOfDay =
@@ -194,19 +113,7 @@ export type AccessibilityFeature =
   | "Mobility Aid Friendly"
   | "Service Animals Welcome";
 
-export type InclusivityFeature =
-  | "Family-Friendly"
-  | "LGBTQ+ Friendly"
-  | "All Ages Welcome"
-  | "Childcare Available"
-  | "Diverse Speakers"
-  | "Multilingual Support"
-  | "Cultural Sensitivity"
-  | "Religious Accommodations"
-  | "Dietary Accommodations"
-  | "Gender-Neutral Facilities"
-  | "Safe Space Certified"
-  | "Inclusive Language Used";
+
 
 export type Address = {
   street: string;
@@ -267,13 +174,8 @@ export type Event = {
   createdAt?: string;
   updatedAt?: string;
 
-  // Duration and time categorization
-  duration?: EventDuration;
-  timeOfDay?: TimeOfDay;
-
-  // Accessibility and inclusivity features
+  // Accessibility features
   accessibilityFeatures?: AccessibilityFeature[];
-  inclusivityFeatures?: InclusivityFeature[];
 };
 
 export type SortBy = 'startDate' | 'title' | 'createdAt';
@@ -313,11 +215,10 @@ export interface EventFilters {
   maxPrice?: number;
   parkingAvailable?: string; // "Yes", "No", "Limited"
 
-  // Duration and time filtering
+  // Duration and time filtering (calculated from startDate/endDate)
   duration?: EventDuration;
   timeOfDay?: TimeOfDay;
 
-  // Accessibility and inclusivity filtering
+  // Accessibility filtering
   accessibilityFeatures?: AccessibilityFeature[];
-  inclusivityFeatures?: InclusivityFeature[];
-}
+};

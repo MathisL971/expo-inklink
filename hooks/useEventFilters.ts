@@ -1,4 +1,4 @@
-import { AccessibilityFeature, DisciplineName, EventDuration, InclusivityFeature, LanguageName, TimeOfDay } from '@/types';
+import { AccessibilityFeature, DisciplineName, LanguageName } from '@/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { EventFilters } from '../types/index';
@@ -30,13 +30,12 @@ const defaultFilters: EventFilters = {
   maxPrice: undefined,
   parkingAvailable: undefined,
 
-  // Duration and time filtering
+  // Duration and time filtering (calculated from startDate/endDate)
   duration: undefined,
   timeOfDay: undefined,
 
-  // Accessibility and inclusivity filtering
+  // Accessibility filtering
   accessibilityFeatures: [],
-  inclusivityFeatures: [],
 };
 
 // Storage utilities
@@ -91,20 +90,16 @@ interface UseEventFiltersReturn {
   clearTimezone: () => Promise<void>;
 
   // Duration filtering helpers
-  updateDuration: (duration: EventDuration) => Promise<void>;
+  updateDuration: (duration: string) => Promise<void>;
   clearDuration: () => Promise<void>;
 
   // Time of day filtering helpers
-  updateTimeOfDay: (timeOfDay: TimeOfDay) => Promise<void>;
+  updateTimeOfDay: (timeOfDay: string) => Promise<void>;
   clearTimeOfDay: () => Promise<void>;
 
   // Accessibility features filtering helpers
   toggleAccessibilityFeature: (feature: AccessibilityFeature) => Promise<void>;
   clearAccessibilityFeatures: () => Promise<void>;
-
-  // Inclusivity features filtering helpers
-  toggleInclusivityFeature: (feature: InclusivityFeature) => Promise<void>;
-  clearInclusivityFeatures: () => Promise<void>;
 }
 
 // Custom hook for managing event filters
@@ -229,8 +224,8 @@ export const useEventFilters = (initialFilters?: Partial<EventFilters>): UseEven
   };
 
   // Duration filtering helpers
-  const updateDuration = async (duration: EventDuration): Promise<void> => {
-    await updateFilter('duration', duration);
+  const updateDuration = async (duration: string): Promise<void> => {
+    await updateFilter('duration', duration as any);
   };
 
   const clearDuration = async (): Promise<void> => {
@@ -238,15 +233,14 @@ export const useEventFilters = (initialFilters?: Partial<EventFilters>): UseEven
   };
 
   // Time of day filtering helpers
-  const updateTimeOfDay = async (timeOfDay: TimeOfDay): Promise<void> => {
-    await updateFilter('timeOfDay', timeOfDay);
+  const updateTimeOfDay = async (timeOfDay: string): Promise<void> => {
+    await updateFilter('timeOfDay', timeOfDay as any);
   };
 
   const clearTimeOfDay = async (): Promise<void> => {
     await updateFilter('timeOfDay', undefined);
   };
 
-  // Accessibility features filtering helpers
   const toggleAccessibilityFeature = async (feature: AccessibilityFeature): Promise<void> => {
     const currentFeatures = filters.accessibilityFeatures || [];
     const newFeatures = currentFeatures.includes(feature)
@@ -257,19 +251,6 @@ export const useEventFilters = (initialFilters?: Partial<EventFilters>): UseEven
 
   const clearAccessibilityFeatures = async (): Promise<void> => {
     await updateFilter('accessibilityFeatures', []);
-  };
-
-  // Inclusivity features filtering helpers
-  const toggleInclusivityFeature = async (feature: InclusivityFeature): Promise<void> => {
-    const currentFeatures = filters.inclusivityFeatures || [];
-    const newFeatures = currentFeatures.includes(feature)
-      ? currentFeatures.filter(f => f !== feature)
-      : [...currentFeatures, feature];
-    await updateFilter('inclusivityFeatures', newFeatures);
-  };
-
-  const clearInclusivityFeatures = async (): Promise<void> => {
-    await updateFilter('inclusivityFeatures', []);
   };
 
   return {
@@ -298,7 +279,5 @@ export const useEventFilters = (initialFilters?: Partial<EventFilters>): UseEven
     clearTimeOfDay,
     toggleAccessibilityFeature,
     clearAccessibilityFeatures,
-    toggleInclusivityFeature,
-    clearInclusivityFeatures,
   };
 };

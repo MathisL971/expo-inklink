@@ -1,5 +1,6 @@
 import type { DisciplineName, EventType, FormatName, LanguageName, VideoConferencePlatform } from "@/types";
-import { AccessName } from "@/types";
+import { AccessName, AccessibilityFeature } from "@/types";
+
 
 // Event formats available for selection
 export const EVENT_FORMATS: FormatName[] = [
@@ -199,94 +200,13 @@ export const EVENT_LANGUAGES: LanguageName[] = [
     "Spanish",
     "French",
     "German",
-    "Italian",
-    "Portuguese",
-    "Russian",
     "Chinese (Mandarin)",
-    "Chinese (Cantonese)",
-    "Japanese",
-    "Korean",
     "Arabic",
-    "Hindi",
-    "Bengali",
+    "Russian",
+    "Portuguese",
+    "Japanese",
+    "Italian",
     "Dutch",
-    "Swedish",
-    "Norwegian",
-    "Danish",
-    "Finnish",
-    "Polish",
-    "Czech",
-    "Hungarian",
-    "Greek",
-    "Hebrew",
-    "Turkish",
-    "Persian (Farsi)",
-    "Urdu",
-    "Tamil",
-    "Telugu",
-    "Marathi",
-    "Gujarati",
-    "Punjabi",
-    "Thai",
-    "Vietnamese",
-    "Indonesian",
-    "Malay",
-    "Tagalog",
-    "Swahili",
-    "Amharic",
-    "Yoruba",
-    "Hausa",
-    "Igbo",
-    "Zulu",
-    "Afrikaans",
-    "Romanian",
-    "Bulgarian",
-    "Serbian",
-    "Croatian",
-    "Bosnian",
-    "Slovenian",
-    "Slovak",
-    "Lithuanian",
-    "Latvian",
-    "Estonian",
-    "Ukrainian",
-    "Belarusian",
-    "Georgian",
-    "Armenian",
-    "Azerbaijani",
-    "Kazakh",
-    "Uzbek",
-    "Kyrgyz",
-    "Tajik",
-    "Turkmen",
-    "Mongolian",
-    "Tibetan",
-    "Burmese",
-    "Khmer",
-    "Lao",
-    "Sinhala",
-    "Nepali",
-    "Pashto",
-    "Dari",
-    "Kurdish",
-    "Maltese",
-    "Basque",
-    "Catalan",
-    "Galician",
-    "Welsh",
-    "Irish",
-    "Scottish Gaelic",
-    "Breton",
-    "Luxembourgish",
-    "Frisian",
-    "Icelandic",
-    "Faroese",
-    "Albanian",
-    "Macedonian",
-    "Montenegrin",
-    "Esperanto",
-    "Latin",
-    "Sanskrit",
     "Other"
 ];
 
@@ -294,11 +214,11 @@ export const EVENT_LANGUAGES: LanguageName[] = [
 export const EVENT_DURATIONS = [
     "Short (< 1 hour)",
     "Medium (1-3 hours)",
-    "Long (3+ hours)",
+    "Long (3-4 hours)",
     "Half Day (4-6 hours)",
-    "Full Day (6+ hours)",
+    "Full Day (6-24 hours)",
     "Multi-Day"
-] as const;
+];
 
 // Time of day categories for filtering
 export const TIME_OF_DAY_OPTIONS = [
@@ -306,7 +226,7 @@ export const TIME_OF_DAY_OPTIONS = [
     "Afternoon (12 PM - 6 PM)",
     "Evening (6 PM - 10 PM)",
     "Night (10 PM - 6 AM)"
-] as const;
+];
 
 // Accessibility features for filtering
 export const ACCESSIBILITY_FEATURES = [
@@ -320,20 +240,5 @@ export const ACCESSIBILITY_FEATURES = [
     "Accessible Restrooms",
     "Mobility Aid Friendly",
     "Service Animals Welcome"
-] as const;
+] as AccessibilityFeature[];
 
-// Inclusivity features for filtering
-export const INCLUSIVITY_FEATURES = [
-    "Family-Friendly",
-    "LGBTQ+ Friendly",
-    "All Ages Welcome",
-    "Childcare Available",
-    "Diverse Speakers",
-    "Multilingual Support",
-    "Cultural Sensitivity",
-    "Religious Accommodations",
-    "Dietary Accommodations",
-    "Gender-Neutral Facilities",
-    "Safe Space Certified",
-    "Inclusive Language Used"
-] as const;

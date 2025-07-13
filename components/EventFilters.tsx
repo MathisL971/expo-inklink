@@ -1,10 +1,10 @@
-import { Colors, getColor } from "@/constants/Colors";
-import { ACCESSIBILITY_FEATURES, COMMON_TIMEZONES, EVENT_DISCIPLINES, EVENT_DURATIONS, EVENT_FORMATS, EVENT_LANGUAGES, EVENT_TYPES, INCLUSIVITY_FEATURES, TIME_OF_DAY_OPTIONS, VIDEO_CONFERENCE_PLATFORMS } from "@/constants/Event";
+import { getColor } from "@/constants/Colors";
+import { ACCESSIBILITY_FEATURES, COMMON_TIMEZONES, EVENT_DISCIPLINES, EVENT_DURATIONS, EVENT_FORMATS, EVENT_LANGUAGES, EVENT_TYPES, TIME_OF_DAY_OPTIONS, VIDEO_CONFERENCE_PLATFORMS } from "@/constants/Event";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { useEventFilters } from "@/hooks/useEventFilters";
-import { EventType, PriceRange, SortBy, VideoConferencePlatform } from "@/types";
+import { AccessibilityFeature, PriceRange, SortBy } from "@/types";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import React from "react";
+import React, { useState } from "react";
 import {
   Platform,
   ScrollView,
@@ -99,7 +99,8 @@ export const eventTypes = EVENT_TYPES;
 export const videoConferencePlatforms = VIDEO_CONFERENCE_PLATFORMS;
 
 export const priceRanges: { key: PriceRange; label: string }[] = [
-  { key: "free", label: "Free" },
+  { key: "free", label: "Free ($0)" },
+  { key: "paid", label: "Paid (Any Price)" },
   { key: "low", label: "Low ($0-$50)" },
   { key: "medium", label: "Medium ($50-$200)" },
   { key: "high", label: "High ($200+)" },
@@ -137,16 +138,16 @@ export const EventFilters = () => {
     clearEndDateTime,
     updateTimezone,
     clearTimezone,
+    toggleAccessibilityFeature,
+    clearAccessibilityFeatures,
     updateDuration,
     clearDuration,
     updateTimeOfDay,
     clearTimeOfDay,
-    toggleAccessibilityFeature,
-    clearAccessibilityFeatures,
-    toggleInclusivityFeature,
-    clearInclusivityFeatures,
   } = useEventFilters();
   const { mode } = useColorScheme();
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
 
   if (isLoadingFilters) {
     return (
@@ -163,34 +164,6 @@ export const EventFilters = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <FilterSection title="Sort by">
-          <View style={styles.buttonRow}>
-            {sortOptions.map((option) => (
-              <FilterButton
-                key={option.key}
-                label={option.label}
-                isSelected={filters.sortBy === option.key}
-                onPress={() => updateFilters({ sortBy: option.key })}
-              />
-            ))}
-          </View>
-        </FilterSection>
-
-        <FilterSection title="Sort Order">
-          <View style={styles.buttonRow}>
-            <FilterButton
-              label="Ascending"
-              isSelected={filters.sortOrder === "asc"}
-              onPress={() => updateFilters({ sortOrder: "asc" })}
-            />
-            <FilterButton
-              label="Descending"
-              isSelected={filters.sortOrder === "desc"}
-              onPress={() => updateFilters({ sortOrder: "desc" })}
-            />
-          </View>
-        </FilterSection>
-
         <FilterSection title="Search">
           <TextInput
             placeholder="Search events..."
@@ -201,8 +174,8 @@ export const EventFilters = () => {
               styles.searchInput,
               {
                 backgroundColor: getColor("inputBackground", mode),
-                borderColor: getColor("inputBorder", mode),
-                color: getColor("inputText", mode),
+                borderColor: getColor("border", mode),
+                color: getColor("text", mode),
               },
             ]}
           />
@@ -210,89 +183,234 @@ export const EventFilters = () => {
 
         <FilterSection title="Date & Time Filtering">
           <View style={styles.inputContainer}>
+            <ThemedText style={styles.inputLabel}>Start Date & Time</ThemedText>
             {Platform.OS === "web" ? (
               <CustomWebDatePicker
                 label="Start Date & Time"
                 value={filters.startDateTime || ""}
-                onChangeText={updateStartDateTime}
+                onChangeText={(dateTime: string) => updateStartDateTime(dateTime)}
                 onBlur={() => { }}
                 placeholder="Select start date & time"
-                colors={Colors[mode]}
-                minDate={new Date()}
+                colors={{
+                  inputBackground: getColor("inputBackground", mode),
+                  border: getColor("border", mode),
+                  text: getColor("text", mode),
+                  inputPlaceholder: getColor("inputPlaceholder", mode),
+                }}
               />
             ) : (
-              filters.startDateTime && (
-                <DateTimePicker
-                  testID="startDateTimePicker"
-                  value={new Date(filters.startDateTime)}
-                  mode="datetime"
-                  onChange={(event, selectedDate) => {
-                    if (selectedDate) {
-                      updateStartDateTime(selectedDate.toISOString());
+              <>
+                {showStartPicker && (
+                  <DateTimePicker
+                    value={
+                      filters.startDateTime
+                        ? new Date(filters.startDateTime)
+                        : new Date()
                     }
-                  }}
-                  minimumDate={new Date()}
-                />
-              )
+                    mode="datetime"
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      setShowStartPicker(false);
+                      if (selectedDate) {
+                        updateStartDateTime(selectedDate.toISOString());
+                      }
+                    }}
+                  />
+                )}
+                <TouchableOpacity
+                  style={[styles.textInput, { borderColor: getColor("border", mode) }]}
+                  onPress={() => setShowStartPicker(true)}
+                >
+                  <Text style={{ color: getColor("text", mode) }}>
+                    {filters.startDateTime
+                      ? new Date(filters.startDateTime).toLocaleString()
+                      : "Select start date & time"}
+                  </Text>
+                </TouchableOpacity>
+              </>
             )}
             {filters.startDateTime && (
-              <FilterButton
-                label="Clear Start Date"
-                isSelected={false}
-                onPress={() => clearStartDateTime()}
-              />
+              <Button size="xs" variant="outline" onPress={() => clearStartDateTime()}>
+                <ButtonText>Clear Start</ButtonText>
+              </Button>
             )}
           </View>
 
           <View style={styles.inputContainer}>
+            <ThemedText style={styles.inputLabel}>End Date & Time</ThemedText>
             {Platform.OS === "web" ? (
               <CustomWebDatePicker
                 label="End Date & Time"
                 value={filters.endDateTime || ""}
-                onChangeText={updateEndDateTime}
+                onChangeText={(dateTime: string) => updateEndDateTime(dateTime)}
                 onBlur={() => { }}
                 placeholder="Select end date & time"
-                colors={Colors[mode]}
-                minDate={filters.startDateTime ? new Date(filters.startDateTime) : new Date()}
+                colors={{
+                  inputBackground: getColor("inputBackground", mode),
+                  border: getColor("border", mode),
+                  text: getColor("text", mode),
+                  inputPlaceholder: getColor("inputPlaceholder", mode),
+                }}
               />
             ) : (
-              filters.endDateTime && (
-                <DateTimePicker
-                  testID="endDateTimePicker"
-                  value={new Date(filters.endDateTime)}
-                  mode="datetime"
-                  onChange={(event, selectedDate) => {
-                    if (selectedDate) {
-                      updateEndDateTime(selectedDate.toISOString());
+              <>
+                {showEndPicker && (
+                  <DateTimePicker
+                    value={
+                      filters.endDateTime
+                        ? new Date(filters.endDateTime)
+                        : new Date()
                     }
-                  }}
-                  minimumDate={filters.startDateTime ? new Date(filters.startDateTime) : new Date()}
-                />
-              )
+                    mode="datetime"
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      setShowEndPicker(false);
+                      if (selectedDate) {
+                        updateEndDateTime(selectedDate.toISOString());
+                      }
+                    }}
+                  />
+                )}
+                <TouchableOpacity
+                  style={[styles.textInput, { borderColor: getColor("border", mode) }]}
+                  onPress={() => setShowEndPicker(true)}
+                >
+                  <Text style={{ color: getColor("text", mode) }}>
+                    {filters.endDateTime
+                      ? new Date(filters.endDateTime).toLocaleString()
+                      : "Select end date & time"}
+                  </Text>
+                </TouchableOpacity>
+              </>
             )}
             {filters.endDateTime && (
-              <FilterButton
-                label="Clear End Date"
-                isSelected={false}
-                onPress={() => clearEndDateTime()}
-              />
+              <Button size="xs" variant="outline" onPress={() => clearEndDateTime()}>
+                <ButtonText>Clear End</ButtonText>
+              </Button>
             )}
           </View>
         </FilterSection>
 
+        <FilterSection title="Event Type">
+          <View style={styles.buttonRow}>
+            {EVENT_TYPES.map((type) => (
+              <FilterButton
+                key={type}
+                label={type}
+                isSelected={filters.eventType === type}
+                onPress={() =>
+                  updateFilters({
+                    eventType: filters.eventType === type ? undefined : type,
+                  })
+                }
+              />
+            ))}
+          </View>
+        </FilterSection>
+
+        <FilterSection title="Location">
+          <View style={styles.inputContainer}>
+            <ThemedText style={styles.inputLabel}>City</ThemedText>
+            <TextInput
+              placeholder="Enter city"
+              placeholderTextColor={getColor("inputPlaceholder", mode)}
+              value={filters.location?.city || ""}
+              onChangeText={(text) =>
+                updateLocationFilter({ city: text || undefined })
+              }
+              style={[
+                styles.textInput,
+                {
+                  backgroundColor: getColor("inputBackground", mode),
+                  borderColor: getColor("border", mode),
+                  color: getColor("text", mode),
+                },
+              ]}
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <ThemedText style={styles.inputLabel}>State/Province</ThemedText>
+            <TextInput
+              placeholder="Enter state or province"
+              placeholderTextColor={getColor("inputPlaceholder", mode)}
+              value={filters.location?.state || ""}
+              onChangeText={(text) =>
+                updateLocationFilter({ state: text || undefined })
+              }
+              style={[
+                styles.textInput,
+                {
+                  backgroundColor: getColor("inputBackground", mode),
+                  borderColor: getColor("border", mode),
+                  color: getColor("text", mode),
+                },
+              ]}
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <ThemedText style={styles.inputLabel}>Country</ThemedText>
+            <TextInput
+              placeholder="Enter country"
+              placeholderTextColor={getColor("inputPlaceholder", mode)}
+              value={filters.location?.country || ""}
+              onChangeText={(text) =>
+                updateLocationFilter({ country: text || undefined })
+              }
+              style={[
+                styles.textInput,
+                {
+                  backgroundColor: getColor("inputBackground", mode),
+                  borderColor: getColor("border", mode),
+                  color: getColor("text", mode),
+                },
+              ]}
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <ThemedText style={styles.inputLabel}>Venue</ThemedText>
+            <TextInput
+              placeholder="Enter venue name"
+              placeholderTextColor={getColor("inputPlaceholder", mode)}
+              value={filters.location?.venue || ""}
+              onChangeText={(text) =>
+                updateLocationFilter({ venue: text || undefined })
+              }
+              style={[
+                styles.textInput,
+                {
+                  backgroundColor: getColor("inputBackground", mode),
+                  borderColor: getColor("border", mode),
+                  color: getColor("text", mode),
+                },
+              ]}
+            />
+          </View>
+
+          {(filters.location?.city ||
+            filters.location?.state ||
+            filters.location?.country ||
+            filters.location?.venue) && (
+              <Button size="xs" variant="outline" onPress={() => clearLocationFilter()}>
+                <ButtonText>Clear Location</ButtonText>
+              </Button>
+            )}
+        </FilterSection>
+
         <FilterSection title="Format">
           <View style={styles.buttonRow}>
-            {formats.map((format) => (
+            {EVENT_FORMATS.map((format) => (
               <FilterButton
                 key={format}
                 label={format}
                 isSelected={filters.format === format}
                 onPress={() =>
                   updateFilters({
-                    format: filters.format === format ? undefined : format
+                    format: filters.format === format ? undefined : format,
                   })
                 }
-                style={styles.formatButton} // Using a more specific style name
               />
             ))}
           </View>
@@ -300,7 +418,7 @@ export const EventFilters = () => {
 
         <FilterSection title="Disciplines">
           <View style={styles.buttonRow}>
-            {disciplines.map((discipline) => (
+            {EVENT_DISCIPLINES.map((discipline) => (
               <FilterButton
                 key={discipline}
                 label={discipline}
@@ -313,7 +431,7 @@ export const EventFilters = () => {
 
         <FilterSection title="Languages">
           <View style={styles.buttonRow}>
-            {languages.map((language) => (
+            {EVENT_LANGUAGES.map((language) => (
               <FilterButton
                 key={language}
                 label={language}
@@ -321,208 +439,6 @@ export const EventFilters = () => {
                 onPress={() => toggleLanguage(language)}
               />
             ))}
-          </View>
-        </FilterSection>
-
-        <FilterSection title="Event Type">
-          <View style={styles.buttonRow}>
-            {eventTypes.map((type: EventType) => (
-              <FilterButton
-                key={type}
-                label={type}
-                isSelected={filters.eventType === type}
-                onPress={() => updateFilters({ eventType: filters.eventType === type ? undefined : type })}
-              />
-            ))}
-          </View>
-        </FilterSection>
-
-        <FilterSection title="Price Range">
-          <View style={styles.buttonRow}>
-            {priceRanges.map((range) => (
-              <FilterButton
-                key={range.key}
-                label={range.label}
-                isSelected={filters.priceRange === range.key}
-                onPress={() => updateFilters({ priceRange: filters.priceRange === range.key ? undefined : range.key })}
-              />
-            ))}
-          </View>
-        </FilterSection>
-
-        <FilterSection title="Features">
-          <View style={styles.buttonRow}>
-            <FilterButton
-              label="Has Featured Guests"
-              isSelected={filters.hasFeaturedGuests === true}
-              onPress={() => toggleFeaturedGuests()}
-            />
-            <FilterButton
-              label="Has Tickets"
-              isSelected={filters.hasTickets === true}
-              onPress={() => toggleHasTickets()}
-            />
-          </View>
-        </FilterSection>
-
-        <FilterSection title="Video Platform">
-          <View style={styles.buttonRow}>
-            {videoConferencePlatforms.map((platform: VideoConferencePlatform) => (
-              <FilterButton
-                key={platform}
-                label={platform}
-                isSelected={filters.videoConferencePlatform === platform}
-                onPress={() => updateFilters({ videoConferencePlatform: filters.videoConferencePlatform === platform ? undefined : platform })}
-              />
-            ))}
-          </View>
-        </FilterSection>
-
-        <FilterSection title="Parking">
-          <View style={styles.buttonRow}>
-            {parkingOptions.map((option) => (
-              <FilterButton
-                key={option.key}
-                label={option.label}
-                isSelected={filters.parkingAvailable === option.key}
-                onPress={() => updateFilters({ parkingAvailable: filters.parkingAvailable === option.key ? undefined : option.key })}
-              />
-            ))}
-          </View>
-        </FilterSection>
-
-        <FilterSection title="Timezone">
-          <View style={styles.buttonRow}>
-            {COMMON_TIMEZONES.slice(0, 10).map((timezone: { value: string; label: string }) => (
-              <FilterButton
-                key={timezone.value}
-                label={timezone.label.split(' ')[0]} // Show abbreviated timezone
-                isSelected={filters.timezone === timezone.value}
-                onPress={() => updateTimezone(filters.timezone === timezone.value ? "" : timezone.value)}
-              />
-            ))}
-          </View>
-          {filters.timezone && (
-            <View style={styles.inputContainer}>
-              <Text style={[styles.activeFilterText, { color: getColor("text", mode) }]}>
-                Selected: {COMMON_TIMEZONES.find((tz: { value: string; label: string }) => tz.value === filters.timezone)?.label}
-              </Text>
-              <FilterButton
-                label="Clear Timezone"
-                isSelected={false}
-                onPress={() => clearTimezone()}
-              />
-            </View>
-          )}
-        </FilterSection>
-
-        <FilterSection title="Location">
-          <View style={styles.inputContainer}>
-            <TextInput
-              placeholder="City..."
-              placeholderTextColor={getColor("inputPlaceholder", mode)}
-              value={filters.location?.city || ""}
-              onChangeText={(text) => updateLocationFilter({ city: text || undefined })}
-              style={[
-                styles.textInput,
-                {
-                  backgroundColor: getColor("inputBackground", mode),
-                  borderColor: getColor("inputBorder", mode),
-                  color: getColor("inputText", mode),
-                },
-              ]}
-            />
-            <TextInput
-              placeholder="State..."
-              placeholderTextColor={getColor("inputPlaceholder", mode)}
-              value={filters.location?.state || ""}
-              onChangeText={(text) => updateLocationFilter({ state: text || undefined })}
-              style={[
-                styles.textInput,
-                {
-                  backgroundColor: getColor("inputBackground", mode),
-                  borderColor: getColor("inputBorder", mode),
-                  color: getColor("inputText", mode),
-                },
-              ]}
-            />
-            <TextInput
-              placeholder="Country..."
-              placeholderTextColor={getColor("inputPlaceholder", mode)}
-              value={filters.location?.country || ""}
-              onChangeText={(text) => updateLocationFilter({ country: text || undefined })}
-              style={[
-                styles.textInput,
-                {
-                  backgroundColor: getColor("inputBackground", mode),
-                  borderColor: getColor("inputBorder", mode),
-                  color: getColor("inputText", mode),
-                },
-              ]}
-            />
-            <TextInput
-              placeholder="Venue..."
-              placeholderTextColor={getColor("inputPlaceholder", mode)}
-              value={filters.location?.venue || ""}
-              onChangeText={(text) => updateLocationFilter({ venue: text || undefined })}
-              style={[
-                styles.textInput,
-                {
-                  backgroundColor: getColor("inputBackground", mode),
-                  borderColor: getColor("inputBorder", mode),
-                  color: getColor("inputText", mode),
-                },
-              ]}
-            />
-            {(filters.location?.city || filters.location?.state || filters.location?.venue || filters.location?.country) && (
-              <FilterButton
-                label="Clear Location"
-                isSelected={false}
-                onPress={() => clearLocationFilter()}
-              />
-            )}
-          </View>
-        </FilterSection>
-
-        <FilterSection title="Custom Price Range">
-          <View style={styles.inputContainer}>
-            <TextInput
-              placeholder="Min Price..."
-              placeholderTextColor={getColor("inputPlaceholder", mode)}
-              value={filters.minPrice?.toString() || ""}
-              onChangeText={(text) => updatePriceRange(text ? parseFloat(text) : undefined, filters.maxPrice)}
-              keyboardType="numeric"
-              style={[
-                styles.textInput,
-                {
-                  backgroundColor: getColor("inputBackground", mode),
-                  borderColor: getColor("inputBorder", mode),
-                  color: getColor("inputText", mode),
-                },
-              ]}
-            />
-            <TextInput
-              placeholder="Max Price..."
-              placeholderTextColor={getColor("inputPlaceholder", mode)}
-              value={filters.maxPrice?.toString() || ""}
-              onChangeText={(text) => updatePriceRange(filters.minPrice, text ? parseFloat(text) : undefined)}
-              keyboardType="numeric"
-              style={[
-                styles.textInput,
-                {
-                  backgroundColor: getColor("inputBackground", mode),
-                  borderColor: getColor("inputBorder", mode),
-                  color: getColor("inputText", mode),
-                },
-              ]}
-            />
-            {(filters.minPrice || filters.maxPrice) && (
-              <FilterButton
-                label="Clear Price"
-                isSelected={false}
-                onPress={() => clearPriceRange()}
-              />
-            )}
           </View>
         </FilterSection>
 
@@ -578,6 +494,158 @@ export const EventFilters = () => {
           )}
         </FilterSection>
 
+        <FilterSection title="Price Range">
+          <View style={styles.buttonRow}>
+            {priceRanges.map((range) => (
+              <FilterButton
+                key={range.key}
+                label={range.label}
+                isSelected={filters.priceRange === range.key}
+                onPress={() =>
+                  updateFilters({
+                    priceRange:
+                      filters.priceRange === range.key ? undefined : range.key,
+                  })
+                }
+              />
+            ))}
+          </View>
+        </FilterSection>
+
+        <FilterSection title="Custom Price Range">
+          <View style={styles.inputContainer}>
+            <ThemedText style={styles.inputLabel}>Minimum Price ($)</ThemedText>
+            <TextInput
+              placeholder="0"
+              placeholderTextColor={getColor("inputPlaceholder", mode)}
+              value={filters.minPrice?.toString() || ""}
+              onChangeText={(text) => {
+                const price = text ? parseFloat(text) : undefined;
+                updatePriceRange(price, filters.maxPrice);
+              }}
+              keyboardType="numeric"
+              style={[
+                styles.textInput,
+                {
+                  backgroundColor: getColor("inputBackground", mode),
+                  borderColor: getColor("border", mode),
+                  color: getColor("text", mode),
+                },
+              ]}
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <ThemedText style={styles.inputLabel}>Maximum Price ($)</ThemedText>
+            <TextInput
+              placeholder="1000"
+              placeholderTextColor={getColor("inputPlaceholder", mode)}
+              value={filters.maxPrice?.toString() || ""}
+              onChangeText={(text) => {
+                const price = text ? parseFloat(text) : undefined;
+                updatePriceRange(filters.minPrice, price);
+              }}
+              keyboardType="numeric"
+              style={[
+                styles.textInput,
+                {
+                  backgroundColor: getColor("inputBackground", mode),
+                  borderColor: getColor("border", mode),
+                  color: getColor("text", mode),
+                },
+              ]}
+            />
+          </View>
+
+          {(filters.minPrice || filters.maxPrice) && (
+            <Button size="xs" variant="outline" onPress={() => clearPriceRange()}>
+              <ButtonText>Clear Custom Price Range</ButtonText>
+            </Button>
+          )}
+        </FilterSection>
+
+        <FilterSection title="Timezone">
+          <View style={styles.buttonRow}>
+            {COMMON_TIMEZONES.slice(0, 10).map((tz) => (
+              <FilterButton
+                key={tz.value}
+                label={tz.label}
+                isSelected={filters.timezone === tz.value}
+                onPress={() => {
+                  if (filters.timezone === tz.value) {
+                    clearTimezone();
+                  } else {
+                    updateTimezone(tz.value);
+                  }
+                }}
+              />
+            ))}
+          </View>
+          {filters.timezone && (
+            <View style={styles.inputContainer}>
+              <ThemedText style={styles.inputLabel}>
+                Selected Timezone: {COMMON_TIMEZONES.find(tz => tz.value === filters.timezone)?.label || filters.timezone}
+              </ThemedText>
+              <Button size="xs" variant="outline" onPress={() => clearTimezone()}>
+                <ButtonText>Clear Timezone</ButtonText>
+              </Button>
+            </View>
+          )}
+        </FilterSection>
+
+        <FilterSection title="Video Platform">
+          <View style={styles.buttonRow}>
+            {VIDEO_CONFERENCE_PLATFORMS.map((platform) => (
+              <FilterButton
+                key={platform}
+                label={platform}
+                isSelected={filters.videoConferencePlatform === platform}
+                onPress={() =>
+                  updateFilters({
+                    videoConferencePlatform:
+                      filters.videoConferencePlatform === platform
+                        ? undefined
+                        : platform,
+                  })
+                }
+              />
+            ))}
+          </View>
+        </FilterSection>
+
+        <FilterSection title="Features">
+          <View style={styles.buttonRow}>
+            <FilterButton
+              label="Featured Guests"
+              isSelected={filters.hasFeaturedGuests === true}
+              onPress={() => toggleFeaturedGuests()}
+            />
+            <FilterButton
+              label="Has Tickets"
+              isSelected={filters.hasTickets === true}
+              onPress={() => toggleHasTickets()}
+            />
+          </View>
+        </FilterSection>
+
+        <FilterSection title="Parking">
+          <View style={styles.buttonRow}>
+            {parkingOptions.map((option) => (
+              <FilterButton
+                key={option.key}
+                label={option.label}
+                isSelected={filters.parkingAvailable === option.key}
+                onPress={() =>
+                  updateFilters({
+                    parkingAvailable:
+                      filters.parkingAvailable === option.key ? undefined : option.key,
+                  })
+                }
+              />
+            ))}
+          </View>
+        </FilterSection>
+
         <FilterSection title="Accessibility Features">
           <View style={styles.buttonRow}>
             {ACCESSIBILITY_FEATURES.map((feature) => (
@@ -585,7 +653,7 @@ export const EventFilters = () => {
                 key={feature}
                 label={feature}
                 isSelected={filters.accessibilityFeatures?.includes(feature) || false}
-                onPress={() => toggleAccessibilityFeature(feature)}
+                onPress={() => toggleAccessibilityFeature(feature as AccessibilityFeature)}
               />
             ))}
           </View>
@@ -598,24 +666,32 @@ export const EventFilters = () => {
           )}
         </FilterSection>
 
-        <FilterSection title="Inclusivity Features">
+        <FilterSection title="Sort by">
           <View style={styles.buttonRow}>
-            {INCLUSIVITY_FEATURES.map((feature) => (
+            {sortOptions.map((option) => (
               <FilterButton
-                key={feature}
-                label={feature}
-                isSelected={filters.inclusivityFeatures?.includes(feature) || false}
-                onPress={() => toggleInclusivityFeature(feature)}
+                key={option.key}
+                label={option.label}
+                isSelected={filters.sortBy === option.key}
+                onPress={() => updateFilters({ sortBy: option.key })}
               />
             ))}
           </View>
-          {filters.inclusivityFeatures && filters.inclusivityFeatures.length > 0 && (
+        </FilterSection>
+
+        <FilterSection title="Sort Order">
+          <View style={styles.buttonRow}>
             <FilterButton
-              label="Clear Inclusivity Features"
-              isSelected={false}
-              onPress={() => clearInclusivityFeatures()}
+              label="Ascending"
+              isSelected={filters.sortOrder === "asc"}
+              onPress={() => updateFilters({ sortOrder: "asc" })}
             />
-          )}
+            <FilterButton
+              label="Descending"
+              isSelected={filters.sortOrder === "desc"}
+              onPress={() => updateFilters({ sortOrder: "desc" })}
+            />
+          </View>
         </FilterSection>
       </ScrollView>
 
@@ -640,8 +716,7 @@ export const EventFilters = () => {
         filters.maxPrice ||
         filters.duration ||
         filters.timeOfDay ||
-        (filters.accessibilityFeatures && filters.accessibilityFeatures.length > 0) ||
-        (filters.inclusivityFeatures && filters.inclusivityFeatures.length > 0)) && (
+        (filters.accessibilityFeatures && filters.accessibilityFeatures.length > 0)) && (
           <View
             style={[
               styles.activeFiltersSection,
@@ -812,6 +887,16 @@ export const EventFilters = () => {
                   Search: &quot;{filters.searchTerm}&quot;
                 </Text>
               )}
+              {(filters.accessibilityFeatures && filters.accessibilityFeatures.length > 0) && (
+                <Text
+                  style={[
+                    styles.activeFilterText,
+                    { color: getColor("text", mode) },
+                  ]}
+                >
+                  Accessibility Features: {filters.accessibilityFeatures.join(", ")}
+                </Text>
+              )}
               {filters.duration && (
                 <Text
                   style={[
@@ -830,26 +915,6 @@ export const EventFilters = () => {
                   ]}
                 >
                   Time of Day: {filters.timeOfDay}
-                </Text>
-              )}
-              {(filters.accessibilityFeatures && filters.accessibilityFeatures.length > 0) && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Accessibility Features: {filters.accessibilityFeatures.join(", ")}
-                </Text>
-              )}
-              {(filters.inclusivityFeatures && filters.inclusivityFeatures.length > 0) && (
-                <Text
-                  style={[
-                    styles.activeFilterText,
-                    { color: getColor("text", mode) },
-                  ]}
-                >
-                  Inclusivity Features: {filters.inclusivityFeatures.join(", ")}
                 </Text>
               )}
             </View>
@@ -1001,5 +1066,10 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     marginVertical: 8,
     opacity: 0.7,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginBottom: 4,
   },
 });

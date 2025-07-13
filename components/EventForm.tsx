@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import {
+  ACCESSIBILITY_FEATURES,
   COMMON_TIMEZONES,
   EVENT_ACCESS_LEVELS,
   EVENT_DISCIPLINES,
@@ -20,7 +21,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { ImagePickerAsset } from "expo-image-picker";
 import { router } from "expo-router";
-import { Building, Car, FileText, MapPin, Monitor, Plus, Ticket, Trash2, Users } from "lucide-react";
+import { Building, Car, FileText, MapPin, Monitor, Plus, Shield, Ticket, Trash2, Users } from "lucide-react";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Alert, Platform, View } from "react-native";
@@ -91,6 +92,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
       organizerId: initialEvent?.organizerId || user?.id,
       ticketTiers: initialEvent?.ticketTiers || [],
       featuredGuests: initialEvent?.featuredGuests || [],
+      accessibilityFeatures: initialEvent?.accessibilityFeatures || [],
     },
   });
 
@@ -488,6 +490,30 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               colors={Colors[mode]}
               keyboardType="url"
               error={errors.source?.message}
+            />
+          )}
+        />
+      </ThemedView>
+
+      <ThemedView>
+        <ThemedText size="xl" bold className="mb-3">
+          Accessibility Features
+        </ThemedText>
+
+        <Controller
+          control={control}
+          name="accessibilityFeatures"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <CustomMultiSelect
+              label="Accessibility Features"
+              values={value}
+              onSelect={onChange}
+              onBlur={onBlur}
+              options={ACCESSIBILITY_FEATURES}
+              colors={Colors[mode]}
+              placeholder="Select accessibility features"
+              error={errors.accessibilityFeatures?.message}
+              Icon={Shield}
             />
           )}
         />

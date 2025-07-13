@@ -29,7 +29,7 @@ export async function fetchEventsWithFilters(filters: EventFilters): Promise<{
     );
   }
   if (filters.eventType) queryParams.append('eventType', filters.eventType);
-  if (filters.searchTerm) queryParams.append('search', filters.searchTerm);
+  if (filters.searchTerm) queryParams.append('searchTerm', filters.searchTerm);
   if (filters.startDateTime) queryParams.append('startDateTime', filters.startDateTime);
   if (filters.endDateTime) queryParams.append('endDateTime', filters.endDateTime);
 
@@ -50,7 +50,7 @@ export async function fetchEventsWithFilters(filters: EventFilters): Promise<{
   if (filters.location?.country) queryParams.append('locationCountry', filters.location.country);
   if (filters.location?.venue) queryParams.append('locationVenue', filters.location.venue);
 
-  // Duration and time filtering
+  // Duration and time filtering (calculated dynamically on backend)
   if (filters.duration) queryParams.append('duration', filters.duration);
   if (filters.timeOfDay) queryParams.append('timeOfDay', filters.timeOfDay);
 
@@ -58,13 +58,6 @@ export async function fetchEventsWithFilters(filters: EventFilters): Promise<{
   if (filters.accessibilityFeatures && filters.accessibilityFeatures.length > 0) {
     filters.accessibilityFeatures.forEach(feature =>
       queryParams.append('accessibilityFeatures', feature)
-    );
-  }
-
-  // Inclusivity features filtering
-  if (filters.inclusivityFeatures && filters.inclusivityFeatures.length > 0) {
-    filters.inclusivityFeatures.forEach(feature =>
-      queryParams.append('inclusivityFeatures', feature)
     );
   }
 

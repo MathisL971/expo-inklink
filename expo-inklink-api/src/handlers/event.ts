@@ -7,7 +7,7 @@ interface EventFilters {
   disciplines: string[];
   languages: string[];
   eventType: string | null;
-  search: string;
+  searchTerm: string;
   startDateTime: string | null;
   endDateTime: string | null;
   sortBy: string;
@@ -28,13 +28,12 @@ interface EventFilters {
   locationCountry: string | null;
   locationVenue: string | null;
 
-  // Duration and time filtering
+  // Duration and time filtering (calculated dynamically from startDate/endDate)
   duration: string | null;
   timeOfDay: string | null;
 
-  // Accessibility and inclusivity filtering
+  // Accessibility filtering
   accessibilityFeatures: string[];
-  inclusivityFeatures: string[];
 }
 
 interface MongoFilter {
@@ -53,7 +52,7 @@ interface MongoFilter {
     "address.parkingDetails"?: { $regex: string; $options: string };
     "address.parkingInstructions"?: { $regex: string; $options: string };
   }[];
-  startDate?: { $gte: Date; $lt?: Date };
+  startDate?: { $gte?: Date; $lt?: Date; $lte?: Date };
   endDate?: { $lte: Date };
 
   // New filtering options
@@ -62,20 +61,15 @@ interface MongoFilter {
   "videoConference.platform"?: string;
   organizerId?: string;
   timezone?: string;
-  "ticketTiers.price"?: { $gte?: number; $lte?: number };
+  "ticketTiers.price"?: { $gte?: number; $lte?: number; $gt?: number; $eq?: number };
   "address.parkingAvailable"?: string;
   "address.city"?: { $regex: string; $options: string };
   "address.state"?: { $regex: string; $options: string };
   "address.country"?: { $regex: string; $options: string };
   "address.venue"?: { $regex: string; $options: string };
 
-  // Duration and time filtering
-  duration?: string;
-  timeOfDay?: string;
-
-  // Accessibility and inclusivity filtering
+  // Accessibility filtering
   accessibilityFeatures?: { $in: string[] };
-  inclusivityFeatures?: { $in: string[] };
 }
 
 export async function handleEventsGET(event: APIGatewayProxyEventV2) {
@@ -105,13 +99,17 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
       startDate: 1
     };
 
+    // Declare duration and timeOfDay variables outside the if block
+    let duration: string | null = null;
+    let timeOfDay: string | null = null;
+
     if (queryStringParameters) {
       const {
         format = null,
         disciplines = [],
         languages = [],
         eventType = null,
-        search = '',
+        searchTerm = '',
         startDateTime = null,
         endDateTime = null,
         sortBy = 'startDate',
@@ -132,30 +130,32 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
         locationCountry = null,
         locationVenue = null,
 
-        // Duration and time filtering
-        duration = null,
-        timeOfDay = null,
+        // Duration and time filtering (calculated dynamically from startDate/endDate)
+        duration: durationParam = null,
+        timeOfDay: timeOfDayParam = null,
 
-        // Accessibility and inclusivity filtering
-        accessibilityFeatures = [],
-        inclusivityFeatures = []
+        // Accessibility filtering
+        accessibilityFeatures = []
       } = queryStringParameters as APIGatewayProxyEventQueryStringParameters & EventFilters;
 
+      // Assign the destructured values to the outer scope variables
+      duration = durationParam;
+      timeOfDay = timeOfDayParam;
 
       if (format) filter.format = format;
       if (disciplines?.length > 0) filter.disciplines = { $in: Array.isArray(disciplines) ? disciplines : [disciplines] };
       if (languages?.length > 0) filter.languages = { $in: Array.isArray(languages) ? languages : [languages] };
       if (eventType) filter.eventType = eventType;
-      if (search) {
+      if (searchTerm) {
         filter.$or = [
-          { title: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } },
-          { "address.street": { $regex: search, $options: 'i' } },
-          { "address.city": { $regex: search, $options: 'i' } },
-          { "address.state": { $regex: search, $options: 'i' } },
-          { "address.venue": { $regex: search, $options: 'i' } },
-          { "address.parkingDetails": { $regex: search, $options: 'i' } },
-          { "address.parkingInstructions": { $regex: search, $options: 'i' } }
+          { title: { $regex: searchTerm, $options: 'i' } },
+          { description: { $regex: searchTerm, $options: 'i' } },
+          { "address.street": { $regex: searchTerm, $options: 'i' } },
+          { "address.city": { $regex: searchTerm, $options: 'i' } },
+          { "address.state": { $regex: searchTerm, $options: 'i' } },
+          { "address.venue": { $regex: searchTerm, $options: 'i' } },
+          { "address.parkingDetails": { $regex: searchTerm, $options: 'i' } },
+          { "address.parkingInstructions": { $regex: searchTerm, $options: 'i' } }
         ];
       }
       // DateTime filtering
@@ -169,7 +169,12 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
       if (endDateTime) {
         const endDate = new Date(endDateTime);
         if (!isNaN(endDate.getTime())) {
-          filter.endDate = { $lte: endDate };
+          // Filter events that start before or at endDateTime
+          if (filter.startDate) {
+            filter.startDate.$lte = endDate;
+          } else {
+            filter.startDate = { $lte: endDate };
+          }
         }
       }
 
@@ -227,28 +232,21 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
       if (priceRange) {
         switch (priceRange) {
           case 'free':
-            filter['ticketTiers.price'] = { $lte: 0 };
+            filter['ticketTiers.price'] = { $eq: 0 };
+            break;
+          case 'paid':
+            filter['ticketTiers.price'] = { $gt: 0 };
             break;
           case 'low':
-            filter['ticketTiers.price'] = { $gte: 0.01, $lte: 50 };
+            filter['ticketTiers.price'] = { $gt: 0, $lte: 50 };
             break;
           case 'medium':
-            filter['ticketTiers.price'] = { $gte: 50.01, $lte: 200 };
+            filter['ticketTiers.price'] = { $gt: 50, $lte: 200 };
             break;
           case 'high':
-            filter['ticketTiers.price'] = { $gte: 200.01 };
+            filter['ticketTiers.price'] = { $gt: 200 };
             break;
         }
-      }
-
-      // Duration filtering
-      if (duration) {
-        filter.duration = duration;
-      }
-
-      // Time of day filtering
-      if (timeOfDay) {
-        filter.timeOfDay = timeOfDay;
       }
 
       // Accessibility features filtering
@@ -256,20 +254,75 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
         filter.accessibilityFeatures = { $in: Array.isArray(accessibilityFeatures) ? accessibilityFeatures : [accessibilityFeatures] };
       }
 
-      // Inclusivity features filtering
-      if (inclusivityFeatures && inclusivityFeatures.length > 0) {
-        filter.inclusivityFeatures = { $in: Array.isArray(inclusivityFeatures) ? inclusivityFeatures : [inclusivityFeatures] };
-      }
-
       sortObj[sortBy] = sortOrder === 'desc' ? -1 : 1;
     }
 
-    const events = await EventModel.find(filter)
-      .limit(limit)
-      .skip(skip)
-      .sort(sortObj);
+    // Get total count based on database filters only
+    const totalCount = await EventModel.countDocuments(filter);
 
-    return createResponse(200, { events, count: events.length });
+    const events = await EventModel.find(filter)
+      .sort(sortObj)
+      .skip(skip)
+      .limit(limit);
+
+    let filteredEvents = events;
+
+    // Apply dynamic filtering for duration and timeOfDay (calculated from startDate/endDate)
+    if (duration) {
+      filteredEvents = filteredEvents.filter(event => {
+        if (!event.startDate || !event.endDate) return false;
+        const start = new Date(event.startDate as Date);
+        const end = new Date(event.endDate as Date);
+        const durationMs = end.getTime() - start.getTime();
+        const durationHours = durationMs / (1000 * 60 * 60);
+
+        switch (duration) {
+          case 'Short (< 1 hour)':
+            return durationHours < 1;
+          case 'Medium (1-3 hours)':
+            return durationHours >= 1 && durationHours < 3;
+          case 'Long (3-4 hours)':
+            return durationHours >= 3 && durationHours < 4;
+          case 'Half Day (4-6 hours)':
+            return durationHours >= 4 && durationHours < 6;
+          case 'Full Day (6-24 hours)':
+            return durationHours >= 6 && durationHours < 24;
+          case 'Multi-Day':
+            return durationHours >= 24;
+          default:
+            return true;
+        }
+      });
+    }
+
+    if (timeOfDay) {
+      filteredEvents = filteredEvents.filter(event => {
+        if (!event.startDate) return false;
+        const start = new Date(event.startDate as Date);
+        const startHour = start.getHours();
+
+        switch (timeOfDay) {
+          case 'Morning (6 AM - 12 PM)':
+            return startHour >= 6 && startHour < 12;
+          case 'Afternoon (12 PM - 6 PM)':
+            return startHour >= 12 && startHour < 18;
+          case 'Evening (6 PM - 10 PM)':
+            return startHour >= 18 && startHour < 22;
+          case 'Night (10 PM - 6 AM)':
+            return startHour >= 22 || startHour < 6;
+          default:
+            return true;
+        }
+      });
+    }
+
+    const filteredCount = filteredEvents.length;
+
+    return createResponse(200, {
+      events: filteredEvents,
+      count: filteredCount,
+      totalCount: totalCount
+    });
   }
 }
 
