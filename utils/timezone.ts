@@ -198,6 +198,99 @@ export function formatDateRangeInTimezone(
 }
 
 /**
+ * Convert and format event times from event timezone to user timezone
+ * @param eventStartDate - Event start date ISO string
+ * @param eventEndDate - Event end date ISO string
+ * @param eventTimezone - Event's original timezone
+ * @param userTimezone - User's timezone (defaults to detected timezone)
+ * @returns Object with formatted times in user's timezone and event timezone info
+ */
+export function formatEventTimesForUser(
+    eventStartDate: string,
+    eventEndDate: string,
+    eventTimezone: string,
+    userTimezone?: string
+): {
+    userTimezone: string;
+    eventTimezone: string;
+    formattedDateRange: string;
+    formattedStartDate: string;
+    formattedStartTime: string;
+    formattedEndTime: string;
+    formattedEndDate: string;
+    isSameDay: boolean;
+} {
+    const detectedUserTimezone = userTimezone || detectUserTimezone();
+
+    try {
+        const startDate = new Date(eventStartDate);
+        const endDate = new Date(eventEndDate);
+
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+            throw new Error("Invalid dates");
+        }
+
+        // Format dates in user's timezone
+        const formattedStartDate = formatDateInTimezone(eventStartDate, detectedUserTimezone, {
+            includeTime: false,
+            dateStyle: "full"
+        });
+
+        const formattedEndDate = formatDateInTimezone(eventEndDate, detectedUserTimezone, {
+            includeTime: false,
+            dateStyle: "full"
+        });
+
+        const formattedStartTime = formatDateInTimezone(eventStartDate, detectedUserTimezone, {
+            includeTime: true,
+            timeStyle: "short"
+        }).split(" ").slice(-2).join(" "); // Get just the time part
+
+        const formattedEndTime = formatDateInTimezone(eventEndDate, detectedUserTimezone, {
+            includeTime: true,
+            timeStyle: "short"
+        }).split(" ").slice(-2).join(" "); // Get just the time part
+
+        // Check if same day in user's timezone
+        const startDateOnly = formatDateInTimezone(eventStartDate, detectedUserTimezone, {
+            includeTime: false,
+            dateStyle: "short"
+        });
+        const endDateOnly = formatDateInTimezone(eventEndDate, detectedUserTimezone, {
+            includeTime: false,
+            dateStyle: "short"
+        });
+        const isSameDay = startDateOnly === endDateOnly;
+
+        // Format date range in user's timezone
+        const formattedDateRange = formatDateRangeInTimezone(eventStartDate, eventEndDate, detectedUserTimezone);
+
+        return {
+            userTimezone: detectedUserTimezone,
+            eventTimezone,
+            formattedDateRange,
+            formattedStartDate,
+            formattedStartTime,
+            formattedEndTime,
+            formattedEndDate,
+            isSameDay
+        };
+    } catch (error) {
+        console.error("Error formatting event times for user:", error);
+        return {
+            userTimezone: detectedUserTimezone,
+            eventTimezone,
+            formattedDateRange: "Invalid Date Range",
+            formattedStartDate: "Invalid Date",
+            formattedStartTime: "Invalid Time",
+            formattedEndTime: "Invalid Time",
+            formattedEndDate: "Invalid Date",
+            isSameDay: false
+        };
+    }
+}
+
+/**
  * Get timezone display name from IANA timezone name
  * @param timezone - IANA timezone name
  * @returns Human-readable timezone name

@@ -1,6 +1,6 @@
 import { getColor } from "@/constants/Colors";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
-import { formatDateRangeInTimezone } from "@/utils/timezone";
+import { formatEventTimesForUser } from "@/utils/timezone";
 import { router } from "expo-router";
 import { Platform, TouchableOpacity } from "react-native";
 import type { Event } from "../types/index";
@@ -14,6 +14,13 @@ import { Image } from "./ui/image";
 
 export default function ThemedEventCard({ event }: { event: Event }) {
   const { mode } = useColorScheme();
+
+  // Format times for user's timezone
+  const formattedTimes = formatEventTimesForUser(
+    event.startDate,
+    event.endDate,
+    event.timezone || "UTC"
+  );
 
   return (
     <Card
@@ -130,7 +137,16 @@ export default function ThemedEventCard({ event }: { event: Event }) {
         style={{ fontWeight: "500" }}
         {...(Platform.OS !== "web" ? { numberOfLines: 1 } : {})}
       >
-        {formatDateRangeInTimezone(event.startDate, event.endDate, event.timezone || "UTC")}
+        {formattedTimes.formattedDateRange}
+      </ThemedText>
+
+      <ThemedText
+        colorVariant="textTertiary"
+        className="text-xs line-clamp-1 mb-1"
+        style={{ fontWeight: "400" }}
+        {...(Platform.OS !== "web" ? { numberOfLines: 1 } : {})}
+      >
+        Your timezone • Event timezone: {formattedTimes.eventTimezone}
       </ThemedText>
 
       <ThemedText

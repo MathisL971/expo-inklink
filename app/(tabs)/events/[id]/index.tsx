@@ -12,6 +12,7 @@ import { VStack } from "@/components/ui/vstack";
 import { Colors, getColor } from "@/constants/Colors";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { fetchEvent } from "@/services/event";
+import { formatEventTimesForUser } from "@/utils/timezone";
 import { useQuery } from "@tanstack/react-query";
 import { ExternalPathString, router, useLocalSearchParams } from "expo-router";
 import {
@@ -34,22 +35,14 @@ export default function EventScreen() {
     queryFn: () => fetchEvent(id),
   });
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  // Use timezone-aware formatting for user's local time
+  const getFormattedTimes = (event: any) => {
+    if (!event) return null;
+    return formatEventTimesForUser(
+      event.startDate,
+      event.endDate,
+      event.timezone || "UTC"
+    );
   };
 
   return (
@@ -135,7 +128,7 @@ export default function EventScreen() {
                 />
                 <View className="flex-1">
                   <ThemedText className="font-semibold mb-1">
-                    {formatDate(data.startDate)}
+                    {data.startDate ? getFormattedTimes(data)?.formattedStartDate : "N/A"}
                   </ThemedText>
                   <View className="flex-row items-center">
                     <Clock
@@ -147,18 +140,25 @@ export default function EventScreen() {
                       colorVariant="textSecondary"
                       className="text-sm"
                     >
-                      {formatTime(data.startDate)} - {formatTime(data.endDate)}
+                      {data.startDate ? getFormattedTimes(data)?.formattedStartTime : "N/A"} - {data.startDate ? getFormattedTimes(data)?.formattedEndTime : "N/A"}
                     </ThemedText>
                   </View>
-                  {data.startDate.split("T")[0] !==
-                    data.endDate.split("T")[0] && (
-                      <ThemedText
-                        colorVariant="textSecondary"
-                        className="text-sm mt-1"
-                      >
-                        Ends: {formatDate(data.endDate)}
-                      </ThemedText>
-                    )}
+                  {data.startDate && getFormattedTimes(data) && (
+                    <ThemedText
+                      colorVariant="textTertiary"
+                      className="text-xs mt-1"
+                    >
+                      Your timezone • Event timezone: {getFormattedTimes(data)?.eventTimezone}
+                    </ThemedText>
+                  )}
+                  {data.startDate && data.endDate && !getFormattedTimes(data)?.isSameDay && (
+                    <ThemedText
+                      colorVariant="textSecondary"
+                      className="text-sm mt-1"
+                    >
+                      Ends: {data.endDate ? getFormattedTimes(data)?.formattedEndDate : "N/A"}
+                    </ThemedText>
+                  )}
                 </View>
               </View>
             </ThemedView>
@@ -347,12 +347,12 @@ export default function EventScreen() {
                     colorVariant="textTertiary"
                     className="text-xs mb-1"
                   >
-                    Created: {formatDate(data.createdAt)}
+                    Created: {data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "N/A"}
                   </ThemedText>
                 )}
                 {data.updatedAt && (
                   <ThemedText colorVariant="textTertiary" className="text-xs">
-                    Last updated: {formatDate(data.updatedAt)}
+                    Last updated: {data.updatedAt ? new Date(data.updatedAt).toLocaleDateString() : "N/A"}
                   </ThemedText>
                 )}
               </View>
