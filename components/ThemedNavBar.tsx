@@ -6,6 +6,7 @@ import { Href, Link, usePathname, useRouter } from "expo-router"; // Added usePa
 import { Pressable, StyleSheet, View } from "react-native"; // Added StyleSheet and Pressable
 import ColorSchemeToggleButton from "./ColorSchemeToggleButton";
 import { SignOutButton } from "./SignOutButton";
+import { ThemedButton } from "./ThemedButton";
 import { ThemedText } from "./ThemedText";
 
 // Helper component for themed navigation links
@@ -108,20 +109,20 @@ export default function ThemedNavBar() {
           </>
         ) : (
           <>
-            {/* <ThemedButton
+            <ThemedButton
               title="Sign in"
               action="primary"
               size="sm"
               variant="solid"
-              onPress={() => router.navigate("/(auth)/sign-in")}
+              onPress={() => router.push("/(auth)/sign-in")}
             />
             <ThemedButton
               title="Sign up"
-              action="secondary"
+              action="primary"
               size="sm"
               variant="solid"
-              onPress={() => router.navigate("/(auth)/sign-up")}
-            /> */}
+              onPress={() => router.push("/(auth)/sign-up")}
+            />
           </>
         )}
         <ColorSchemeToggleButton />
