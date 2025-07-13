@@ -225,7 +225,7 @@ export const EventFilters = () => {
                 onPress={() =>
                   updateFilter(
                     "format",
-                    filters.format === format ? und : format
+                    filters.format === format ? undefined : format
                   )
                 }
                 style={styles.formatButton} // Using a more specific style name
