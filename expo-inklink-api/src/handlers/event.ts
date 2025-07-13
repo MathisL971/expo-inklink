@@ -6,6 +6,7 @@ interface EventFilters {
   format: string | null;
   disciplines: string[];
   access: string | null;
+  eventType: string | null;
   search: string;
   dateRange: string | null;
   sortBy: string;
@@ -16,6 +17,7 @@ interface MongoFilter {
   format?: string;
   disciplines?: { $in: string[] };
   access?: string;
+  eventType?: string;
   $or?: {
     title?: { $regex: string; $options: string };
     description?: { $regex: string; $options: string };
@@ -56,6 +58,7 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
         format = null,
         disciplines = [],
         access = null,
+        eventType = null,
         search = '',
         dateRange = null,
         sortBy = 'startDate',
@@ -66,6 +69,7 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
       if (format) filter.format = format;
       if (disciplines?.length > 0) filter.disciplines = { $in: Array.isArray(disciplines) ? disciplines : [disciplines] };
       if (access) filter.access = access;
+      if (eventType) filter.eventType = eventType;
       if (search) {
         filter.$or = [
           { title: { $regex: search, $options: 'i' } },

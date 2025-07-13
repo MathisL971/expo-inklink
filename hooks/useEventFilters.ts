@@ -11,6 +11,7 @@ const defaultFilters: EventFilters = {
   format: undefined,
   disciplines: [],
   access: undefined,
+  eventType: undefined,
   dateRange: undefined,
   searchTerm: '',
   sortBy: 'startDate',
@@ -63,13 +64,13 @@ export const useEventFilters = (initialFilters?: Partial<EventFilters>): UseEven
   // Function to update filters
   const updateFilters = async (newFilters: Partial<EventFilters>): Promise<void> => {
     const updatedFilters: EventFilters = { ...filters, ...newFilters };
-    
+
     // Update the query cache immediately
     queryClient.setQueryData(FILTER_QUERY_KEY, updatedFilters);
-    
+
     // Save to persistent storage
     await saveFiltersToStorage(updatedFilters);
-    
+
     // Invalidate events query to trigger refetch with new filters
     queryClient.invalidateQueries({ queryKey: ['events'] });
   };
@@ -83,7 +84,7 @@ export const useEventFilters = (initialFilters?: Partial<EventFilters>): UseEven
 
   // Function to update a single filter
   const updateFilter = async <K extends keyof EventFilters>(
-    key: K, 
+    key: K,
     value: EventFilters[K]
   ): Promise<void> => {
     await updateFilters({ [key]: value } as Partial<EventFilters>);
@@ -95,7 +96,7 @@ export const useEventFilters = (initialFilters?: Partial<EventFilters>): UseEven
     const updatedDisciplines = currentDisciplines.includes(discipline)
       ? currentDisciplines.filter(d => d !== discipline)
       : [...currentDisciplines, discipline];
-    
+
     await updateFilter('disciplines', updatedDisciplines);
   };
 

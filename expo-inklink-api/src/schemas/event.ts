@@ -46,6 +46,10 @@ const DisciplineNames = [
 
 const AccessNames = ["Public", "Private", "Invitation Only"] as const;
 
+const EventTypeNames = ["In-Person", "Online", "Hybrid"] as const;
+
+const VideoConferencePlatformNames = ["Zoom", "Teams", "Google Meet", "WebEx", "GoToMeeting", "Other"] as const;
+
 // Define the address schema
 const addressSchema = new Schema({
   street: { type: String, required: true },
@@ -54,6 +58,19 @@ const addressSchema = new Schema({
   zipCode: { type: String, required: true },
   country: { type: String, required: true },
   venue: { type: String, required: false }, // Optional venue name
+}, { _id: false }); // Don't create separate _id for subdocument
+
+// Define the video conference schema
+const videoConferenceSchema = new Schema({
+  platform: {
+    type: String,
+    required: true,
+    enum: VideoConferencePlatformNames
+  },
+  link: { type: String, required: true },
+  meetingId: { type: String, required: false },
+  passcode: { type: String, required: false },
+  instructions: { type: String, required: false },
 }, { _id: false }); // Don't create separate _id for subdocument
 
 // Define the ticket tier schema
@@ -72,7 +89,33 @@ const eventSchema = new Schema(
     image: { type: String, required: false },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
-    address: { type: addressSchema, required: true },
+    eventType: {
+      type: String,
+      required: true,
+      enum: EventTypeNames,
+    },
+    address: {
+      type: addressSchema,
+      required: false, // Optional for online events
+      validate: {
+        validator: function (this: any) {
+          // Address is required for In-Person and Hybrid events
+          return this.eventType === "Online" || this.address;
+        },
+        message: "Address is required for In-Person and Hybrid events"
+      }
+    },
+    videoConference: {
+      type: videoConferenceSchema,
+      required: false, // Optional for in-person events
+      validate: {
+        validator: function (this: any) {
+          // Video conference is required for Online and Hybrid events
+          return this.eventType === "In-Person" || this.videoConference;
+        },
+        message: "Video conference information is required for Online and Hybrid events"
+      }
+    },
     source: { type: String, required: false },
     format: {
       type: String,

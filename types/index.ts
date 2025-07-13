@@ -56,6 +56,18 @@ export type Access = {
   name: AccessName;
 };
 
+export type EventType = "In-Person" | "Online" | "Hybrid";
+
+export type VideoConferencePlatform = "Zoom" | "Teams" | "Google Meet" | "WebEx" | "GoToMeeting" | "Other";
+
+export type VideoConference = {
+  platform: VideoConferencePlatform;
+  link: string;
+  meetingId?: string;
+  passcode?: string;
+  instructions?: string;
+};
+
 export type Address = {
   street: string;
   city: string;
@@ -81,7 +93,9 @@ export type Event = {
   image?: string;
   startDate: string;
   endDate: string;
-  address: Address;
+  eventType: EventType;
+  address?: Address; // Optional for online events
+  videoConference?: VideoConference; // Optional for in-person events
   source?: string;
   format: FormatName;
   disciplines: DisciplineName[];
@@ -101,6 +115,7 @@ export interface EventFilters {
   format?: FormatName;
   disciplines: DisciplineName[];
   access?: AccessName;
+  eventType?: EventType;
   dateRange?: DateRange;
   searchTerm: string;
   sortBy: SortBy;

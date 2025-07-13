@@ -24,6 +24,7 @@ export async function fetchEventsWithFilters(filters: EventFilters): Promise<{
     );
   }
   if (filters.access) queryParams.append('access', filters.access);
+  if (filters.eventType) queryParams.append('eventType', filters.eventType);
   if (filters.searchTerm) queryParams.append('search', filters.searchTerm);
   if (filters.dateRange) queryParams.append('dateRange', filters.dateRange);
 
@@ -52,7 +53,9 @@ export async function updateEvent(event: Event) {
     image: event.image,
     startDate: event.startDate,
     endDate: event.endDate,
+    eventType: event.eventType,
     address: event.address,
+    videoConference: event.videoConference,
     source: event.source,
     format: event.format,
     disciplines: event.disciplines,

@@ -57,11 +57,14 @@ export default function EventsTable({ events }: { events: Event[] }) {
         image: event.image,
         startDate: event.startDate,
         endDate: event.endDate,
+        eventType: event.eventType,
         address: event.address,
+        videoConference: event.videoConference,
         source: event.source,
         format: event.format,
         disciplines: event.disciplines,
         access: event.access,
+        ticketTiers: event.ticketTiers,
         organizerId: event.organizerId,
       });
     }
@@ -116,12 +119,18 @@ export default function EventsTable({ events }: { events: Event[] }) {
             </TableData>
             <TableData>
               <ThemedText>
-                {(() => {
-                  const addressText = event.address.venue
-                    ? `${event.address.venue}, ${event.address.city}, ${event.address.state}`
-                    : `${event.address.city}, ${event.address.state}`;
-                  return addressText.length < 30 ? addressText : addressText.slice(0, 30) + "...";
-                })()}
+                {event.eventType === "Online" ? (
+                  <ThemedText>Online Event</ThemedText>
+                ) : event.address ? (
+                  (() => {
+                    const addressText = event.address.venue
+                      ? `${event.address.venue}, ${event.address.city}, ${event.address.state}`
+                      : `${event.address.city}, ${event.address.state}`;
+                    return addressText;
+                  })()
+                ) : (
+                  <ThemedText>Location TBD</ThemedText>
+                )}
               </ThemedText>
             </TableData>
             <TableData>

@@ -2,7 +2,7 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { createEvent } from "@/services/event";
 import { deleteImage } from "@/services/image";
-import type { DisciplineName, Event, FormatName } from "@/types";
+import type { DisciplineName, Event, EventType, FormatName, VideoConferencePlatform } from "@/types";
 import { AccessName } from "@/types";
 import { getImageKey } from "@/utils/image";
 import { useUser } from "@clerk/clerk-expo";
@@ -11,7 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { ImagePickerAsset } from "expo-image-picker";
 import { router } from "expo-router";
-import { Building, FileText, MapPin, Plus, Ticket, Trash2 } from "lucide-react";
+import { Building, FileText, MapPin, Monitor, Plus, Ticket, Trash2, Users } from "lucide-react";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Alert, Platform, View } from "react-native";
@@ -75,6 +75,10 @@ const LOCAL_DISCIPLINES: DisciplineName[] = [
 
 const LOCAL_ACCESSES: AccessName[] = ["Public", "Private", "Invitation Only"];
 
+const LOCAL_EVENT_TYPES: EventType[] = ["In-Person", "Online", "Hybrid"];
+
+const LOCAL_VIDEO_PLATFORMS: VideoConferencePlatform[] = ["Zoom", "Teams", "Google Meet", "WebEx", "GoToMeeting", "Other"];
+
 export const EventForm = ({ initialEvent }: EventFormProps) => {
   const { user } = useUser();
 
@@ -96,6 +100,7 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
       image: initialEvent?.image || "",
       startDate: initialEvent?.startDate || "",
       endDate: initialEvent?.endDate || "",
+      eventType: initialEvent?.eventType || "In-Person",
       address: {
         street: initialEvent?.address?.street || "",
         city: initialEvent?.address?.city || "",
@@ -103,6 +108,13 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
         zipCode: initialEvent?.address?.zipCode || "",
         country: initialEvent?.address?.country || "",
         venue: initialEvent?.address?.venue || "",
+      },
+      videoConference: {
+        platform: initialEvent?.videoConference?.platform || "Zoom",
+        link: initialEvent?.videoConference?.link || "",
+        meetingId: initialEvent?.videoConference?.meetingId || "",
+        passcode: initialEvent?.videoConference?.passcode || "",
+        instructions: initialEvent?.videoConference?.instructions || "",
       },
       source: initialEvent?.source || "",
       format: initialEvent?.format || "",
@@ -424,9 +436,10 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
         <Controller
           control={control}
           name="access"
+          rules={{ required: "Access level is required" }}
           render={({ field: { onChange, onBlur, value } }) => (
             <CustomPicker
-              label="Access Level"
+              label="Access Level *"
               value={value}
               onSelect={onChange}
               onBlur={onBlur}
@@ -461,6 +474,239 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
           )}
         />
       </ThemedView>
+
+      <ThemedView>
+        <ThemedText size="xl" bold className="mb-3">
+          Event Type
+        </ThemedText>
+
+        <Controller
+          control={control}
+          name="eventType"
+          rules={{ required: "Event type is required" }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <CustomPicker
+              label="Event Type *"
+              value={value}
+              onSelect={onChange}
+              onBlur={onBlur}
+              options={LOCAL_EVENT_TYPES}
+              error={errors.eventType?.message}
+              Icon={Users}
+              colors={Colors[mode]}
+              placeholder="Select event type"
+            />
+          )}
+        />
+      </ThemedView>
+
+
+      {/* Conditional Location/Video Conference Section */}
+      {(watch("eventType") === "In-Person" || watch("eventType") === "Hybrid") && (
+        <ThemedView>
+          <ThemedText size="xl" bold className="mb-3">
+            Event Location
+          </ThemedText>
+
+          <Controller
+            control={control}
+            name="address.venue"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomInput
+                label="Venue Name"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="University Conference Center, etc."
+                error={errors.address?.venue?.message}
+                Icon={Building}
+                colors={Colors[mode]}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="address.street"
+            rules={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? { required: "Street address is required" } : {}}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomInput
+                label={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? "Street Address *" : "Street Address"}
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="123 Main Street"
+                error={errors.address?.street?.message}
+                Icon={MapPin}
+                colors={Colors[mode]}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="address.city"
+            rules={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? { required: "City is required" } : {}}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomInput
+                label={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? "City *" : "City"}
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="New York"
+                error={errors.address?.city?.message}
+                colors={Colors[mode]}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="address.state"
+            rules={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? { required: "State is required" } : {}}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomInput
+                label={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? "State/Province *" : "State/Province"}
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="NY"
+                error={errors.address?.state?.message}
+                colors={Colors[mode]}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="address.zipCode"
+            rules={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? { required: "ZIP code is required" } : {}}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomInput
+                label={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? "ZIP/Postal Code *" : "ZIP/Postal Code"}
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="10001"
+                error={errors.address?.zipCode?.message}
+                colors={Colors[mode]}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="address.country"
+            rules={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? { required: "Country is required" } : {}}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomInput
+                label={watch("eventType") === "In-Person" || watch("eventType") === "Hybrid" ? "Country *" : "Country"}
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="United States"
+                error={errors.address?.country?.message}
+                colors={Colors[mode]}
+              />
+            )}
+          />
+        </ThemedView>
+      )}
+
+      {/* Video Conference Section */}
+      {(watch("eventType") === "Online" || watch("eventType") === "Hybrid") && (
+        <ThemedView>
+          <ThemedText size="xl" bold className="mb-3">
+            Video Conference Details
+          </ThemedText>
+
+          <Controller
+            control={control}
+            name="videoConference.platform"
+            rules={watch("eventType") === "Online" || watch("eventType") === "Hybrid" ? { required: "Platform is required" } : {}}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomPicker
+                label={watch("eventType") === "Online" || watch("eventType") === "Hybrid" ? "Platform *" : "Platform"}
+                value={value}
+                onSelect={onChange}
+                onBlur={onBlur}
+                options={LOCAL_VIDEO_PLATFORMS}
+                error={errors.videoConference?.platform?.message}
+                Icon={Monitor}
+                colors={Colors[mode]}
+                placeholder="Select video platform"
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="videoConference.link"
+            rules={watch("eventType") === "Online" || watch("eventType") === "Hybrid" ? { required: "Meeting link is required" } : {}}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomInput
+                label={watch("eventType") === "Online" || watch("eventType") === "Hybrid" ? "Meeting Link *" : "Meeting Link"}
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="https://zoom.us/j/123456789"
+                error={errors.videoConference?.link?.message}
+                colors={Colors[mode]}
+                keyboardType="url"
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="videoConference.meetingId"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomInput
+                label="Meeting ID"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="123 456 789"
+                error={errors.videoConference?.meetingId?.message}
+                colors={Colors[mode]}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="videoConference.passcode"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomInput
+                label="Passcode"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="Meeting passcode"
+                error={errors.videoConference?.passcode?.message}
+                colors={Colors[mode]}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="videoConference.instructions"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomInput
+                label="Additional Instructions"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="Any special instructions for joining the meeting"
+                error={errors.videoConference?.instructions?.message}
+                colors={Colors[mode]}
+                multiline
+              />
+            )}
+          />
+        </ThemedView>
+      )}
 
       <ThemedView>
         <ThemedText size="xl" bold className="mb-3">
@@ -538,115 +784,6 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
           <ButtonIcon as={Plus} size="xs" />
           <ButtonText>Add Ticket Tier</ButtonText>
         </Button>
-      </ThemedView>
-
-      <ThemedView>
-        <ThemedText size="xl" bold className="mb-3">
-          Event Location
-        </ThemedText>
-
-        <Controller
-          control={control}
-          name="address.venue"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <CustomInput
-              label="Venue Name"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="University Conference Center, etc."
-              error={errors.address?.venue?.message}
-              Icon={Building}
-              colors={Colors[mode]}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="address.street"
-          rules={{ required: "Street address is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <CustomInput
-              label="Street Address *"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="123 Main Street"
-              error={errors.address?.street?.message}
-              Icon={MapPin}
-              colors={Colors[mode]}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="address.city"
-          rules={{ required: "City is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <CustomInput
-              label="City *"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="New York"
-              error={errors.address?.city?.message}
-              colors={Colors[mode]}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="address.state"
-          rules={{ required: "State is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <CustomInput
-              label="State/Province *"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="NY"
-              error={errors.address?.state?.message}
-              colors={Colors[mode]}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="address.zipCode"
-          rules={{ required: "ZIP code is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <CustomInput
-              label="ZIP/Postal Code *"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="10001"
-              error={errors.address?.zipCode?.message}
-              colors={Colors[mode]}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="address.country"
-          rules={{ required: "Country is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <CustomInput
-              label="Country *"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="United States"
-              error={errors.address?.country?.message}
-              colors={Colors[mode]}
-            />
-          )}
-        />
       </ThemedView>
 
       <ThemedButton
