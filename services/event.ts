@@ -16,10 +16,10 @@ export async function fetchEventsWithFilters(filters: EventFilters): Promise<{
   count: number;
 }> {
   const queryParams = new URLSearchParams();
-  
+
   if (filters.format) queryParams.append('format', filters.format);
   if (filters.disciplines.length > 0) {
-    filters.disciplines.forEach(discipline => 
+    filters.disciplines.forEach(discipline =>
       queryParams.append('disciplines', discipline)
     );
   }
@@ -52,7 +52,7 @@ export async function updateEvent(event: Event) {
     image: event.image,
     startDate: event.startDate,
     endDate: event.endDate,
-    location: event.location,
+    address: event.address,
     source: event.source,
     format: event.format,
     disciplines: event.disciplines,

@@ -56,6 +56,15 @@ export type Access = {
   name: AccessName;
 };
 
+export type Address = {
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  venue?: string; // Optional venue name (e.g., "University Conference Center")
+};
+
 export type Event = {
   id: string;
   title: string;
@@ -64,7 +73,7 @@ export type Event = {
   image?: string;
   startDate: string;
   endDate: string;
-  location: string;
+  address: Address;
   source?: string;
   format: FormatName;
   disciplines: DisciplineName[];

@@ -94,7 +94,14 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
       image: initialEvent?.image || "",
       startDate: initialEvent?.startDate || "",
       endDate: initialEvent?.endDate || "",
-      location: initialEvent?.location || "",
+      address: {
+        street: initialEvent?.address?.street || "",
+        city: initialEvent?.address?.city || "",
+        state: initialEvent?.address?.state || "",
+        zipCode: initialEvent?.address?.zipCode || "",
+        country: initialEvent?.address?.country || "",
+        venue: initialEvent?.address?.venue || "",
+      },
       source: initialEvent?.source || "",
       format: initialEvent?.format || "",
       disciplines: initialEvent?.disciplines || [],
@@ -334,24 +341,6 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
             )
           }
         />
-
-        <Controller
-          control={control}
-          name="location"
-          rules={{ required: "Location is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <CustomInput
-              label="Location *"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Event location or online link"
-              error={errors.location?.message}
-              Icon={MapPin}
-              colors={Colors[mode]}
-            />
-          )}
-        />
       </ThemedView>
 
       <ThemedView>
@@ -439,6 +428,115 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
               colors={Colors[mode]}
               keyboardType="url"
               error={errors.source?.message}
+            />
+          )}
+        />
+      </ThemedView>
+
+      <ThemedView>
+        <ThemedText size="xl" bold className="mb-3">
+          Event Location
+        </ThemedText>
+
+        <Controller
+          control={control}
+          name="address.venue"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <CustomInput
+              label="Venue Name"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              placeholder="University Conference Center, etc."
+              error={errors.address?.venue?.message}
+              Icon={Building}
+              colors={Colors[mode]}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="address.street"
+          rules={{ required: "Street address is required" }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <CustomInput
+              label="Street Address *"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              placeholder="123 Main Street"
+              error={errors.address?.street?.message}
+              Icon={MapPin}
+              colors={Colors[mode]}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="address.city"
+          rules={{ required: "City is required" }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <CustomInput
+              label="City *"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              placeholder="New York"
+              error={errors.address?.city?.message}
+              colors={Colors[mode]}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="address.state"
+          rules={{ required: "State is required" }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <CustomInput
+              label="State/Province *"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              placeholder="NY"
+              error={errors.address?.state?.message}
+              colors={Colors[mode]}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="address.zipCode"
+          rules={{ required: "ZIP code is required" }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <CustomInput
+              label="ZIP/Postal Code *"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              placeholder="10001"
+              error={errors.address?.zipCode?.message}
+              colors={Colors[mode]}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="address.country"
+          rules={{ required: "Country is required" }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <CustomInput
+              label="Country *"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              placeholder="United States"
+              error={errors.address?.country?.message}
+              colors={Colors[mode]}
             />
           )}
         />

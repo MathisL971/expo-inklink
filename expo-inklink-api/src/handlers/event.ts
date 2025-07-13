@@ -19,7 +19,10 @@ interface MongoFilter {
   $or?: {
     title?: { $regex: string; $options: string };
     description?: { $regex: string; $options: string };
-    location?: { $regex: string; $options: string };
+    "address.street"?: { $regex: string; $options: string };
+    "address.city"?: { $regex: string; $options: string };
+    "address.state"?: { $regex: string; $options: string };
+    "address.venue"?: { $regex: string; $options: string };
   }[];
   startDate?: { $gte: Date; $lt?: Date };
 }
@@ -38,11 +41,11 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
     const limit = queryStringParameters?.limit
       ? parseInt(queryStringParameters.limit)
       : 20;
-      
+
     const skip = queryStringParameters?.skip
       ? parseInt(queryStringParameters.skip)
       : 0;
-    
+
     const filter: MongoFilter = {};
     const sortObj: Record<string, 1 | -1> = {
       startDate: 1
@@ -67,7 +70,10 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
         filter.$or = [
           { title: { $regex: search, $options: 'i' } },
           { description: { $regex: search, $options: 'i' } },
-          { location: { $regex: search, $options: 'i' } }
+          { "address.street": { $regex: search, $options: 'i' } },
+          { "address.city": { $regex: search, $options: 'i' } },
+          { "address.state": { $regex: search, $options: 'i' } },
+          { "address.venue": { $regex: search, $options: 'i' } }
         ];
       }
       if (dateRange) {
@@ -107,10 +113,10 @@ export async function handleEventsGET(event: APIGatewayProxyEventV2) {
           filter.startDate = { $gte: today, $lt: endOfMonth };
         }
       }
-      
+
       sortObj[sortBy] = sortOrder === 'desc' ? -1 : 1;
     }
-   
+
     const events = await EventModel.find(filter)
       .limit(limit)
       .skip(skip)

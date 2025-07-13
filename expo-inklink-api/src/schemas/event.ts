@@ -46,6 +46,16 @@ const DisciplineNames = [
 
 const AccessNames = ["Public", "Private", "Invitation Only"] as const;
 
+// Define the address schema
+const addressSchema = new Schema({
+  street: { type: String, required: true },
+  city: { type: String, required: true },
+  state: { type: String, required: true },
+  zipCode: { type: String, required: true },
+  country: { type: String, required: true },
+  venue: { type: String, required: false }, // Optional venue name
+}, { _id: false }); // Don't create separate _id for subdocument
+
 const eventSchema = new Schema(
   {
     title: { type: String, required: true },
@@ -54,7 +64,7 @@ const eventSchema = new Schema(
     image: { type: String, required: false },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
-    location: { type: String, required: true },
+    address: { type: addressSchema, required: true },
     source: { type: String, required: false },
     format: {
       type: String,

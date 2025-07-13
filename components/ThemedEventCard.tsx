@@ -14,7 +14,7 @@ import { Image } from "./ui/image";
 export default function ThemedEventCard({ event }: { event: Event }) {
   const { mode } = useColorScheme();
 
-  return ( 
+  return (
     <Card
       className={`p-5 rounded-md max-h-[600px] flex-1`}
       style={{ backgroundColor: getColor("card", mode) }}
@@ -79,7 +79,10 @@ export default function ThemedEventCard({ event }: { event: Event }) {
         className="text-sm line-clamp-1"
         {...(Platform.OS !== "web" ? { numberOfLines: 1 } : {})}
       >
-        {event.location}
+        {event.address.venue
+          ? `${event.address.venue}, ${event.address.city}, ${event.address.state}`
+          : `${event.address.city}, ${event.address.state}`
+        }
       </ThemedText>
 
       <ThemedHeading

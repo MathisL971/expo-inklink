@@ -57,7 +57,7 @@ export default function EventsTable({ events }: { events: Event[] }) {
         image: event.image,
         startDate: event.startDate,
         endDate: event.endDate,
-        location: event.location,
+        address: event.address,
         source: event.source,
         format: event.format,
         disciplines: event.disciplines,
@@ -115,7 +115,14 @@ export default function EventsTable({ events }: { events: Event[] }) {
               </ThemedText>
             </TableData>
             <TableData>
-              <ThemedText>{event.location.length < 30 ? event.location : event.location.slice(0, 30) + "..."}</ThemedText>
+              <ThemedText>
+                {(() => {
+                  const addressText = event.address.venue
+                    ? `${event.address.venue}, ${event.address.city}, ${event.address.state}`
+                    : `${event.address.city}, ${event.address.state}`;
+                  return addressText.length < 30 ? addressText : addressText.slice(0, 30) + "...";
+                })()}
+              </ThemedText>
             </TableData>
             <TableData>
               <HStack className="gap-2">
@@ -127,7 +134,7 @@ export default function EventsTable({ events }: { events: Event[] }) {
                     />
                   </ExternalLink>
                 )}
-                <Pressable onPress={() => {}}>
+                <Pressable onPress={() => { }}>
                   <Icon as={EditIcon} color={getColor("warning", mode)} />
                 </Pressable>
                 <Pressable onPress={() => handleDuplicate(event)}>

@@ -145,13 +145,13 @@ export default function EventScreen() {
                   </View>
                   {data.startDate.split("T")[0] !==
                     data.endDate.split("T")[0] && (
-                    <ThemedText
-                      colorVariant="textSecondary"
-                      className="text-sm mt-1"
-                    >
-                      Ends: {formatDate(data.endDate)}
-                    </ThemedText>
-                  )}
+                      <ThemedText
+                        colorVariant="textSecondary"
+                        className="text-sm mt-1"
+                      >
+                        Ends: {formatDate(data.endDate)}
+                      </ThemedText>
+                    )}
                 </View>
               </View>
             </ThemedView>
@@ -167,8 +167,19 @@ export default function EventScreen() {
                   <ThemedText className="font-semibold mb-1">
                     Location
                   </ThemedText>
+                  {data.address.venue && (
+                    <ThemedText colorVariant="textSecondary" className="mb-1">
+                      {data.address.venue}
+                    </ThemedText>
+                  )}
                   <ThemedText colorVariant="textSecondary">
-                    {data.location}
+                    {data.address.street}
+                  </ThemedText>
+                  <ThemedText colorVariant="textSecondary">
+                    {data.address.city}, {data.address.state} {data.address.zipCode}
+                  </ThemedText>
+                  <ThemedText colorVariant="textSecondary">
+                    {data.address.country}
                   </ThemedText>
                 </View>
               </View>
