@@ -12,10 +12,17 @@ import {
   handleEventsPUT,
 } from "./handlers/event";
 import { handleFormatsGET } from "./handlers/format";
+import {
+  handleTicketsDELETE,
+  handleTicketsGET,
+  handleTicketsPOST,
+  handleTicketsPUT,
+} from "./handlers/ticket";
 import { AccessModel } from "./schemas/access";
 import { DisciplineModel } from "./schemas/discipline";
 import { EventModel } from "./schemas/event";
 import { FormatModel } from "./schemas/format";
+import { TicketModel } from "./schemas/ticket";
 import { createResponse, errorResponse } from "./utils/response";
 // Import other models as needed
 
@@ -49,11 +56,15 @@ const RESOURCE_CONFIG = {
   },
   disciplines: {
     model: DisciplineModel,
-    allowedMethods: ["GET"] 
+    allowedMethods: ["GET"]
   },
   accesses: {
     model: AccessModel,
     allowedMethods: ["GET"]
+  },
+  tickets: {
+    model: TicketModel,
+    allowedMethods: ["GET", "POST", "PUT", "DELETE"],
   }
   // Add more resources here
 } as const;
@@ -75,6 +86,12 @@ function createResourceHandler(resourceName: string) {
     },
     accesses: {
       GET: handleAccessesGET
+    },
+    tickets: {
+      GET: handleTicketsGET,
+      POST: handleTicketsPOST,
+      PUT: handleTicketsPUT,
+      DELETE: handleTicketsDELETE,
     }
     // Add more resource handlers here
   };
@@ -151,7 +168,7 @@ export async function handler(
 
     const methodHandler =
       resourceHandlers[
-        event.requestContext.http.method as keyof typeof resourceHandlers
+      event.requestContext.http.method as keyof typeof resourceHandlers
       ];
 
     if (!methodHandler) {

@@ -115,6 +115,45 @@ export type AccessibilityFeature =
   | "Mobility Aid Friendly"
   | "Service Animals Welcome";
 
+export type TicketStatus = "purchased" | "cancelled" | "refunded" | "used" | "expired";
+
+export type PaymentStatus = "pending" | "completed" | "failed" | "refunded";
+
+export type PaymentMethod = "credit_card" | "paypal" | "bank_transfer" | "other";
+
+export type Ticket = {
+  id: string;
+  eventId: string; // Reference to Event
+  userId: string; // Clerk user ID
+  ticketTierId: string; // Reference to TicketTier
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  status: TicketStatus;
+  paymentStatus: PaymentStatus;
+  purchaseDate: string; // ISO date string
+  paymentMethod?: PaymentMethod;
+  paymentTransactionId?: string;
+  notes?: string;
+  checkInDate?: string; // ISO date string
+  contactEmail?: string;
+  contactPhone?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  // Populated event details (when included)
+  event?: Pick<Event, "id" | "title" | "startDate" | "endDate" | "eventType" | "address">;
+};
+
+export type TicketFilters = {
+  userId?: string;
+  eventId?: string;
+  status?: TicketStatus;
+  paymentStatus?: PaymentStatus;
+  startDate?: string; // Purchase date filtering
+  endDate?: string; // Purchase date filtering
+  sortBy?: 'purchaseDate' | 'totalPrice' | 'status';
+  sortOrder?: SortOrder;
+};
 
 
 export type Address = {
