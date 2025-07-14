@@ -98,6 +98,9 @@ export async function updateEvent(event: Event) {
     ticketTiers: event.ticketTiers,
     featuredGuests: event.featuredGuests,
     organizerId: event.organizerId,
+    totalTickets: event.totalTickets,
+    availableTickets: event.availableTickets,
+    status: event.status,
   });
   return res.data;
 }

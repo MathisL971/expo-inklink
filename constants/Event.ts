@@ -1,4 +1,4 @@
-import type { DisciplineName, EventType, FormatName, LanguageName, VideoConferencePlatform } from "@/types";
+import type { DisciplineName, EventStatus, EventType, FormatName, LanguageName, VideoConferencePlatform } from "@/types";
 import { AccessName, AccessibilityFeature } from "@/types";
 
 
@@ -59,6 +59,13 @@ export const EVENT_TYPES: EventType[] = [
     "In-Person",
     "Online",
     "Hybrid"
+];
+
+// Event status options
+export const EVENT_STATUS: EventStatus[] = [
+    "active",
+    "sold_out",
+    "cancelled"
 ];
 
 // Video conference platforms available for selection

@@ -35,6 +35,7 @@ const events = [
                 name: "Student",
                 price: 25,
                 quantity: 100,
+                available: 100,
                 description: "Discounted rate for students with valid ID"
             },
             {
@@ -42,6 +43,7 @@ const events = [
                 name: "General Admission",
                 price: 75,
                 quantity: 200,
+                available: 200,
                 description: "General admission includes lunch and materials"
             },
             {
@@ -49,9 +51,13 @@ const events = [
                 name: "Premium",
                 price: 150,
                 quantity: 50,
+                available: 50,
                 description: "Premium includes VIP reception and signed book"
             }
         ],
+        totalTickets: 350,
+        availableTickets: 350,
+        status: "active",
         featuredGuests: [
             {
                 id: "dr-smith",
@@ -93,9 +99,13 @@ const events = [
                 name: "Free Access",
                 price: 0,
                 quantity: 500,
+                available: 500,
                 description: "Free access to live webinar with Q&A"
             }
         ],
+        totalTickets: 500,
+        availableTickets: 500,
+        status: "active",
         featuredGuests: [
             {
                 id: "prof-jones",
@@ -157,6 +167,7 @@ const events = [
                 name: "In-Person",
                 price: 120,
                 quantity: 20,
+                available: 15,
                 description: "Includes materials, lunch, and tasting session"
             },
             {
@@ -164,9 +175,13 @@ const events = [
                 name: "Virtual",
                 price: 80,
                 quantity: 50,
+                available: 45,
                 description: "Virtual participation with mailed tasting kit"
             }
-        ]
+        ],
+        totalTickets: 70,
+        availableTickets: 60,
+        status: "active"
     },
     {
         title: "Economic Psychology Conference",

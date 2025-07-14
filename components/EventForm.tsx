@@ -118,11 +118,26 @@ export const EventForm = ({ initialEvent }: EventFormProps) => {
       // Only upload if it's a local asset
       imageUrl = await uploadImage(eventData.image);
     }
+
+    // Process ticket tiers and set available = quantity for each tier
+    const ticketTiers = (eventData.ticketTiers || []).map((tier: any) => ({
+      ...tier,
+      available: tier.quantity || 0 // Set available to match quantity
+    }));
+
+    // Calculate ticket totals from ticket tiers
+    const totalTickets = ticketTiers.reduce((sum: number, tier: any) => sum + (tier.quantity || 0), 0);
+    const availableTickets = ticketTiers.reduce((sum: number, tier: any) => sum + (tier.available || 0), 0);
+
     createMutation.mutate({
       ...eventData,
       image: imageUrl,
       startDate: new Date(eventData.startDate),
       endDate: new Date(eventData.endDate),
+      ticketTiers,
+      totalTickets,
+      availableTickets,
+      status: "active",
     });
   };
 

@@ -50,6 +50,12 @@ export default function EventsTable({ events }: { events: Event[] }) {
 
   const handleDuplicate = (event: Event) => {
     if (confirm("Are you sure you want to duplicate this event?")) {
+      // Reset ticket availability for duplicate (unsell all tickets)
+      const resetTicketTiers = event.ticketTiers?.map(tier => ({
+        ...tier,
+        available: tier.quantity
+      })) || [];
+
       createMutation.mutate({
         title: event.title + " (Copy)",
         description: event.description,
@@ -66,9 +72,13 @@ export default function EventsTable({ events }: { events: Event[] }) {
         disciplines: event.disciplines,
         languages: event.languages,
         access: event.access,
-        ticketTiers: event.ticketTiers,
+        ticketTiers: resetTicketTiers,
         featuredGuests: event.featuredGuests,
         organizerId: event.organizerId,
+        // These values will be auto-calculated and overwritten
+        totalTickets: 0,
+        availableTickets: 0,
+        status: "active",
       });
     }
   };

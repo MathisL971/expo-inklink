@@ -48,6 +48,8 @@ const AccessNames = ["Public", "Private", "Invitation Only"] as const;
 
 const EventTypeNames = ["In-Person", "Online", "Hybrid"] as const;
 
+const EventStatusNames = ["active", "sold_out", "cancelled"] as const;
+
 const VideoConferencePlatformNames = ["Zoom", "Teams", "Google Meet", "WebEx", "GoToMeeting", "Other"] as const;
 
 const LanguageNames = [
@@ -97,6 +99,7 @@ const ticketTierSchema = new Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true, min: 0 },
   quantity: { type: Number, required: true, min: 0 },
+  available: { type: Number, required: true, min: 0 },
   description: { type: String, required: false },
 }, { _id: true }); // Allow MongoDB to generate _id for each ticket tier
 
@@ -179,6 +182,14 @@ const eventSchema = new Schema(
     ticketTiers: [ticketTierSchema],
     featuredGuests: [featuredGuestSchema],
     organizerId: { type: String, required: false },
+    totalTickets: { type: Number, required: true, min: 0, default: 0 },
+    availableTickets: { type: Number, required: true, min: 0, default: 0 },
+    status: {
+      type: String,
+      required: true,
+      enum: EventStatusNames,
+      default: "active"
+    },
   },
   {
     timestamps: true, // This adds createdAt and updatedAt automatically

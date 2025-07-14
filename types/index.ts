@@ -77,6 +77,8 @@ export type Language = {
 
 export type EventType = "In-Person" | "Online" | "Hybrid";
 
+export type EventStatus = "active" | "sold_out" | "cancelled";
+
 export type VideoConferencePlatform = "Zoom" | "Teams" | "Google Meet" | "WebEx" | "GoToMeeting" | "Other";
 
 export type VideoConference = {
@@ -133,6 +135,7 @@ export type TicketTier = {
   name: string;
   price: number;
   quantity: number;
+  available: number;
   description?: string;
 };
 
@@ -173,6 +176,9 @@ export type Event = {
   organizerId?: string;
   createdAt?: string;
   updatedAt?: string;
+  totalTickets: number;
+  availableTickets: number;
+  status: EventStatus;
 
   // Accessibility features
   accessibilityFeatures?: AccessibilityFeature[];
