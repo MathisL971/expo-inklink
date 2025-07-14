@@ -67,6 +67,20 @@ const LanguageNames = [
   "Other"
 ] as const;
 
+// Define accessibility features enum values
+const AccessibilityFeatureNames = [
+  "Wheelchair Accessible",
+  "Hearing Assistance (ASL/Interpreters)",
+  "Visual Assistance (Large Print/Braille)",
+  "Audio Description Available",
+  "Closed Captions Available",
+  "Sensory-Friendly Environment",
+  "Accessible Parking",
+  "Accessible Restrooms",
+  "Mobility Aid Friendly",
+  "Service Animals Welcome"
+] as const;
+
 // Define the address schema
 const addressSchema = new Schema({
   street: { type: String, required: true },
@@ -190,6 +204,13 @@ const eventSchema = new Schema(
       enum: EventStatusNames,
       default: "active"
     },
+    accessibilityFeatures: [
+      {
+        type: String,
+        enum: AccessibilityFeatureNames,
+        required: false,
+      },
+    ],
   },
   {
     timestamps: true, // This adds createdAt and updatedAt automatically

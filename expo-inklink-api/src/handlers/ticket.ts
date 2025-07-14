@@ -119,7 +119,7 @@ export async function handleTicketsPOST(event: APIGatewayProxyEventV2) {
             }
 
             // Check if the event has available tickets
-            if (eventExists.availableTickets < (ticketData.quantity || 1)) {
+            if ((eventExists.availableTickets as number) < (ticketData.quantity || 1)) {
                 return errorResponse(400, "Not enough available tickets for this event");
             }
 
@@ -190,8 +190,8 @@ export async function handleTicketsPUT(event: APIGatewayProxyEventV2) {
         }
 
         // Handle quantity changes if applicable
-        if (ticketData.quantity && ticketData.quantity !== originalTicket.quantity) {
-            const quantityDifference = originalTicket.quantity - ticketData.quantity;
+        if (ticketData.quantity && ticketData.quantity !== (originalTicket.quantity as number)) {
+            const quantityDifference = (originalTicket.quantity as number) - ticketData.quantity;
             await EventModel.findByIdAndUpdate(
                 originalTicket.eventId,
                 {
