@@ -97,6 +97,9 @@ export default function ThemedNavBar() {
                 >
                   Events
                 </NavLink>
+                <NavLink href="/tickets" currentPathname={pathname} theme={theme}>
+                  Tickets
+                </NavLink>
                 <NavLink href="/users" currentPathname={pathname} theme={theme}>
                   Users
                 </NavLink>

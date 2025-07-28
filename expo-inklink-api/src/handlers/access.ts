@@ -7,14 +7,14 @@ export async function handleAccessesGET(event: APIGatewayProxyEventV2) {
   const accessId = pathParameters?.id;
 
   if (accessId) {
-    // Get single event
+    // Get single access
     const singleAccess = await AccessModel.findById(accessId);
     if (!singleAccess) {
       return errorResponse(404, "Access not found");
     }
     return createResponse(200, singleAccess);
   } else {
-    // Get all events with optional query parameters
+    // Get all accesses with optional query parameters
     const limit = queryStringParameters?.limit
       ? parseInt(queryStringParameters.limit)
       : 20;

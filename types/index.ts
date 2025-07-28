@@ -267,3 +267,20 @@ export interface EventFilters {
   // Accessibility filtering
   accessibilityFeatures?: AccessibilityFeature[];
 };
+
+export interface TicketSelection {
+  tierId: string;
+  quantity: number;
+  unitPrice: number;
+  name: string;
+}
+
+export interface Reservation {
+  id: string;
+  eventId: string;
+  userId: string;
+  tickets: TicketSelection[];
+  expiresAt: string;
+  createdAt: string;
+  updatedAt: string;
+}

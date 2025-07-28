@@ -7,14 +7,14 @@ export async function handleDisciplinesGET(event: APIGatewayProxyEventV2) {
   const disciplineId = pathParameters?.id;
 
   if (disciplineId) {
-    // Get single event
+    // Get single discipline
     const singleDiscipline = await DisciplineModel.findById(disciplineId);
     if (!singleDiscipline) {
       return errorResponse(404, "Discipline not found");
     }
     return createResponse(200, singleDiscipline);
   } else {
-    // Get all events with optional query parameters
+    // Get all disciplines with optional query parameters
     const limit = queryStringParameters?.limit
       ? parseInt(queryStringParameters.limit)
       : 20;

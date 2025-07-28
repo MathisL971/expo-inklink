@@ -13,6 +13,12 @@ import {
 } from "./handlers/event";
 import { handleFormatsGET } from "./handlers/format";
 import {
+  handleReservationsDELETE,
+  handleReservationsGET,
+  handleReservationsPOST,
+  handleReservationsPUT
+} from "./handlers/reservation";
+import {
   handleTicketsDELETE,
   handleTicketsGET,
   handleTicketsPOST,
@@ -22,6 +28,7 @@ import { AccessModel } from "./schemas/access";
 import { DisciplineModel } from "./schemas/discipline";
 import { EventModel } from "./schemas/event";
 import { FormatModel } from "./schemas/format";
+import { ReservationModel } from "./schemas/reservation";
 import { TicketModel } from "./schemas/ticket";
 import { createResponse, errorResponse } from "./utils/response";
 // Import other models as needed
@@ -65,6 +72,10 @@ const RESOURCE_CONFIG = {
   tickets: {
     model: TicketModel,
     allowedMethods: ["GET", "POST", "PUT", "DELETE"],
+  },
+  reservations: {
+    model: ReservationModel,
+    allowedMethods: ["GET", "POST", "PUT", "DELETE"],
   }
   // Add more resources here
 } as const;
@@ -92,6 +103,12 @@ function createResourceHandler(resourceName: string) {
       POST: handleTicketsPOST,
       PUT: handleTicketsPUT,
       DELETE: handleTicketsDELETE,
+    },
+    reservations: {
+      GET: handleReservationsGET,
+      POST: handleReservationsPOST,
+      PUT: handleReservationsPUT,
+      DELETE: handleReservationsDELETE,
     }
     // Add more resource handlers here
   };

@@ -8,7 +8,22 @@ export async function fetchEvents(): Promise<{
   count: number;
 }> {
   const res = await axios.get(`${baseUrl}/events`);
-  return res.data;
+  const data = res.data;
+
+  // Transform ticket tiers to use 'id' instead of '_id' for each event
+  if (data.events) {
+    data.events = data.events.map((event: any) => {
+      if (event.ticketTiers) {
+        event.ticketTiers = event.ticketTiers.map((tier: any) => ({
+          ...tier,
+          id: tier._id || tier.id, // Use _id if present, fallback to id
+        }));
+      }
+      return event;
+    });
+  }
+
+  return data;
 }
 
 export async function fetchEventsWithFilters(filters: EventFilters): Promise<{
@@ -18,22 +33,14 @@ export async function fetchEventsWithFilters(filters: EventFilters): Promise<{
   const queryParams = new URLSearchParams();
 
   if (filters.format) queryParams.append('format', filters.format);
-  if (filters.disciplines.length > 0) {
-    filters.disciplines.forEach(discipline =>
-      queryParams.append('disciplines', discipline)
-    );
-  }
-  if (filters.languages.length > 0) {
-    filters.languages.forEach(language =>
-      queryParams.append('languages', language)
-    );
-  }
+  if (filters.disciplines.length > 0) queryParams.append('disciplines', filters.disciplines.join(','));
+  if (filters.languages.length > 0) queryParams.append('languages', filters.languages.join(','));
   if (filters.eventType) queryParams.append('eventType', filters.eventType);
-  if (filters.searchTerm) queryParams.append('searchTerm', filters.searchTerm);
   if (filters.startDateTime) queryParams.append('startDateTime', filters.startDateTime);
   if (filters.endDateTime) queryParams.append('endDateTime', filters.endDateTime);
-
-  // New filtering parameters
+  if (filters.searchTerm) queryParams.append('searchTerm', filters.searchTerm);
+  if (filters.sortBy) queryParams.append('sortBy', filters.sortBy);
+  if (filters.sortOrder) queryParams.append('sortOrder', filters.sortOrder);
   if (filters.priceRange) queryParams.append('priceRange', filters.priceRange);
   if (filters.hasFeaturedGuests !== undefined) queryParams.append('hasFeaturedGuests', filters.hasFeaturedGuests.toString());
   if (filters.hasTickets !== undefined) queryParams.append('hasTickets', filters.hasTickets.toString());
@@ -43,6 +50,9 @@ export async function fetchEventsWithFilters(filters: EventFilters): Promise<{
   if (filters.minPrice !== undefined) queryParams.append('minPrice', filters.minPrice.toString());
   if (filters.maxPrice !== undefined) queryParams.append('maxPrice', filters.maxPrice.toString());
   if (filters.parkingAvailable) queryParams.append('parkingAvailable', filters.parkingAvailable);
+  if (filters.duration) queryParams.append('duration', filters.duration);
+  if (filters.timeOfDay) queryParams.append('timeOfDay', filters.timeOfDay);
+  if (filters.accessibilityFeatures && filters.accessibilityFeatures.length > 0) queryParams.append('accessibilityFeatures', filters.accessibilityFeatures.join(','));
 
   // Location filters
   if (filters.location?.city) queryParams.append('locationCity', filters.location.city);
@@ -50,23 +60,24 @@ export async function fetchEventsWithFilters(filters: EventFilters): Promise<{
   if (filters.location?.country) queryParams.append('locationCountry', filters.location.country);
   if (filters.location?.venue) queryParams.append('locationVenue', filters.location.venue);
 
-  // Duration and time filtering (calculated dynamically on backend)
-  if (filters.duration) queryParams.append('duration', filters.duration);
-  if (filters.timeOfDay) queryParams.append('timeOfDay', filters.timeOfDay);
+  const res = await axios.get(`${baseUrl}/events?${queryParams.toString()}`);
+  const data = res.data;
 
-  // Accessibility features filtering
-  if (filters.accessibilityFeatures && filters.accessibilityFeatures.length > 0) {
-    filters.accessibilityFeatures.forEach(feature =>
-      queryParams.append('accessibilityFeatures', feature)
-    );
+  // Transform ticket tiers to use 'id' instead of '_id' for each event
+  if (data.events) {
+    data.events = data.events.map((event: any) => {
+      if (event.ticketTiers) {
+        event.ticketTiers = event.ticketTiers.map((tier: any) => ({
+          ...tier,
+          id: tier._id || tier.id, // Use _id if present, fallback to id
+        }));
+      }
+      return event;
+    });
   }
 
-  queryParams.append('sortBy', filters.sortBy);
-  queryParams.append('sortOrder', filters.sortOrder);
-
-  const res = await axios.get(`${baseUrl}/events?${queryParams.toString()}`);
-  return res.data;
-};
+  return data;
+}
 
 export async function deleteEvent(id: string) {
   const res = await axios.delete(`${baseUrl}/events/${id}`);
@@ -107,5 +118,15 @@ export async function updateEvent(event: Event) {
 
 export async function fetchEvent(id: string): Promise<Event> {
   const res = await axios.get(`${baseUrl}/events/${id}`);
-  return res.data;
+  const event = res.data;
+
+  // Transform ticket tiers to use 'id' instead of '_id'
+  if (event.ticketTiers) {
+    event.ticketTiers = event.ticketTiers.map((tier: any) => ({
+      ...tier,
+      id: tier._id || tier.id, // Use _id if present, fallback to id
+    }));
+  }
+
+  return event;
 }

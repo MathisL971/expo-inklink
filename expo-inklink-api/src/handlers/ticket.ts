@@ -134,28 +134,28 @@ export async function handleTicketsPOST(event: APIGatewayProxyEventV2) {
             }
         }
 
-        // Create the ticket
-        const newTicket = new TicketModel(ticketData);
-        const savedTicket = await newTicket.save();
+        const tickets = ticketData.selectedTickets;
 
-        // Update event ticket availability
-        if (ticketData.eventId && ticketData.quantity) {
-            await EventModel.findByIdAndUpdate(
-                ticketData.eventId,
-                {
-                    $inc: {
-                        availableTickets: -ticketData.quantity
-                    }
-                }
-            );
+        if (tickets.length === 0) {
+            return errorResponse(400, "No tickets selected");
         }
 
-        // Populate event details in response
-        const populatedTicket = await TicketModel.findById(savedTicket._id)
-            .populate('eventId', 'title startDate endDate')
-            .exec();
+        const createdTickets = [];
 
-        return createResponse(201, populatedTicket);
+        for (const ticket of tickets) {
+            for (let i = 0; i < ticket.quantity; i++) {
+                const newTicket = new TicketModel({
+                    eventId: ticketData.eventId,
+                    ticketTierId: ticket.tierId,
+                    userId: ticketData.userId,
+                    reservationId: ticketData.reservationId
+                });
+                await newTicket.save();
+                createdTickets.push(newTicket);
+            }
+        }
+
+        return createResponse(201, createdTickets);
     } catch (error: any) {
         if (error.name === "ValidationError") {
             return errorResponse(400, "Validation error", error);
@@ -173,12 +173,6 @@ export async function handleTicketsPUT(event: APIGatewayProxyEventV2) {
     try {
         const ticketData = JSON.parse(event.body || "{}");
 
-        // Get the original ticket to check for quantity changes
-        const originalTicket = await TicketModel.findById(ticketId);
-        if (!originalTicket) {
-            return errorResponse(404, "Ticket not found");
-        }
-
         const updatedTicket = await TicketModel.findByIdAndUpdate(
             ticketId,
             ticketData,
@@ -187,19 +181,6 @@ export async function handleTicketsPUT(event: APIGatewayProxyEventV2) {
 
         if (!updatedTicket) {
             return errorResponse(404, "Ticket not found");
-        }
-
-        // Handle quantity changes if applicable
-        if (ticketData.quantity && ticketData.quantity !== (originalTicket.quantity as number)) {
-            const quantityDifference = (originalTicket.quantity as number) - ticketData.quantity;
-            await EventModel.findByIdAndUpdate(
-                originalTicket.eventId,
-                {
-                    $inc: {
-                        availableTickets: quantityDifference
-                    }
-                }
-            );
         }
 
         return createResponse(200, updatedTicket);
@@ -217,26 +198,8 @@ export async function handleTicketsDELETE(event: APIGatewayProxyEventV2) {
         return errorResponse(400, "Ticket ID is required for DELETE requests");
     }
 
-    // Get the ticket first to restore event availability
-    const ticket = await TicketModel.findById(ticketId);
-    if (!ticket) {
-        return errorResponse(404, "Ticket not found");
-    }
-
     // Delete the ticket
     const deletedTicket = await TicketModel.findByIdAndDelete(ticketId);
-
-    // Restore event ticket availability
-    if (ticket.eventId && ticket.quantity) {
-        await EventModel.findByIdAndUpdate(
-            ticket.eventId,
-            {
-                $inc: {
-                    availableTickets: ticket.quantity
-                }
-            }
-        );
-    }
 
     return createResponse(200, {
         message: "Ticket deleted successfully",

@@ -1,7 +1,9 @@
 import Container from "@/components/Container";
 import { ExternalLink } from "@/components/ExternalLink";
+import PaymentModal from "@/components/PaymentModal";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import TicketSelectionComponent from "@/components/TicketSelectionComponent";
 import { Alert, AlertIcon } from "@/components/ui/alert";
 import { Badge, BadgeText } from "@/components/ui/badge";
 import { HStack } from "@/components/ui/hstack";
@@ -12,8 +14,12 @@ import { VStack } from "@/components/ui/vstack";
 import { Colors, getColor } from "@/constants/Colors";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { fetchEvent } from "@/services/event";
+import { createReservation, updateReservation } from "@/services/reservation";
+import { createTickets } from "@/services/ticket";
+import { Reservation, TicketSelection } from "@/types";
 import { formatEventTimesForUser } from "@/utils/timezone";
-import { useQuery } from "@tanstack/react-query";
+import { useUser } from "@clerk/clerk-expo";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ExternalPathString, router, useLocalSearchParams } from "expo-router";
 import {
   Calendar,
@@ -22,18 +28,51 @@ import {
   ExternalLink as ExternalLinkIcon,
   MapPin,
   Tag,
+  Ticket,
 } from "lucide-react-native";
-import { Image, ScrollView, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { Image, Alert as RNAlert, ScrollView, TouchableOpacity, View } from "react-native";
 
 export default function EventScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { mode: colorScheme } = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+  const { user } = useUser();
 
-  const { data, isLoading, error } = useQuery({
+  // Modal state management
+  const [reservation, setReservation] = useState<Reservation | null>(null);
+
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["event", id],
     queryFn: () => fetchEvent(id),
   });
+
+  const createReservationMutation = useMutation({
+    mutationFn: createReservation,
+    onSuccess: (reservation) => {
+      setReservation(reservation);
+    },
+    onError: (error) => {
+      console.error('Error creating reservation:', error);
+      RNAlert.alert('Error', 'Failed to reserve tickets. Please try again.');
+    }
+  })
+
+  const createTicketsMutation = useMutation({
+    mutationFn: createTickets,
+    onError: (error) => {
+      console.error('Error creating tickets:', error);
+      RNAlert.alert('Error', 'Failed to create tickets. Please try again.');
+    }
+  })
+
+  const updateReservationMutation = useMutation({
+    mutationFn: updateReservation,
+    onError: (error) => {
+      console.error('Error updating reservation:', error);
+      RNAlert.alert('Error', 'Failed to update reservation. Please try again.');
+    }
+  })
 
   // Use timezone-aware formatting for user's local time
   const getFormattedTimes = (event: any) => {
@@ -44,6 +83,33 @@ export default function EventScreen() {
       event.timezone || "UTC"
     );
   };
+
+  // Handle continue to payment - opens modal
+  const handleContinueToPayment = (selectedTickets: TicketSelection[]) => {
+    createReservationMutation.mutate({ eventId: id, userId: user!.id, tickets: selectedTickets });
+  };
+
+  // Handle free ticket purchase directly
+  const handleFreePurchase = async (selectedTickets: TicketSelection[]) => {
+    createTicketsMutation.mutate({ eventId: id, userId: user!.id, reservationId: reservation!.id, selectedTickets });
+  };
+
+  // Handle closing payment modal
+  const handleClosePaymentModal = () => {
+    setReservation(null);
+    refetch();
+  };
+
+  // Handle purchase complete
+  const handlePurchaseComplete = async () => {
+    await Promise.all([
+      updateReservationMutation.mutateAsync({ reservationId: reservation!.id, status: "paid" }),
+      createTicketsMutation.mutateAsync({ eventId: id, userId: user!.id, reservationId: reservation!.id, selectedTickets: reservation!.tickets })
+    ]);
+    setReservation(null);
+    refetch();
+    router.push(`/events/${id}/tickets`);
+  }
 
   return (
     <Container>
@@ -300,6 +366,25 @@ export default function EventScreen() {
               </ThemedText>
             </ThemedView>
 
+            {/* Ticket Purchase Section */}
+            {data.ticketTiers && data.ticketTiers.length > 0 && (
+              <ThemedView className="p-2 mb-4">
+                <HStack className="items-center mb-4">
+                  <Icon as={Ticket} size="md" color={colors.primary} />
+                  <ThemedText className="font-semibold text-lg ml-2">
+                    Tickets Available
+                  </ThemedText>
+                </HStack>
+
+                <TicketSelectionComponent
+                  ticketTiers={data.ticketTiers}
+                  onContinueToPayment={handleContinueToPayment}
+                  onFreePurchase={handleFreePurchase}
+                  isLoading={createReservationMutation.isPending}
+                />
+              </ThemedView>
+            )}
+
             {data.note && (
               <View
                 className="p-4 rounded-xl mb-4"
@@ -358,6 +443,12 @@ export default function EventScreen() {
               </View>
             )}
           </View>
+          <PaymentModal
+            onClose={handleClosePaymentModal}
+            eventId={data.id}
+            reservation={reservation}
+            onPurchaseComplete={handlePurchaseComplete}
+          />
         </ScrollView>
       )}
     </Container>

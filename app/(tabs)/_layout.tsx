@@ -41,9 +41,21 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
+        name="tickets/index"
+        options={{
+          title: "Tickets",
+          tabBarStyle: {
+            display: Platform.OS !== "web" ? "flex" : "none",
+            backgroundColor: navbarBackgroundColor,
+            borderTopColor: navbarBackgroundColor,
+            opacity: 1,
+          },
+        }}
+      />
+      <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Explore",
           tabBarStyle: {
             display: Platform.OS !== "web" ? "flex" : "none",
             backgroundColor: navbarBackgroundColor,
@@ -53,21 +65,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="settings/index"
         options={{
           title: "Settings",
-          tabBarStyle: {
-            display: Platform.OS !== "web" ? "flex" : "none",
-            backgroundColor: navbarBackgroundColor,
-            borderTopColor: navbarBackgroundColor,
-            opacity: 1,
-          },
-        }}
-      />
-      <Tabs.Screen
-        name="events/[id]/index"
-        options={{
-          title: "Event",
           tabBarStyle: {
             display: Platform.OS !== "web" ? "flex" : "none",
             backgroundColor: navbarBackgroundColor,

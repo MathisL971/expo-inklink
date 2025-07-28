@@ -7,14 +7,14 @@ export async function handleFormatsGET(event: APIGatewayProxyEventV2) {
   const formatId = pathParameters?.id;
 
   if (formatId) {
-    // Get single event
+    // Get single format
     const singleFormat = await FormatModel.findById(formatId);
     if (!singleFormat) {
       return errorResponse(404, "Format not found");
     }
     return createResponse(200, singleFormat);
   } else {
-    // Get all events with optional query parameters
+    // Get all formats with optional query parameters
     const limit = queryStringParameters?.limit
       ? parseInt(queryStringParameters.limit)
       : 20;

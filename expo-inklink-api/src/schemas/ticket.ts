@@ -9,14 +9,6 @@ const TicketStatusNames = [
     "expired"
 ] as const;
 
-// Define payment status enum values  
-const PaymentStatusNames = [
-    "pending",
-    "completed",
-    "failed",
-    "refunded"
-] as const;
-
 const ticketSchema = new Schema(
     {
         eventId: {
@@ -34,33 +26,17 @@ const ticketSchema = new Schema(
             type: mongoose.Schema.Types.ObjectId,
             required: true // Reference to the specific ticket tier
         },
-        quantity: {
-            type: Number,
+        reservationId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Reservation",
             required: true,
-            min: 1,
-            default: 1
-        },
-        unitPrice: {
-            type: Number,
-            required: true,
-            min: 0 // Price per individual ticket
-        },
-        totalPrice: {
-            type: Number,
-            required: true,
-            min: 0 // Total amount paid (unitPrice * quantity)
+            index: true // For efficient queries by reservation
         },
         status: {
             type: String,
             required: true,
             enum: TicketStatusNames,
             default: "purchased"
-        },
-        paymentStatus: {
-            type: String,
-            required: true,
-            enum: PaymentStatusNames,
-            default: "completed"
         },
         purchaseDate: {
             type: Date,
@@ -122,3 +98,4 @@ type Ticket = InferSchemaType<typeof ticketSchema> & {
 };
 
 export type { Ticket };
+

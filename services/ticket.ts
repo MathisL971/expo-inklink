@@ -1,5 +1,5 @@
 import axios from "axios";
-import { PaymentMethod, Ticket, TicketFilters } from "../types/index";
+import { PaymentMethod, Ticket, TicketFilters, TicketSelection } from "../types/index";
 
 const baseUrl = "https://c2nxeiwa04.execute-api.us-east-2.amazonaws.com/api";
 
@@ -55,6 +55,21 @@ export async function fetchEventTickets(eventId: string): Promise<{
 
 export async function createTicket(ticket: Omit<Ticket, "id" | "createdAt" | "updatedAt">): Promise<Ticket> {
     const res = await axios.post(`${baseUrl}/tickets`, ticket);
+    return res.data;
+}
+
+export async function createTickets({
+    eventId,
+    userId,
+    reservationId,
+    selectedTickets
+}: {
+    eventId: string;
+    userId: string;
+    reservationId: string;
+    selectedTickets: TicketSelection[];
+}): Promise<Ticket[]> {
+    const res = await axios.post(`${baseUrl}/tickets`, { eventId, userId, reservationId, selectedTickets });
     return res.data;
 }
 

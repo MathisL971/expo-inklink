@@ -1,3 +1,4 @@
+import { StripeProvider } from "@/components/StripeProvider";
 import ThemedNavBar from "@/components/ThemedNavBar";
 import { ThemedView } from "@/components/ThemedView";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
@@ -47,11 +48,11 @@ export default function RootWrapper() {
 
   return (
     <ClerkProvider tokenCache={tokenCache}>
-        <ColorSchemeProvider>
-          <QueryClientProvider client={queryClient}>
-            <ThemeWrapper />
-          </QueryClientProvider>
-        </ColorSchemeProvider>
+      <ColorSchemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeWrapper />
+        </QueryClientProvider>
+      </ColorSchemeProvider>
     </ClerkProvider>
   );
 }
@@ -60,8 +61,10 @@ function ThemeWrapper() {
   const { mode } = useColorScheme();
 
   return (
-    <GluestackUIProvider mode={mode}> 
-      <RootLayout />
+    <GluestackUIProvider mode={mode}>
+      <StripeProvider>
+        <RootLayout />
+      </StripeProvider>
     </GluestackUIProvider>
   )
 }

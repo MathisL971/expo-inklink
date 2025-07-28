@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+      "target": "ES2020", // Or a newer version supported by your Lambda Node.js runtime
+      "module": "commonjs", // CommonJS is standard for Node.js runtimes
+      "lib": ["ES2020"],
+      "outDir": "./dist", // Output directory for compiled JS files
+      "rootDir": "./src", // Root directory of your TS source files
+      "strict": true,
+      "esModuleInterop": true, // Enables compatibility with CommonJS modules
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "resolveJsonModule": true, // Allows importing .json files
+      "sourceMap": false // Set to true for local debugging, false for smaller prod packages
+    },
+    "include": ["src/**/*.ts"], // Glob pattern for your source files
+    "exclude": ["node_modules", "**/*.test.ts"]
+  }
